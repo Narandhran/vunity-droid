@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/lay_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:ignore="MissingConstraints">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="56dp">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/im_back"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerInParent="true"
+                android:layout_margin="5dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="10dp"
+                android:tint="@color/black"
+                app:srcCompat="@drawable/ic_left_arrow" />
+
+        </RelativeLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="25dp">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:layout_width="140dp"
+                    android:layout_height="90dp"
+                    android:src="@drawable/im_applogo" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="25dp"
+                    android:fontFamily="@font/lato_bold"
+                    android:text="@string/verification"
+                    android:textColor="@color/theme_dark_grey"
+                    android:textSize="18sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:fontFamily="@font/lato_regular"
+                    android:lineSpacingExtra="1dp"
+                    android:text="@string/msg_verification"
+                    android:textColor="@color/theme_light_grey"
+                    android:textSize="16sp" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_code_one"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="10dp"
+                        android:background="@drawable/bg_bottom_line"
+                        android:digits="0123456789"
+                        android:focusable="true"
+                        android:fontFamily="@font/lato_bold"
+                        android:gravity="center"
+                        android:hint="@string/_0"
+                        android:inputType="number"
+                        android:maxLength="1"
+                        android:padding="5dp"
+                        android:textColor="@color/theme_dark_grey"
+                        android:textSize="18sp" />
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_code_two"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="10dp"
+                        android:background="@drawable/bg_bottom_line"
+                        android:digits="0123456789"
+                        android:fontFamily="@font/lato_bold"
+                        android:gravity="center"
+                        android:hint="@string/_0"
+                        android:inputType="number"
+                        android:maxLength="1"
+                        android:padding="5dp"
+                        android:textColor="@color/theme_dark_grey"
+                        android:textSize="18sp" />
+
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_code_three"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="10dp"
+                        android:background="@drawable/bg_bottom_line"
+                        android:digits="0123456789"
+                        android:fontFamily="@font/lato_bold"
+                        android:gravity="center"
+                        android:hint="@string/_0"
+                        android:inputType="number"
+                        android:maxLength="1"
+                        android:padding="5dp"
+                        android:textColor="@color/theme_dark_grey"
+                        android:textSize="18sp" />
+
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/edt_code_four"
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/bg_bottom_line"
+                        android:digits="0123456789"
+                        android:fontFamily="@font/lato_bold"
+                        android:gravity="center"
+                        android:hint="@string/_0"
+                        android:inputType="number"
+                        android:maxLength="1"
+                        android:padding="5dp"
+                        android:textColor="@color/theme_dark_grey"
+                        android:textSize="18sp" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/txt_resend"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginEnd="5dp"
+                    android:fontFamily="@font/lato_regular"
+                    android:lineSpacingExtra="1dp"
+                    android:text="@string/resend_code"
+                    android:textColor="@color/theme_main"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/lay_timer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="5dp"
+                        android:fontFamily="@font/lato_regular"
+                        android:lineSpacingExtra="1dp"
+                        android:text="@string/resend_code_in"
+                        android:textColor="@color/theme_light_grey"
+                        android:textSize="14sp" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/txt_timer"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="@font/lato_regular"
+                        android:lineSpacingExtra="1dp"
+                        android:text="@string/_00_00"
+                        android:textColor="@color/theme_light_grey"
+                        android:textSize="14sp" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_verify"
+                    style="@style/BtnTheme"
+                    android:layout_width="match_parent"
+                    android:layout_height="45dp"
+                    android:layout_marginTop="50dp"
+                    android:text="@string/verify" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </androidx.core.widget.NestedScrollView>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

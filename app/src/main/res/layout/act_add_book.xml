@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical">
+
+    <include layout="@layout/toolbar" />
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/lay_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:horizontalSpacing="2dp"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="10dp"
+            app:cardUseCompatPadding="true">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/img_image_add"
+                            android:layout_width="130dp"
+                            android:layout_height="130dp"
+                            android:layout_gravity="center"
+                            android:padding="20dp"
+                            app:srcCompat="@drawable/ic_image_add" />
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/txt_image_filename"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/lato_regular"
+                                android:maxLines="1"
+                                android:padding="5dp"
+                                android:text="@string/sample_jpg"
+                                android:textColor="@color/theme_dark_grey"
+                                android:textSize="16sp" />
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/img_image_delete"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                android:padding="5dp"
+                                android:visibility="gone"
+                                app:srcCompat="@drawable/ic_delete" />
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:id="@+id/img_pdf_add"
+                            android:layout_width="130dp"
+                            android:layout_height="130dp"
+                            android:layout_gravity="center"
+                            android:padding="20dp"
+                            app:srcCompat="@drawable/ic_pdf_add" />
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:gravity="center"
+                            android:orientation="horizontal">
+
+                            <com.google.android.material.textview.MaterialTextView
+                                android:id="@+id/txt_pdf_filename"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:fontFamily="@font/lato_regular"
+                                android:maxLines="1"
+                                android:padding="5dp"
+                                android:text="@string/sample_pdf"
+                                android:textColor="@color/theme_dark_grey"
+                                android:textSize="16sp" />
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:id="@+id/img_pdf_delete"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_gravity="center"
+                                android:padding="5dp"
+                                android:visibility="gone"
+                                app:srcCompat="@drawable/ic_delete" />
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/lay_category"
+                        style="@style/MaterialInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/categories">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_category"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="false"
+                            android:digits=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                            android:drawableEnd="@drawable/custom_downarrow"
+                            android:drawableTint="@color/theme_dark_grey"
+                            android:focusable="false"
+                            android:fontFamily="@font/lato_regular"
+                            android:imeOptions="actionDone"
+                            android:inputType="text"
+                            android:maxLength="16"
+                            android:maxLines="1"
+                            android:paddingStart="1dp"
+                            android:paddingEnd="1dp"
+                            android:textColor="@color/theme_dark_grey"
+                            android:textSize="16sp"
+                            tools:targetApi="m" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/lay_name"
+                        style="@style/MaterialInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:hint="@string/name">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:digits=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()-"
+                            android:fontFamily="@font/lato_regular"
+                            android:imeOptions="actionDone"
+                            android:inputType="text"
+                            android:maxLength="16"
+                            android:maxLines="1"
+                            android:paddingStart="1dp"
+                            android:paddingEnd="1dp"
+                            android:textColor="@color/theme_dark_grey"
+                            android:textSize="16sp"
+                            tools:targetApi="lollipop" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerInParent="true"
+                            android:fontFamily="@font/lato_bold"
+                            android:padding="5dp"
+                            android:text="@string/genre"
+                            android:textColor="@color/theme_dark_grey"
+                            android:textSize="16sp" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/btn_add_genre"
+                            android:layout_width="56dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerInParent="true"
+                            android:background="@drawable/bg_oval"
+                            android:fontFamily="@font/lato_bold"
+                            android:gravity="center"
+                            android:padding="5dp"
+                            android:text="@string/add"
+                            android:textColor="@color/theme_main"
+                            android:textSize="14dp"
+                            tools:ignore="RelativeOverlap" />
+                    </RelativeLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/view_genre"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scrollbars="none" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/lay_author"
+                        style="@style/MaterialInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:hint="Author">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_author"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:digits=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                            android:fontFamily="@font/lato_regular"
+                            android:imeOptions="actionDone"
+                            android:inputType="text"
+                            android:maxLength="16"
+                            android:maxLines="1"
+                            android:paddingStart="1dp"
+                            android:paddingEnd="1dp"
+                            android:textColor="@color/theme_dark_grey"
+                            android:textSize="16sp"
+                            tools:targetApi="lollipop" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/lay_publish"
+                        style="@style/MaterialInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:hint="Year of Publish">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_publish"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:digits="0123456789"
+                            android:fontFamily="@font/lato_regular"
+                            android:imeOptions="actionDone"
+                            android:inputType="number"
+                            android:maxLength="4"
+                            android:maxLines="1"
+                            android:paddingStart="1dp"
+                            android:paddingEnd="1dp"
+                            android:textColor="@color/theme_dark_grey"
+                            android:textSize="16sp"
+                            tools:targetApi="lollipop" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="15dp"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentStart="true"
+                            android:layout_centerInParent="true"
+                            android:fontFamily="@font/lato_bold"
+                            android:padding="5dp"
+                            android:text="Keywords"
+                            android:textColor="@color/theme_dark_grey"
+                            android:textSize="16sp" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/btn_add_keyword"
+                            android:layout_width="56dp"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerInParent="true"
+                            android:background="@drawable/bg_oval"
+                            android:fontFamily="@font/lato_bold"
+                            android:gravity="center"
+                            android:padding="5dp"
+                            android:text="@string/add"
+                            android:textColor="@color/theme_main"
+                            android:textSize="14dp"
+                            tools:ignore="RelativeOverlap" />
+                    </RelativeLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/view_keyword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:scrollbars="none" />
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/lay_description"
+                        style="@style/MaterialInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:hint="@string/description">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_description"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:digits=" ,abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+                            android:fontFamily="@font/lato_regular"
+                            android:imeOptions="actionDone"
+                            android:inputType="text"
+                            android:maxLength="180"
+                            android:maxLines="2"
+                            android:paddingStart="1dp"
+                            android:paddingEnd="1dp"
+                            android:textColor="@color/theme_dark_grey"
+                            android:textSize="16sp"
+                            tools:targetApi="lollipop" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_create"
+                        style="@style/BtnTheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="45dp"
+                        android:layout_marginTop="25dp"
+                        android:layout_marginBottom="15dp"
+                        android:text="@string/create" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </com.google.android.material.card.MaterialCardView>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.appcompat.widget.LinearLayoutCompat>

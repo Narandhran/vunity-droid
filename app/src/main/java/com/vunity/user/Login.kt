@@ -9,6 +9,8 @@ import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.tasks.OnCompleteListener
+import com.google.firebase.iid.FirebaseInstanceId
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -68,6 +70,21 @@ class Login : AppCompatActivity() {
                 applicationContext
             )
             finish()
+        }
+
+        try {
+            FirebaseInstanceId.getInstance().instanceId
+                .addOnCompleteListener(OnCompleteListener { task ->
+                    if (!task.isSuccessful) {
+                        Log.w("FirebaseInstanceId", "getInstanceId failed", task.exception)
+                        return@OnCompleteListener
+                    }
+                    // Get new Instance ID token
+                    saveData("fcm_token", task.result?.token.toString(), applicationContext)
+                    Log.e("FirebaseInstanceId", task.result?.token.toString())
+                })
+        } catch (exception: Exception) {
+            Log.e("Exception from Login", exception.toString())
         }
     }
 

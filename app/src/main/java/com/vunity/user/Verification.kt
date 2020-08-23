@@ -159,7 +159,11 @@ class Verification : AppCompatActivity() {
                     "Enter your verification code (OTP)."
                 )
             } else {
-                val loginBody = LoginBody(mobile = mobile, otp = otp.toInt())
+                val loginBody = LoginBody(
+                    mobile = mobile,
+                    otp = otp.toInt(),
+                    fcmToken = getData("fcm_token", applicationContext).toString()
+                )
                 login(loginBody)
             }
         }

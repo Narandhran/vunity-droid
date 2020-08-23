@@ -4,10 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    android:focusable="false"
-    android:focusableInTouchMode="true"
-    android:orientation="vertical">
+    android:background="@color/white">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -31,44 +28,44 @@
                 android:layout_width="match_parent"
                 android:layout_height="52dp">
 
+                <com.github.siyamed.shapeimageview.CircularImageView
+                    android:id="@+id/img_profile"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_dummy_profile"
+                    app:siBorderColor="@color/theme_light_grey"
+                    app:siBorderWidth="0.5dp" />
+
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/im_back"
+                    android:id="@+id/img_filter"
                     android:layout_width="50dp"
                     android:layout_height="50dp"
-                    android:layout_alignParentStart="true"
+                    android:layout_alignParentEnd="true"
                     android:layout_centerInParent="true"
                     android:clickable="true"
                     android:focusable="true"
                     android:padding="15dp"
-                    android:tint="@color/theme_light_grey"
-                    app:srcCompat="@drawable/ic_left_arrow" />
-
-                <androidx.appcompat.widget.SearchView
-                    android:id="@+id/search_book"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:layout_toStartOf="@+id/txt_total_user"
-                    android:layout_toEndOf="@+id/im_back"
-                    android:theme="@style/CustomSearch"
-                    app:iconifiedByDefault="false"
-                    app:queryBackground="@android:color/transparent"
-                    app:queryHint="Search in 'Users'"
-                    app:searchIcon="@null" />
+                    android:tint="@color/theme_main"
+                    app:srcCompat="@drawable/ic_filter" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/txt_total_user"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
+                    android:id="@+id/txt_search"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_centerInParent="true"
-                    android:layout_marginEnd="15dp"
-                    android:background="@drawable/bg_oval"
-                    android:fontFamily="@font/lato_bold"
-                    android:gravity="center"
-                    android:padding="5dp"
-                    android:textColor="@color/theme_main"
-                    android:textSize="14sp" />
+                    android:layout_toStartOf="@+id/img_filter"
+                    android:layout_toEndOf="@+id/img_profile"
+                    android:fontFamily="@font/lato_regular"
+                    android:gravity="center_vertical"
+                    android:paddingStart="10dp"
+                    android:text="@string/filter_with_vunity"
+                    android:textColor="@color/theme_pure_grey"
+                    android:textSize="16sp"
+                    tools:ignore="RtlSymmetry" />
 
             </RelativeLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -78,6 +75,7 @@
         android:id="@+id/layout_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <RelativeLayout
@@ -135,9 +133,11 @@
                     android:visibility="visible">
 
                     <androidx.recyclerview.widget.RecyclerView
-                        android:id="@+id/view_users"
+                        android:id="@+id/view_vunity"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginStart="5dp"
+                        android:layout_marginEnd="5dp"
                         android:scrollbars="none" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
@@ -192,7 +192,7 @@
                     android:layout_width="80sp"
                     android:layout_height="80sp"
                     android:layout_gravity="center"
-                    android:padding="5sp"
+                    android:padding="10sp"
                     android:tint="@color/theme_main"
                     app:srcCompat="@drawable/ic_no_data" />
 
@@ -207,11 +207,25 @@
                     android:textColor="@color/theme_dark_grey"
                     android:textSize="16sp" />
 
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="10sp"
+                    android:fontFamily="@font/lato_regular"
+                    android:gravity="center"
+                    android:text="@string/there_is_no_information"
+                    android:textSize="13sp" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
         </RelativeLayout>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+
+
+
+

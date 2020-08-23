@@ -6,7 +6,7 @@ import com.vunity.book.*
 import com.vunity.category.CategoryDto
 import com.vunity.category.CategoryListDto
 import com.vunity.category.GenreDto
-import com.vunity.family.*
+import com.vunity.vunity.*
 import com.vunity.favourite.FavListDto
 import com.vunity.user.*
 import okhttp3.MultipartBody
@@ -34,7 +34,7 @@ interface ResponseService {
 
     @Multipart
     @PUT("user/update_dp")
-    fun updateDp(@Part dp: MultipartBody.Part): Call<ProfileDto>
+    fun updateDp(@Part dp: MultipartBody.Part): Call<ResDto>
 
     @FormUrlEncoded
     @PUT("user/update_profile")
@@ -103,47 +103,6 @@ interface ResponseService {
     @GET("fav/list")
     fun listFavourite(): Call<FavListDto>
 
-    @GET("family/list_by_user/{id}")
-    fun listOfFamily(@Path("id") id: String): Call<FamilyDto>
-
-    @POST("family/create_update_personal_info/{id}")  // To create or update personal info
-    fun personal(@Path("id") id: String, @Body personalInfo: PersonalInfo): Call<FamilyDto>
-
-    @POST("family/create_family_tree/{id}")  // To create family tree
-    fun familyTree(@Path("id") id: String, @Body bodyFamilyTree: FamilyBody): Call<FamilyDto>
-
-    @POST("family/update_family_tree")  // To update family tree
-    fun familyTree(
-        @Query("userId") userId: String,
-        @Query("treeId") treeId: String,
-        @Body bodyFamilyTree: FamilyBody
-    ): Call<ResDto>
-
-    @POST("family/create_update_family_info/{id}")  // To create or update family info
-    fun family(@Path("id") id: String, @Body familyInfo: FamilyInfo): Call<FamilyDto>
-
-    @POST("family/create_update_gothram/{id}")  // To create or update gothram
-    fun gothram(@Path("id") id: String, @Body gothram: Gothram): Call<FamilyDto>
-
-    @POST("family/create_thithi/{id}")  // To create thithi
-    fun thithi(@Path("id") id: String, @Body thithiData: ThithiData): Call<FamilyDto>
-
-    @POST("family/update_thithi")  // To  update thithi
-    fun thithi(
-        @Query("userId") userId: String,
-        @Query("thithiId") thithiId: String,
-        @Body thithiData: ThithiData
-    ): Call<ResDto>
-
-    @POST("family/create_update_name/{id}")  // To create or update name
-    fun name(@Path("id") id: String, @Body name: Name): Call<FamilyDto>
-
-    @POST("family/create_update_samayal/{id}")  // To create or update samayal
-    fun samayal(@Path("id") id: String, @Body samayal: Samayal): Call<FamilyDto>
-
-    @POST("family/create_update_vazhkam/{id}")  // To create or update vazhakkam
-    fun vazhakkam(@Path("id") id: String, @Body vazhakkam: Vazhakkam): Call<FamilyDto>
-
     @Multipart
     @POST("banner/create")
     fun addBanner(@Part image: MultipartBody.Part): Call<BannerDto>
@@ -164,4 +123,20 @@ interface ResponseService {
 
     @GET("about")
     fun about(): Call<ResDto>
+
+    @POST("vunity/create")
+    fun createVunity(@Body body: VunityBody): Call<ResDto>
+
+    @PUT("vunity/update/{id}")
+    fun updateVunity(@Path("id") id: String, @Body body: VunityBody): Call<ResDto>
+
+    @Multipart
+    @PUT("vunity/update_photo")
+    fun updateVunityPhoto(@Part dp: MultipartBody.Part): Call<ResDto>
+
+    @GET("vunity/get_by_user/{id}")
+    fun vunityGetByUser(@Path("id") id: String): Call<VunityDto>
+
+    @GET("vunity/list")
+    fun vunityAllUsers(): Call<VunityListDto>
 }

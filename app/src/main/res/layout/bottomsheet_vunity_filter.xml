@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bottomsheet_filter"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:behavior_hideable="false"
+    app:behavior_peekHeight="0dp"
+    app:layout_behavior="@string/bottom_sheet_behavior">
+
+    <com.google.android.material.card.MaterialCardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:horizontalSpacing="1dp"
+        android:orientation="vertical"
+        app:cardBackgroundColor="@color/white"
+        app:cardCornerRadius="10dp"
+        app:cardElevation="2.5dp"
+        app:cardUseCompatPadding="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="10dp">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/txt_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerInParent="true"
+                    android:fontFamily="@font/lato_regular"
+                    android:padding="5dp"
+                    android:text="@string/msg_filter"
+                    android:textColor="@color/theme_dark_grey"
+                    android:textSize="16sp"
+                    tools:ignore="RelativeOverlap"
+                    tools:targetApi="jelly_bean" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="150dp"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerInParent="true"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/btn_clear"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/lato_regular"
+                        android:gravity="end"
+                        android:padding="5dp"
+                        android:text="@string/clear"
+                        android:textColor="@color/ios_red_dark"
+                        android:textSize="16sp" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/btn_apply"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:fontFamily="@font/lato_regular"
+                        android:gravity="end"
+                        android:padding="5dp"
+                        android:text="@string/apply"
+                        android:textColor="@color/ios_blue_light"
+                        android:textSize="16sp" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+            </RelativeLayout>
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:scrollbars="none">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/MaterialInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/city">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_city"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:digits=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                            android:fontFamily="@font/lato_regular"
+                            android:imeOptions="actionDone"
+                            android:inputType="text"
+                            android:maxLength="32"
+                            android:maxLines="1"
+                            android:paddingStart="1dp"
+                            android:paddingEnd="1dp"
+                            android:textColor="@color/theme_dark_grey"
+                            android:textSize="14sp"
+                            tools:targetApi="lollipop" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/MaterialInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/vedham">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_vedham"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="false"
+                            android:digits=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                            android:drawableEnd="@drawable/custom_downarrow"
+                            android:drawableTint="@color/theme_dark_grey"
+                            android:focusable="false"
+                            android:fontFamily="@font/lato_regular"
+                            android:imeOptions="actionDone"
+                            android:inputType="text|textNoSuggestions"
+                            android:maxLength="32"
+                            android:maxLines="1"
+                            android:paddingStart="1dp"
+                            android:paddingEnd="1dp"
+                            android:textColor="@color/theme_dark_grey"
+                            android:textSize="14sp"
+                            tools:targetApi="m" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/MaterialInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/sampradhayam">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_sampradhayam"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="false"
+                            android:digits=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                            android:drawableEnd="@drawable/custom_downarrow"
+                            android:drawableTint="@color/theme_dark_grey"
+                            android:focusable="false"
+                            android:fontFamily="@font/lato_regular"
+                            android:imeOptions="actionDone"
+                            android:inputType="text|textNoSuggestions"
+                            android:maxLength="64"
+                            android:maxLines="1"
+                            android:paddingStart="1dp"
+                            android:paddingEnd="1dp"
+                            android:textColor="@color/theme_dark_grey"
+                            android:textSize="14sp"
+                            tools:targetApi="m" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_bottom_line"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lato_bold"
+                            android:maxLines="2"
+                            android:padding="5dp"
+                            android:text="@string/shaka"
+                            android:textColor="@color/theme_dark_grey"
+                            android:textSize="14sp" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/view_shaka"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:scrollbars="none" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_bottom_line"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lato_bold"
+                            android:maxLines="2"
+                            android:padding="5dp"
+                            android:text="@string/vedha_adhyayanam"
+                            android:textColor="@color/theme_dark_grey"
+                            android:textSize="14sp" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/view_vedha_adhyayanam"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:scrollbars="none" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/MaterialInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/shadanga_adhyayanam">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_shadanga_adhyayanam"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="false"
+                            android:digits=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                            android:drawableEnd="@drawable/custom_downarrow"
+                            android:drawableTint="@color/theme_dark_grey"
+                            android:focusable="false"
+                            android:fontFamily="@font/lato_regular"
+                            android:imeOptions="actionDone"
+                            android:inputType="text|textNoSuggestions"
+                            android:maxLength="32"
+                            android:maxLines="1"
+                            android:paddingStart="1dp"
+                            android:paddingEnd="1dp"
+                            android:textColor="@color/theme_dark_grey"
+                            android:textSize="16sp"
+                            tools:targetApi="m" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_bottom_line"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lato_bold"
+                            android:maxLines="2"
+                            android:padding="5dp"
+                            android:text="@string/shastra_adhyayanam"
+                            android:textColor="@color/theme_dark_grey"
+                            android:textSize="14sp" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/view_shastra_adhyayanam"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:scrollbars="none" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/bg_bottom_line"
+                        android:orientation="vertical">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/lato_bold"
+                            android:maxLines="2"
+                            android:padding="5dp"
+                            android:text="@string/prayogam"
+                            android:textColor="@color/theme_dark_grey"
+                            android:textSize="14sp" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/view_prayogam"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:scrollbars="none" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/MaterialInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/marital_status">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_marital_status"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="false"
+                            android:digits=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                            android:drawableEnd="@drawable/custom_downarrow"
+                            android:drawableTint="@color/theme_dark_grey"
+                            android:focusable="false"
+                            android:fontFamily="@font/lato_regular"
+                            android:imeOptions="actionDone"
+                            android:inputType="text|textNoSuggestions"
+                            android:maxLength="32"
+                            android:maxLines="1"
+                            android:paddingStart="1dp"
+                            android:paddingEnd="1dp"
+                            android:textColor="@color/theme_dark_grey"
+                            android:textSize="16sp"
+                            tools:targetApi="m" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/MaterialInputLayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/mother_tongue">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/edt_mothertongue"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:clickable="false"
+                            android:digits=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                            android:drawableEnd="@drawable/custom_downarrow"
+                            android:drawableTint="@color/theme_dark_grey"
+                            android:focusable="false"
+                            android:fontFamily="@font/lato_regular"
+                            android:imeOptions="actionDone"
+                            android:inputType="text|textNoSuggestions"
+                            android:maxLength="32"
+                            android:maxLines="1"
+                            android:paddingStart="1dp"
+                            android:paddingEnd="1dp"
+                            android:textColor="@color/theme_dark_grey"
+                            android:textSize="16sp"
+                            tools:targetApi="m" />
+
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.core.widget.NestedScrollView>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </com.google.android.material.card.MaterialCardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

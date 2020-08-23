@@ -28,29 +28,31 @@
                 android:layout_width="match_parent"
                 android:layout_height="52dp">
 
+                <com.github.siyamed.shapeimageview.CircularImageView
+                    android:id="@+id/img_profile"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerInParent="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"
+                    android:src="@drawable/ic_dummy_profile"
+                    app:siBorderColor="@color/theme_light_grey"
+                    app:siBorderWidth="0.5dp" />
+
                 <com.google.android.material.textview.MaterialTextView
                     android:id="@+id/txt_search"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_centerInParent="true"
-                    android:layout_toStartOf="@+id/img_profile"
+                    android:layout_toEndOf="@+id/img_profile"
+                    android:fontFamily="@font/lato_regular"
                     android:gravity="center_vertical"
-                    android:paddingStart="15dp"
+                    android:paddingStart="10dp"
                     android:text="@string/search_in_discover"
                     android:textColor="@color/theme_pure_grey"
                     android:textSize="16sp"
                     tools:ignore="RtlSymmetry" />
-
-                <com.github.siyamed.shapeimageview.CircularImageView
-                    android:id="@+id/img_profile"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerInParent="true"
-                    android:layout_marginEnd="10dp"
-                    android:src="@drawable/ic_dummy_profile"
-                    app:siBorderColor="@color/theme_light_grey"
-                    app:siBorderWidth="0.5dp" />
 
             </RelativeLayout>
         </com.google.android.material.card.MaterialCardView>

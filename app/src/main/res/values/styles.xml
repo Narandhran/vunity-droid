@@ -60,28 +60,10 @@
         <item name="cornerRadius">@dimen/btn_theme_radius</item>
     </style>
 
-    <style name="OutlinedBtnTheme" parent="Widget.MaterialComponents.Button.OutlinedButton">
-        <item name="android:insetTop">0dp</item>
-        <item name="android:insetBottom">0dp</item>
-        <item name="android:textAllCaps">false</item>
-        <item name="android:textColor">@color/theme_dark_grey</item>
-        <item name="android:paddingStart">5dp</item>
-        <item name="iconTint">@color/theme_main</item>
-        <item name="iconPadding">4dp</item>
-        <item name="strokeColor">@color/theme_main</item>
-        <item name="android:fontFamily">@font/lato_regular</item>
-        <item name="cornerRadius">5dp</item>
-    </style>
-
     <style name="DialogTheme" parent="Theme.MaterialComponents.Light.Dialog.Alert">
         <item name="android:windowBackground">@drawable/bg_dialog</item>
         <item name="android:windowMinWidthMajor">90%</item>
         <item name="android:windowMinWidthMinor">90%</item>
-    </style>
-
-    <style name="tabTextAppearance" parent="Widget.MaterialComponents.TabLayout">
-        <item name="android:fontFamily">@font/lato_bold</item>
-        <item name="android:textSize">14sp</item>
     </style>
 
 </resources>

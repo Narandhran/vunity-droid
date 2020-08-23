@@ -187,12 +187,12 @@ class Discover : Fragment(), IOnBackPressed {
                                     }
                                 })
                             }
-                            else -> {
-                                coordinatorErrorMessage(
-                                    view.lay_root,
-                                    response.message()
-                                )
-                            }
+//                            else -> {
+//                                coordinatorErrorMessage(
+//                                    view.lay_root,
+//                                    response.message()
+//                                )
+//                            }
                         }
                     }
 
@@ -301,12 +301,12 @@ class Discover : Fragment(), IOnBackPressed {
                                 view.lay_data.visibility = View.GONE
                                 view.lay_no_internet.visibility = View.GONE
                             }
-                            else -> {
-                                coordinatorErrorMessage(
-                                    view.lay_root,
-                                    response.message()
-                                )
-                            }
+//                            else -> {
+//                                coordinatorErrorMessage(
+//                                    view.lay_root,
+//                                    response.message()
+//                                )
+//                            }
                         }
                     }
 
@@ -414,12 +414,12 @@ class Discover : Fragment(), IOnBackPressed {
                                     activity!!
                                 )
                             }
-                            else -> {
-                                coordinatorErrorMessage(
-                                    view.lay_root,
-                                    response.message()
-                                )
-                            }
+//                            else -> {
+//                                coordinatorErrorMessage(
+//                                    view.lay_root,
+//                                    response.message()
+//                                )
+//                            }
                         }
                     }
 

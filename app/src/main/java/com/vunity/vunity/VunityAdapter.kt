@@ -1,7 +1,8 @@
-package com.vunity.user
+package com.vunity.vunity
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,17 +17,17 @@ import com.vunity.general.Enums
 import com.vunity.general.getData
 import org.apache.commons.lang3.StringUtils
 
-class UserAdapter(
-    private var dataList: List<ProData>,
+class VunityAdapter(
+    private var dataList: List<VunityData>,
     private val activity: Activity
 
 ) :
-    RecyclerView.Adapter<UserAdapter.Holder>() {
-    lateinit var data: ProData
+    RecyclerView.Adapter<VunityAdapter.Holder>() {
+    lateinit var data: VunityData
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.card_user, parent, false)
+            .inflate(R.layout.card_vunity, parent, false)
         return Holder(itemView)
     }
 
@@ -38,26 +39,34 @@ class UserAdapter(
                 getData(
                     "rootPath",
                     activity.applicationContext
-                ) + Enums.Dp.value + data.dp
+                ) + Enums.Dp.value + data.photo
             ).placeholder(R.drawable.ic_dummy_profile).into(holder.imgProfile)
+            Log.e(
+                "PicassoPath",
+                getData(
+                    "rootPath",
+                    activity.applicationContext
+                ) + Enums.Dp.value + data.photo.toString()
+            )
             holder.txtName.text =
-                StringUtils.capitalize(data.fname) + " " + StringUtils.capitalize(data.lname)
-            holder.txtEmail.text = data.email
+                StringUtils.capitalize(data.user_id?.fname) + " " + StringUtils.capitalize(data.user_id?.lname)
+            holder.txtCity.text = data.city
             holder.txtMobile.text = data.mobile
-//            holder.cardUser.setOnClickListener {
-//                data = dataList[position]
-//                val intent = Intent(activity, ActFamily::class.java)
-//                intent.putExtra(activity.getString(R.string.userId), data._id)
-//                activity.startActivity(intent)
-//                activity.finish()
-//            }
+            holder.txtVedham.text = data.vedham
+            holder.txtSampradhayam.text = data.samprdhayam
+            holder.cardUser.setOnClickListener {
+                data = dataList[position]
+                val intent = Intent(activity, DetailsOfVunity::class.java)
+                intent.putExtra(activity.getString(R.string.userId), data.user_id?._id)
+                activity.startActivity(intent)
+            }
         } catch (e: Exception) {
             Log.d("Exception", e.toString())
             e.printStackTrace()
         }
     }
 
-    fun filterList(filteredList: MutableList<ProData>) {
+    fun filterList(filteredList: MutableList<VunityData>) {
         this.dataList = filteredList
         notifyDataSetChanged()
     }
@@ -77,8 +86,10 @@ class UserAdapter(
     inner class Holder(view: View) : RecyclerView.ViewHolder(view) {
         var imgProfile: CircularImageView = view.findViewById(R.id.img_profile)
         var txtName: MaterialTextView = view.findViewById(R.id.txt_fullname)
-        var txtEmail: MaterialTextView = view.findViewById(R.id.txt_email)
+        var txtCity: MaterialTextView = view.findViewById(R.id.txt_city)
         var txtMobile: MaterialTextView = view.findViewById(R.id.txt_mobile)
+        var txtVedham: MaterialTextView = view.findViewById(R.id.txt_vedham)
+        var txtSampradhayam: MaterialTextView = view.findViewById(R.id.txt_sampradhayam)
         var cardUser: MaterialCardView = view.findViewById(R.id.card_user)
     }
 }

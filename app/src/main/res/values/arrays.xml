@@ -1,69 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!--Personal information-->
-    <string-array name="rashi">
-        <item>Mesha</item>
-        <item>Vrushabha</item>
-        <item>Mithuna</item>
-        <item>Kataka</item>
-        <item>Simha</item>
-        <item>Kanya</item>
-        <item>Thula</item>
-        <item>Vrushchika</item>
-        <item>Dhanus</item>
-        <item>Makara</item>
-        <item>Kumbha</item>
-        <item>Meena</item>
-    </string-array>
-
-    <string-array name="nakshathram">
-        <item>Ashwini</item>
-        <item>Bharani</item>
-        <item>Krithika</item>
-        <item>Rohini</item>
-        <item>Mrugasheersha</item>
-        <item>Thiruvadhirai(ardhra)</item>
-        <item>Punarpoosam (punarvasu)</item>
-        <item>Poosam(pushya)</item>
-        <item>Ayilyam(ashlesha)</item>
-        <item>Magha</item>
-        <item>Pooram(poorva phalguni)</item>
-        <item>Uttharam(utthara phalguni)</item>
-        <item>Hastha</item>
-        <item>Chithra</item>
-        <item>Swathi</item>
-        <item>Vishakha</item>
-        <item>Anusham(anuradha)</item>
-        <item>Kettai(jyeshta)</item>
-        <item>Moola</item>
-        <item>Pooradam (poorvashada)</item>
-        <item>Uttharadam (uttharashada)</item>
-        <item>Thiruvonam(shravana)</item>
-        <item>Avittam(shravishta)</item>
-        <item>Sadhayam (shathabhishak)</item>
-        <item>Poorattadhi(poorva proshtapadha)</item>
-        <item>Uttharattadhi(utthara proshtapadha)</item>
-        <item>Revathi</item>
-    </string-array>
-
-    <string-array name="padham">
-        <item>1</item>
-        <item>2</item>
-        <item>3</item>
-        <item>4</item>
-    </string-array>
-
-    <string-array name="gender">
-        <item>Male</item>
-        <item>Female</item>
-    </string-array>
-
-    <string-array name="status">
-        <item>Married</item>
-        <item>UnMarried</item>
-    </string-array>
-
-    <!--    Family information-->
     <string-array name="mother_tongue">
         <item>Tamil</item>
         <item>Telugu</item>
@@ -76,71 +12,12 @@
         <item>Smartha</item>
         <item>Smartha subsect (telugu)</item>
         <item>Shree vaishnavam</item>
-        <item>Shree vaishnavam (telugu)</item>
+        <item>Shree vaishnavam (thenkalai)</item>
+        <item>Shree vaishnavam (vadakalai)</item>
+        <item>Shree vaishnavam (thenkalai) (telugu)</item>
+        <item>Shree vaishnavam (vadakalai) (telugu)</item>
         <item>Madhva (kannada)</item>
         <item>Madhva (marati)</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="subsect">
-        <item>Bruhacharanam</item>
-        <item>Vadamal</item>
-        <item>Vathimal</item>
-        <item>Ashta sahasram</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="telugu_subsect">
-        <item>Velnadu</item>
-        <item>Molaganadu</item>
-        <item>Thelungani</item>
-        <item>Niyogi</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="vaishnavam">
-        <item>Thenkalai</item>
-        <item>Vadakalai</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="madhava">
-        <item>Aruvelu</item>
-        <item>Aravatthu vakkulu</item>
-        <item>Balaganadu</item>
-        <item>Kambalru</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="gothram">
-        <item>Bharthvajam</item>
-        <item>Kaushikam</item>
-        <item>Kashyapam</item>
-        <item>Shrivathsam</item>
-        <item>Sankruthi</item>
-        <item>Shadamarshanam</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="rushi">
-        <item>Eka-arsheya gothram</item>
-        <item>Dvaya-arsheya gothram</item>
-        <item>Thraya-arsheya gothram</item>
-        <item>Pancha-arsheya gothram</item>
-        <item>Saptha-arsheya gothram</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="soothram">
-        <item>Apasthambam</item>
-        <item>Bodhayanam</item>
-        <item>Sathyashadam</item>
-        <item>Bharadvajam</item>
-        <item>Agniveshyam</item>
-        <item>Vaikhanasam</item>
-        <item>Kathyayanam</item>
-        <item>Ashvalayanam</item>
-        <item>Drahyayanam</item>
         <item>Other</item>
     </string-array>
 
@@ -150,250 +27,97 @@
         <item>Shukla yajus</item>
         <item>Samam</item>
         <item>Atharvam</item>
-    </string-array>
-
-    <string-array name="poojas">
-        <item>Varalakshmi vratham</item>
-        <item>Karadayan nombu</item>
-        <item>Navarathri golu</item>
         <item>Other</item>
     </string-array>
 
-    <string-array name="panchangam">
-        <item>Pambu panchangam</item>
-        <item>Shri mata panchangam</item>
-        <item>Shri ranga panchangam</item>
-        <item>Arkadu panchangam</item>
-        <item>Thirunalveli panchangam</item>
-        <item>108 panchangam</item>
+    <string-array name="city">
+        <item>Chennai</item>
+        <item>Madurai</item>
+        <item>Tiruchy</item>
+        <item>Tiruppur</item>
+    </string-array>
+
+    <string-array name="shakha">
+        <item>Shakalam (shaishireeyam) (rug)</item>
+        <item>Shankhyayanam (rug)</item>
+        <item>Bashkalam (rug)</item>
+        <item>Thaitthireeyam (Krishna yajus)</item>
+        <item>Maithrayaneeyam (Krishna yajus)</item>
+        <item>Kanvam (shukla yajus)</item>
+        <item>Madhyandhinam (shukla yajus)</item>
+        <item>Kauthumam (samam)</item>
+        <item>Jaimineeyam (samam)</item>
+        <item>Ranayaneeyam (samam)</item>
+        <item>Paippaladham (atharvam)</item>
+        <item>Shaunakeeyam (atharvam)</item>
+    </string-array>
+
+    <string-array name="vedha_adhyayanam">
+        <item>Moolam</item>
+        <item>Padham</item>
+        <item>Kramam</item>
+        <item>Jata</item>
+        <item>Ghanam</item>
         <item>Other</item>
     </string-array>
 
-    <string-array name="thilakam">
-        <item>Vibhuthi</item>
-        <item>Gopi</item>
-        <item>Thiruman (vadakalai)</item>
-        <item>Thiruman (thenkalai)</item>
-        <item>Thiruman (vaikhanasam)</item>
-        <item>Other</item>
-    </string-array>
-
-    <!--    Family tree-->
-    <string-array name="relationship">
-        <item>Father</item>
-        <item>Mother</item>
-        <item>Grand father</item>
-        <item>Grand mother</item>
-        <item>Great grand father</item>
-        <item>Great grand mother</item>
-        <item>Elder brother</item>
-        <item>Younger brother</item>
-        <item>Elder sister</item>
-        <item>Younger sister</item>
-        <item>Spouse</item>
-        <item>Son</item>
-        <item>Daughter</item>
-        <item>Son-in-law</item>
-        <item>Daughter-in-law</item>
-        <item>Grand son</item>
-        <item>Grand Daughter</item>
-        <item>Great Grand son</item>
-        <item>Great Grand Daughter</item>
-        <item>Other</item>
-    </string-array>
-
-    <!--    Shraddha information-->
-    <!--    thithi-->
-    <string-array name="thithi_relationship">
-        <item>Pithru</item>
-        <item>Mathru</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="masam_sauramanam">
-        <item>Chitthirai</item>
-        <item>Vaigasi</item>
-        <item>Ani</item>
-        <item>Adi</item>
-        <item>Avani</item>
-        <item>Purattasi</item>
-        <item>Aippasi</item>
-        <item>Karthigai</item>
-        <item>Margazhi</item>
-        <item>Thai</item>
-        <item>Masi</item>
-        <item>Panguni</item>
-    </string-array>
-
-    <string-array name="masam_chandramanam">
-        <item>Chaithram</item>
-        <item>Vaishakham</item>
-        <item>Jyeshtam</item>
-        <item>Ashadam</item>
-        <item>Shravanam</item>
-        <item>Bhadhrapadham</item>
-        <item>Ashveenam</item>
-        <item>Kartheekam</item>
-        <item>Agrahayanam</item>
-        <item>Pausham</item>
-        <item>Magham</item>
-        <item>phalgunam</item>
-    </string-array>
-
-    <string-array name="paksham">
-        <item>Krushna paksham</item>
-        <item>Shukla paksham</item>
-    </string-array>
-
-    <string-array name="thithi">
-        <item>Prathama</item>
-        <item>Dhvitheeya</item>
-        <item>Thrutheeya</item>
-        <item>Chathurthi</item>
-        <item>Panchami</item>
-        <item>Shashti</item>
-        <item>Sapthami</item>
-        <item>Ashtami</item>
-        <item>Navami</item>
-        <item>Dhashami</item>
-        <item>Ekadhashi</item>
-        <item>Dhwadhashi</item>
-        <item>Thrayodhashi</item>
-        <item>Chathurdhashi</item>
-        <item>Amavasya</item>
-        <item>Paurnami</item>
-    </string-array>
-
-    <!--    AddSamayal-->
-    <string-array name="payasam">
-        <item>Pasiparuppu</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="thayir_pachchadi">
-        <item>Vazhaithandu</item>
-        <item>Vellarikkai</item>
-        <item>Sundakkai</item>
-        <item>Pudalangai</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="sweet_pachchadi">
-        <item>Manga</item>
-        <item>Narthampazham</item>
-        <item>Vilapazham</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="kari">
-        <item>Vazhaikkai</item>
-        <item>Pagarkai</item>
-        <item>Seppam kizhangu</item>
-        <item>Avaraikkai</item>
-        <item>Koththavarangai</item>
-        <item>Vazhaiththandu</item>
-        <item>Pudalanga</item>
-        <item>Palamasu</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="puli_kuttu">
-        <item>Pagarkai</item>
-        <item>Karunaikkizhangu</item>
-        <item>Seppam kizhangu</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="morkuzhambu">
-        <item>Seppam kizhangu</item>
-        <item>Vadai</item>
-        <item>Vazhaiththandu</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="rasam">
-        <item>Milagu</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="poruchchakuttu">
-        <item>Pudalangai</item>
-        <item>Avarakkai</item>
-        <item>Sundakkai</item>
-        <item>Koththavarangai</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="bhakshanam">
-        <item>Appam</item>
-        <item>Adhirasam</item>
-        <item>Thirattipal</item>
-        <item>Suyyam</item>
-        <item>Godhuma urundai</item>
-        <item>Payaththam urundai</item>
-        <item>Murukku</item>
-        <item>Omapadi</item>
-        <item>Vazhakka (chips)</item>
-        <item>Seppamkizhangu (chips)</item>
-        <item>Senai kizhangu (chips)</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="thugayal">
-        <item>Karuveppilai</item>
-        <item>Pirandai</item>
-        <item>Thengai</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="uruga">
-        <item>Mangai</item>
-        <item>Mangai inji</item>
-        <item>Narthangai</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="pazhangal">
-        <item>Mambazham</item>
-        <item>Vazhaipazham</item>
-        <item>Palapazham</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="samayal_type">
-        <item>Thengai, pachcha milagai</item>
-        <item>Milagu, jeeragam</item>
-        <item>Other</item>
-    </string-array>
-
-    <!--    vazhakkam-->
-    <string-array name="koorcham">
-        <item>Koorcham</item>
-        <item>Dharbhasthambam</item>
-        <item>Sthalam</item>
-    </string-array>
-
-    <string-array name="tharpanakoorcham">
-        <item>One</item>
-        <item>Two</item>
-    </string-array>
-
-    <string-array name="pindam_count">
-        <item>3</item>
-        <item>6</item>
-        <item>7</item>
-        <item>24</item>
-        <item>Other</item>
-    </string-array>
-
-    <string-array name="krusaram">
+    <string-array name="shadanga_adhyayanam">
         <item>Yes</item>
         <item>No</item>
     </string-array>
 
-    <string-array name="pundra_dharanam">
-        <item>Yes</item>
-        <item>No</item>
+    <string-array name="shastra_adhyayana">
+        <item>Vyakaranam</item>
+        <item>Poorva mimamsa</item>
+        <item>Utthara mimamsa</item>
+        <item>Adhvaitham</item>
+        <item>Vishishtadhvaitham</item>
+        <item>Dhvaitham</item>
+        <item>Tharkam</item>
+        <item>Sankhyam</item>
+        <item>Yogam</item>
+        <item>Other</item>
     </string-array>
 
+    <string-array name="prayogam">
+        <item>Apasthamba poorvam</item>
+        <item>Apasthamba aparam</item>
+        <item>Apasthamba shraddham</item>
+        <item>Bodhayana poorvam</item>
+        <item>Bodhayana aparam</item>
+        <item>Bodhayana shraddham</item>
+        <item>Sathyashada poorvam</item>
+        <item>Sathyashada aparam</item>
+        <item>Sathyashada shraddham</item>
+        <item>Bharadvaja poorvam</item>
+        <item>Bharadvaja aparam</item>
+        <item>Bharadvaja shraddham</item>
+        <item>Agniveshya poorvam</item>
+        <item>Agniveshya aparam</item>
+        <item>Agniveshya shraddham</item>
+        <item>Vaikhanasa poorvam</item>
+        <item>Vaikhanasa aparam</item>
+        <item>Vaikhanasa shraddham</item>
+        <item>Kathyayana poorvam</item>
+        <item>Kathyayana aparam</item>
+        <item>Kathyayana shraddham</item>
+        <item>Ashvalayana poorvam</item>
+        <item>Ashvalayana aparam</item>
+        <item>Ashvalayana shraddham</item>
+        <item>Kausheedhakam poorvam</item>
+        <item>Kausheedhakam aparam</item>
+        <item>Kausheedhakam shraddham</item>
+        <item>Drahyayana poorvam</item>
+        <item>Drahyayana aparam</item>
+        <item>Drahyayana shraddham</item>
+        <item>Gobhila poorvam</item>
+        <item>Gobhila aparam</item>
+        <item>Gobhila shraddham</item>
+        <item>Other</item>
+    </string-array>
+
+    <string-array name="marital_status">
+        <item>Married</item>
+        <item>Unmarried</item>
+    </string-array>
 </resources>

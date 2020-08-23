@@ -107,84 +107,14 @@
             tools:ignore="LockedOrientationActivity" />
 
         <activity
-            android:name="com.vunity.family.personal.AddPersonal"
+            android:name="com.vunity.vunity.AddVunity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize"
             tools:ignore="LockedOrientationActivity" />
 
         <activity
-            android:name="com.vunity.family.familyInfo.AddFamilyInfo"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            tools:ignore="LockedOrientationActivity" />
-
-        <activity
-            android:name="com.vunity.family.familytree.AddFamilyTree"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            tools:ignore="LockedOrientationActivity" />
-
-        <activity
-            android:name="com.vunity.family.shraddha.Shraddha"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            tools:ignore="LockedOrientationActivity" />
-
-        <activity
-            android:name="com.vunity.family.personal.Personal"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            tools:ignore="LockedOrientationActivity" />
-
-        <activity
-            android:name="com.vunity.family.familyInfo.FamilyInfo"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            tools:ignore="LockedOrientationActivity" />
-
-        <activity
-            android:name="com.vunity.family.familytree.FamilyTree"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            tools:ignore="LockedOrientationActivity" />
-
-        <activity
-            android:name="com.vunity.family.shraddha.gothram.AddGothram"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            tools:ignore="LockedOrientationActivity" />
-
-        <activity
-            android:name="com.vunity.family.shraddha.name.AddName"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            tools:ignore="LockedOrientationActivity" />
-
-        <activity
-            android:name="com.vunity.family.shraddha.samayal.AddSamayal"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            tools:ignore="LockedOrientationActivity" />
-
-        <activity
-            android:name="com.vunity.family.shraddha.thithi.AddThithi"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateHidden|adjustResize"
-            tools:ignore="LockedOrientationActivity" />
-
-        <activity
-            android:name="com.vunity.family.shraddha.vazhakkam.AddVazhakkam"
+            android:name="com.vunity.vunity.DetailsOfVunity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize"
@@ -233,13 +163,6 @@
 
         <activity
             android:name="com.vunity.banner.Banner"
-            android:configChanges="orientation"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="stateAlwaysHidden"
-            tools:ignore="LockedOrientationActivity" />
-
-        <activity
-            android:name="com.vunity.family.ActFamily"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateAlwaysHidden"

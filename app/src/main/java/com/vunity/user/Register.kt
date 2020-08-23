@@ -47,6 +47,7 @@ class Register : AppCompatActivity() {
         .build()
     var id: String = ""
     var internet: InternetDetector? = null
+    var isVaidhika = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -146,11 +147,23 @@ class Register : AppCompatActivity() {
             )
         }
 
+        group_vaidhika.setOnCheckedChangeListener { radioGroup, i ->
+            when (i) {
+                R.id.radio_yes -> {
+                    isVaidhika = true
+                }
+                R.id.radio_no -> {
+                    isVaidhika = false
+                }
+            }
+        }
+
         btn_register.setOnClickListener {
             lay_fname.error = null
             lay_lname.error = null
             lay_email.error = null
             lay_mobile.error = null
+            lay_soothram.error = null
 
             if (edt_fname.length() < 3) {
                 lay_fname.error = "First name minimum character is 3."
@@ -161,12 +174,18 @@ class Register : AppCompatActivity() {
                     lay_email.error = "Please enter the valid email."
                 } else if (edt_mobile.length() != 10) {
                     lay_mobile.error = "Enter the valid mobile number."
+                } else if (edt_soothram.length() < 3) {
+                    lay_soothram.error = "Soothram's minimum character is 3."
+                } else if (group_vaidhika.checkedRadioButtonId == -1) {
+                    showMessage(lay_root, "Please select vaidhika!")
                 } else {
-                    val mapData: HashMap<String, String> = HashMap()
+                    val mapData: HashMap<String, Any> = HashMap()
                     mapData["fname"] = edt_fname.text.toString().toLowerCase(Locale.getDefault())
                     mapData["lname"] = edt_lname.text.toString().toLowerCase(Locale.getDefault())
                     mapData["email"] = edt_email.text.toString().toLowerCase(Locale.getDefault())
                     mapData["mobile"] = edt_mobile.text.toString().toLowerCase(Locale.getDefault())
+                    mapData["soothram"] = edt_soothram.text.toString().toLowerCase(Locale.getDefault())
+                    mapData["vaidhika"] = isVaidhika
                     if (id.isEmpty()) {
                         register(mapData)
                     } else {
@@ -175,11 +194,17 @@ class Register : AppCompatActivity() {
                 }
             } else if (edt_mobile.length() != 10) {
                 lay_mobile.error = "Enter the valid mobile number."
+            } else if (edt_soothram.length() < 3) {
+                lay_soothram.error = "Soothram's minimum character is 3."
+            } else if (group_vaidhika.checkedRadioButtonId == -1) {
+                showMessage(lay_root, "Please select vaidhika!")
             } else {
-                val mapData: HashMap<String, String> = HashMap()
+                val mapData: HashMap<String, Any> = HashMap()
                 mapData["fname"] = edt_fname.text.toString().toLowerCase(Locale.getDefault())
                 mapData["lname"] = edt_lname.text.toString().toLowerCase(Locale.getDefault())
                 mapData["mobile"] = edt_mobile.text.toString().toLowerCase(Locale.getDefault())
+                mapData["soothram"] = edt_soothram.text.toString().toLowerCase(Locale.getDefault())
+                mapData["vaidhika"] = isVaidhika
                 if (id.isEmpty()) {
                     register(mapData)
                 } else {
@@ -214,12 +239,12 @@ class Register : AppCompatActivity() {
                 if (internet?.checkMobileInternetConn(context)!!) {
                     val uploadProfile = RetrofitClient.instanceClient.updateDp(part)
                     uploadProfile.enqueue(
-                        RetrofitWithBar(this@Register, object : Callback<ProfileDto> {
+                        RetrofitWithBar(this@Register, object : Callback<ResDto> {
                             @SuppressLint("SimpleDateFormat")
                             @RequiresApi(Build.VERSION_CODES.O)
                             override fun onResponse(
-                                call: Call<ProfileDto>,
-                                response: Response<ProfileDto>
+                                call: Call<ResDto>,
+                                response: Response<ResDto>
                             ) {
                                 Log.e("onResponse", response.toString())
                                 if (response.code() == 200) {
@@ -234,7 +259,7 @@ class Register : AppCompatActivity() {
                                                     getData(
                                                         "rootPath",
                                                         this@Register
-                                                    ) + Enums.Dp.value + response.body()!!.data.dp
+                                                    ) + Enums.Dp.value + response.body()!!.data.toString()
                                                 )
                                                 .error(R.drawable.ic_dummy_profile)
                                                 .placeholder(R.drawable.ic_dummy_profile)
@@ -298,7 +323,7 @@ class Register : AppCompatActivity() {
                                 }
                             }
 
-                            override fun onFailure(call: Call<ProfileDto>, t: Throwable) {
+                            override fun onFailure(call: Call<ResDto>, t: Throwable) {
                                 Log.e("onResponse", t.message.toString())
                                 showErrorMessage(
                                     lay_root,
@@ -317,7 +342,7 @@ class Register : AppCompatActivity() {
         }
     }
 
-    private fun register(mapData: HashMap<String, String>) {
+    private fun register(mapData: HashMap<String, Any>) {
         if (internet!!.checkMobileInternetConn(this@Register)) {
             try {
                 Log.e("mapData", mapData.toString())
@@ -431,7 +456,7 @@ class Register : AppCompatActivity() {
         }
     }
 
-    private fun update(mapData: HashMap<String, String>) {
+    private fun update(mapData: HashMap<String, Any>) {
         if (internet!!.checkMobileInternetConn(this@Register)) {
             try {
                 Log.e("mapData", mapData.toString())

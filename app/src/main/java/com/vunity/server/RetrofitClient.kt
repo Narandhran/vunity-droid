@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit
 @SuppressLint("StaticFieldLeak")
 object RetrofitClient {
 
-    private const val HOST = "http://3.6.116.252:1358"
+    private const val HOST = "http://3.6.116.252:7433"
     private val moshi: Moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
         .build()

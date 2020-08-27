@@ -11,9 +11,12 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -39,6 +42,8 @@ import com.vunity.user.DialogChoosePhoto
 import com.vunity.user.ErrorMsgDto
 import com.vunity.user.ResDto
 import kotlinx.android.synthetic.main.act_add_vunity.*
+import kotlinx.android.synthetic.main.act_add_vunity.img_profile
+import kotlinx.android.synthetic.main.content_vunity_users.*
 import kotlinx.android.synthetic.main.toolbar.*
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -57,15 +62,16 @@ class AddVunity : AppCompatActivity() {
     var vedhaAdhyayanamList: MutableList<Any> = arrayListOf()
     var shastraAdhyayanamList: MutableList<Any> = arrayListOf()
     var prayogamList: MutableList<Any> = arrayListOf()
-    var isShadangaAdhyayanam = false
-
+    var adapter: ArrayAdapter<String>? = null
+    val listOfCities = arrayListOf<String>()
     private val moshi: Moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
         .build()
     var internet: InternetDetector? = null
     private var unityFrom: Call<ResDto>? = null
-    var updateId: String? = null
+    var vunityId: String? = null
 
+    @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_add_vunity)
@@ -80,6 +86,19 @@ class AddVunity : AppCompatActivity() {
         txt_edit.visibility = View.GONE
         im_back.setOnClickListener {
             onBackPressed()
+        }
+
+        img_info.setOnClickListener {
+            val builder = android.app.AlertDialog.Builder(this@AddVunity)
+                .setMessage("By turning on will make your phone to public visiblity!")
+                .setCancelable(true)
+                .setPositiveButton(
+                    "OK"
+                ) { dialog, _ ->
+                    dialog.dismiss()
+                }
+            val alert = builder.create()
+            alert.show()
         }
 
         img_profile.setOnClickListener {
@@ -140,7 +159,7 @@ class AddVunity : AppCompatActivity() {
                     moshi.adapter(VunityData::class.java)
                 val vunityData: VunityData? = jsonAdapter.fromJson(data.toString())
                 println(vunityData)
-                updateId = vunityData?._id.toString()
+                vunityId = vunityData?._id.toString()
 
                 Picasso.get().load(
                     getData(
@@ -154,8 +173,9 @@ class AddVunity : AppCompatActivity() {
                 edt_city.setText(vunityData?.city.toString())
                 edt_vedham.setText(vunityData?.vedham.toString())
                 edt_sampradhayam.setText(vunityData?.samprdhayam.toString())
+                swt_mobile.isChecked = vunityData?.isMobileVisible!!
 
-                shakhaList = vunityData?.shakha?.toMutableList()!!
+                shakhaList = vunityData.shakha?.toMutableList()!!
                 if (shakhaList.isNotEmpty()) {
                     view_shaka?.apply {
                         view_shaka?.layoutManager = LinearLayoutManager(
@@ -192,8 +212,7 @@ class AddVunity : AppCompatActivity() {
                         view_vedha_adhyayanam?.adapter = genreAdapter
                     }
                 }
-
-                edt_shadanga_adhyayanam?.setText(vunityData.shadanga_adhyayanam.toString())
+                edt_shadanga_adhyayanam?.setText(vunityData.shadanga_adhyayanam)
 
                 shastraAdhyayanamList = vunityData.shastra_adhyayanam?.toMutableList()!!
                 if (shastraAdhyayanamList.isNotEmpty()) {
@@ -239,6 +258,24 @@ class AddVunity : AppCompatActivity() {
         } catch (exception: Exception) {
             Log.e("Exception", exception.toString())
         }
+
+        edt_city.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(value: CharSequence?, arg1: Int, arg2: Int, arg3: Int) {
+                if (value.toString().length >= 3) {
+                    searchCities(value.toString())
+                } else {
+                    listOfCities.clear()
+                    adapter?.clear()
+                    adapter?.notifyDataSetChanged()
+                }
+            }
+
+            override fun beforeTextChanged(arg0: CharSequence?, arg1: Int, arg2: Int, arg3: Int) {
+            }
+
+            override fun afterTextChanged(arg0: Editable?) {
+            }
+        })
 
         edt_vedham.setOnClickListener {
             val data: ArrayList<String> = arrayListOf()
@@ -568,7 +605,6 @@ class AddVunity : AppCompatActivity() {
                     }
                     dialog.show()
                 } else {
-                    isShadangaAdhyayanam = item == "Yes"
                     edt_shadanga_adhyayanam.setText(item)
                 }
             }
@@ -577,7 +613,7 @@ class AddVunity : AppCompatActivity() {
 
         btn_add_shastra_adhyayanam.setOnClickListener {
             val data: ArrayList<String> = arrayListOf()
-            data.addAll(resources.getStringArray(R.array.shastra_adhyayana))
+            data.addAll(resources.getStringArray(R.array.shastra_adhyayanam))
             val spinnerDialog = SpinnerDialog(
                 this@AddVunity,
                 data,
@@ -800,7 +836,6 @@ class AddVunity : AppCompatActivity() {
             spinnerDialog.showSpinerDialog()
         }
 
-
         edt_mothertongue.setOnClickListener {
             val data: ArrayList<String> = arrayListOf()
             data.addAll(resources.getStringArray(R.array.mother_tongue))
@@ -856,8 +891,112 @@ class AddVunity : AppCompatActivity() {
             spinnerDialog.showSpinerDialog()
         }
 
+        swt_mobile.setOnCheckedChangeListener { buttonView, isChecked ->
+            mobileVisibility(isChecked)
+        }
+
         btn_update.setOnClickListener {
             update()
+        }
+    }
+
+    private fun mobileVisibility(isChecked: Boolean) {
+        if (internet!!.checkMobileInternetConn(this@AddVunity)) {
+            try {
+                val mapData: HashMap<String, Boolean> = HashMap()
+                mapData["isMobileVisible"] = isChecked
+                Log.e("mapData", mapData.toString())
+                val mobileVisibility = RetrofitClient.instanceClient.mobileVisibility(vunityId.toString(),mapData)
+                mobileVisibility.enqueue(
+                    RetrofitWithBar(this@AddVunity, object : Callback<ResDto> {
+                        @SuppressLint("SimpleDateFormat")
+                        @RequiresApi(Build.VERSION_CODES.O)
+                        override fun onResponse(
+                            call: Call<ResDto>,
+                            response: Response<ResDto>
+                        ) {
+                            Log.e("onResponse", response.toString())
+                            if (response.code() == 200) {
+                                when (response.body()?.status) {
+                                    200 -> {
+
+                                    }
+                                    else -> {
+                                        showErrorMessage(
+                                            lay_root,
+                                            response.message()
+                                        )
+                                    }
+                                }
+
+                            } else if (response.code() == 422 || response.code() == 400) {
+                                try {
+                                    val adapter: JsonAdapter<ErrorMsgDto> =
+                                        moshi.adapter(ErrorMsgDto::class.java)
+                                    val errorResponse =
+                                        adapter.fromJson(response.errorBody()!!.string())
+                                    if (errorResponse != null) {
+                                        if (errorResponse.status == 400) {
+                                            showErrorMessage(
+                                                lay_root,
+                                                errorResponse.message
+                                            )
+                                        } else {
+                                            showErrorMessage(
+                                                lay_root,
+                                                errorResponse.message
+                                            )
+                                        }
+
+                                    } else {
+                                        showErrorMessage(
+                                            lay_root,
+                                            getString(R.string.msg_something_wrong)
+                                        )
+                                        Log.e(
+                                            "Response",
+                                            response.body()!!.toString()
+                                        )
+                                    }
+                                } catch (e: Exception) {
+                                    showErrorMessage(
+                                        lay_root,
+                                        getString(R.string.msg_something_wrong)
+                                    )
+                                    Log.e("Exception", e.toString())
+                                }
+
+                            } else if (response.code() == 401) {
+                                sessionExpired(
+                                    this@AddVunity
+                                )
+                            } else {
+                                showErrorMessage(
+                                    lay_root,
+                                    response.message()
+                                )
+                            }
+                        }
+
+                        override fun onFailure(call: Call<ResDto>, t: Throwable) {
+                            Log.e("onResponse", t.message.toString())
+                            showErrorMessage(
+                                lay_root,
+                                getString(R.string.msg_something_wrong)
+                            )
+                        }
+                    })
+                )
+
+            } catch (e: Exception) {
+                Log.d("ParseException", e.toString())
+                e.printStackTrace()
+            }
+        } else {
+            showErrorMessage(
+                lay_root,
+                getString(R.string.msg_no_internet)
+            )
         }
     }
 
@@ -874,7 +1013,6 @@ class AddVunity : AppCompatActivity() {
             }
             else -> {
                 val data = VunityBody(
-                    user_id = getData("user_id", applicationContext),
                     name = StringUtils.capitalize(
                         edt_fullname.text.toString().toLowerCase(Locale.getDefault())
                     ),
@@ -890,7 +1028,10 @@ class AddVunity : AppCompatActivity() {
                     ),
                     shakha = shakhaList,
                     vedha_adhyayanam = vedhaAdhyayanamList,
-                    shadanga_adhyayanam = isShadangaAdhyayanam,
+                    shadanga_adhyayanam = StringUtils.capitalize(
+                        edt_shadanga_adhyayanam.text.toString()
+                            .toLowerCase(Locale.getDefault())
+                    ),
                     shastra_adhyayanam = shastraAdhyayanamList,
                     prayogam = prayogamList,
                     marital_status = StringUtils.capitalize(
@@ -911,11 +1052,11 @@ class AddVunity : AppCompatActivity() {
         if (internet!!.checkMobileInternetConn(this@AddVunity)) {
             try {
                 Log.e("body", data.toString())
-                unityFrom = if (updateId == null) {
+                unityFrom = if (vunityId == null) {
                     RetrofitClient.instanceClient.createVunity(body = data)
                 } else {
                     RetrofitClient.instanceClient.updateVunity(
-                        id = updateId.toString(),
+                        id = vunityId.toString(),
                         body = data
                     )
                 }
@@ -1011,6 +1152,118 @@ class AddVunity : AppCompatActivity() {
         } else {
             showErrorMessage(
                 lay_root,
+                getString(R.string.msg_no_internet)
+            )
+        }
+    }
+
+    private fun searchCities(value: String) {
+        if (internet?.checkMobileInternetConn(applicationContext)!!) {
+            try {
+                val requestOtp = RetrofitClient.instanceClient.searchCities(value)
+                requestOtp.enqueue(object : Callback<CityDto> {
+                    @SuppressLint("SimpleDateFormat")
+                    @RequiresApi(Build.VERSION_CODES.O)
+                    override fun onResponse(
+                        call: Call<CityDto>,
+                        response: Response<CityDto>
+                    ) {
+                        if (response.code() == 200) {
+                            when (response.body()?.status) {
+                                200 -> {
+                                    listOfCities.clear()
+                                    adapter = ArrayAdapter(
+                                        this@AddVunity,
+                                        android.R.layout.select_dialog_item,
+                                        listOfCities
+                                    )
+                                    for (i in response.body()?.data!!) {
+                                        listOfCities.add(i.city.toString())
+                                    }
+                                    if (listOfCities.size < 40) edt_city.threshold = 1
+                                    else edt_city.threshold = 2
+                                    edt_city.setAdapter(adapter)
+                                    adapter?.notifyDataSetChanged()
+                                    Log.e("listOfCities", listOfCities.toString())
+                                }
+                                204 -> {
+                                    listOfCities.clear()
+                                    adapter?.clear()
+                                    adapter?.notifyDataSetChanged()
+                                }
+                                else -> {
+                                    showErrorMessage(
+                                        layout_refresh,
+                                        response.message()
+                                    )
+                                }
+                            }
+
+                        } else if (response.code() == 422 || response.code() == 400) {
+                            try {
+                                val adapter: JsonAdapter<ErrorMsgDto> =
+                                    moshi.adapter(ErrorMsgDto::class.java)
+                                val errorResponse =
+                                    adapter.fromJson(response.errorBody()!!.string())
+                                if (errorResponse != null) {
+                                    if (errorResponse.status == 400) {
+                                        showErrorMessage(
+                                            layout_refresh,
+                                            errorResponse.message
+                                        )
+                                    } else {
+                                        showErrorMessage(
+                                            layout_refresh,
+                                            errorResponse.message
+                                        )
+                                    }
+
+                                } else {
+                                    showErrorMessage(
+                                        layout_refresh,
+                                        getString(R.string.msg_something_wrong)
+                                    )
+                                    Log.e(
+                                        "Response",
+                                        response.body()!!.toString()
+                                    )
+                                }
+                            } catch (e: Exception) {
+                                showErrorMessage(
+                                    layout_refresh,
+                                    getString(R.string.msg_something_wrong)
+                                )
+                                Log.e("Exception", e.toString())
+                            }
+
+                        } else if (response.code() == 401) {
+                            sessionExpired(
+                                this@AddVunity
+                            )
+                        } else {
+                            showErrorMessage(
+                                layout_refresh,
+                                response.message()
+                            )
+                        }
+                    }
+
+                    override fun onFailure(call: Call<CityDto>, t: Throwable) {
+                        Log.e("onResponse", t.message.toString())
+                        showErrorMessage(
+                            layout_refresh,
+                            getString(R.string.msg_something_wrong)
+                        )
+                    }
+                })
+
+            } catch (e: Exception) {
+                Log.d("ParseException", e.toString())
+                e.printStackTrace()
+            }
+        } else {
+            showErrorMessage(
+                layout_refresh,
                 getString(R.string.msg_no_internet)
             )
         }

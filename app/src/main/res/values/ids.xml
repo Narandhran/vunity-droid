@@ -4,5 +4,6 @@
     <item name="fab_book" type="id" />
     <item name="fab_genre" type="id" />
     <item name="fab_user" type="id" />
+    <item name="fab_vunity_announcement" type="id" />
 
 </resources>

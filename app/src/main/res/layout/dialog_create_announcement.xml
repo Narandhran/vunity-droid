@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_gravity="center"
+            android:padding="2.5dp"
+            android:tint="@color/theme_main"
+            app:srcCompat="@drawable/ic_megaphone" />
+
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:fontFamily="@font/lato_bold"
+            android:padding="5dp"
+            android:text="@string/msg_create_announcement"
+            android:textColor="@color/theme_dark_grey"
+            android:textSize="18sp"
+            tools:targetApi="jelly_bean" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lay_title"
+        style="@style/MaterialInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="@string/title">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:digits=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            android:fontFamily="@font/lato_regular"
+            android:imeOptions="actionDone"
+            android:inputType="text"
+            android:maxLength="32"
+            android:maxLines="1"
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp"
+            android:textColor="@color/theme_dark_grey"
+            android:textSize="16sp"
+            tools:targetApi="lollipop" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/lay_description"
+        style="@style/MaterialInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:hint="@string/description">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/edt_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:digits=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+            android:fontFamily="@font/lato_regular"
+            android:imeOptions="actionDone"
+            android:inputType="textMultiLine"
+            android:maxLength="250"
+            android:maxLines="5"
+            android:paddingStart="1dp"
+            android:paddingEnd="1dp"
+            android:textColor="@color/theme_dark_grey"
+            android:textSize="16sp"
+            tools:targetApi="lollipop" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_send"
+        style="@style/BtnTheme"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:layout_marginTop="25dp"
+        android:text="@string/send" />
+
+</androidx.appcompat.widget.LinearLayoutCompat>
+
+

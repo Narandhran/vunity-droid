@@ -19,13 +19,11 @@ import com.vunity.general.*
 import com.vunity.interfaces.IOnBackPressed
 import com.vunity.server.InternetDetector
 import com.vunity.server.RetrofitClient
-import com.vunity.server.RetrofitWithBar
 import com.vunity.user.ErrorMsgDto
 import com.vunity.user.Login
-import com.vunity.user.ProDto
 import com.vunity.user.Profile
+import kotlinx.android.synthetic.main.act_home.*
 import kotlinx.android.synthetic.main.frag_vunity.*
-import org.apache.commons.lang3.StringUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -33,7 +31,6 @@ import retrofit2.Response
 
 class Vunity : Fragment(), IOnBackPressed {
 
-    private var profile: Call<ProDto>? = null
     private var getByUser: Call<VunityDto>? = null
     private val moshi: Moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
@@ -50,6 +47,8 @@ class Vunity : Fragment(), IOnBackPressed {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().navigationView.visibility = View.VISIBLE
         layout_refresh.setOnRefreshListener {
             reloadFragment(
                 activity?.supportFragmentManager!!,
@@ -57,6 +56,17 @@ class Vunity : Fragment(), IOnBackPressed {
             )
             layout_refresh.isRefreshing = false
         }
+
+        Picasso.get()
+            .load(
+                getData(
+                    "rootPath",
+                    requireContext()
+                ) + Enums.Dp.value + getData("dp", requireContext())
+            )
+            .error(R.drawable.ic_dummy_profile)
+            .placeholder(R.drawable.ic_dummy_profile)
+            .into(img_profile)
 
         img_profile.setOnClickListener {
             val isLoggedIn = getData("logged_user", requireContext())
@@ -74,22 +84,14 @@ class Vunity : Fragment(), IOnBackPressed {
         btn_add.setOnClickListener {
             startActivity(Intent(requireActivity(), AddVunity::class.java))
         }
-
-        if (internetDetector?.checkMobileInternetConn(requireActivity())!!) {
-            loadProfileInfo()
-        } else {
-            lay_no_data.visibility = View.GONE
-            lay_data.visibility = View.GONE
-            lay_no_internet.visibility = View.VISIBLE
-        }
         getByUser()
     }
 
     private fun getByUser() {
         if (internetDetector?.checkMobileInternetConn(requireContext())!!) {
             val userId = getData("user_id", requireContext()).toString()
-            getByUser = RetrofitClient.instanceClient.vunityGetByUser(userId)
-            getByUser?.enqueue(RetrofitWithBar(requireActivity(), object : Callback<VunityDto> {
+            getByUser = RetrofitClient.instanceClient.getVunityUserById(userId)
+            getByUser?.enqueue(object : Callback<VunityDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(
                     call: Call<VunityDto>,
@@ -110,13 +112,6 @@ class Vunity : Fragment(), IOnBackPressed {
                                             requireContext()
                                         ) + Enums.Dp.value + response.body()!!.data?.photo
                                     ).placeholder(R.drawable.ic_dummy_profile).into(img_vprofile)
-
-                                    Log.e(
-                                        "Picasso", getData(
-                                            "rootPath",
-                                            requireContext()
-                                        ) + Enums.Dp.value + response.body()!!.data?.photo
-                                    )
 
                                     txt_name.text = response.body()!!.data?.name.toString()
                                     txt_mobile.text = response.body()!!.data?.mobile.toString()
@@ -163,10 +158,8 @@ class Vunity : Fragment(), IOnBackPressed {
                                             view_vedha_adhyayanam?.adapter = genreAdapter
                                         }
                                     }
-
-                                    txt_shadanga_adhyayanam.text =
-                                        response.body()!!.data?.shadanga_adhyayanam.toString()
-
+                                    txt_shadanga_adhyayanam?.text =
+                                        response.body()!!.data?.shadanga_adhyayanam
                                     val shastraAdhyayanam: MutableList<Any> =
                                         response.body()!!.data?.shastra_adhyayanam!!
                                     if (shastraAdhyayanam.isNotEmpty()) {
@@ -297,111 +290,13 @@ class Vunity : Fragment(), IOnBackPressed {
                         )
                     }
                 }
-            }))
+            })
 
         } else {
             lay_no_data.visibility = View.GONE
             lay_data.visibility = View.GONE
             lay_no_internet.visibility = View.VISIBLE
         }
-    }
-
-    private fun loadProfileInfo() {
-        profile = RetrofitClient.instanceClient.profile()
-        profile?.enqueue(object : Callback<ProDto> {
-            @SuppressLint("DefaultLocale", "SetTextI18n")
-            override fun onResponse(
-                call: Call<ProDto>,
-                response: Response<ProDto>
-            ) {
-                Log.e("onResponse", response.toString())
-                when {
-                    response.code() == 200 -> {
-                        when (response.body()?.status) {
-                            200 -> {
-                                try {
-                                    saveData(
-                                        "fullname",
-                                        StringUtils.capitalize(response.body()?.data?.fname?.toLowerCase()) + " " + StringUtils.capitalize(
-                                            response.body()?.data?.lname?.toLowerCase()
-                                        ),
-                                        requireContext()
-                                    )
-                                    saveData(
-                                        "mobile",
-                                        response.body()?.data?.mobile.toString(),
-                                        requireContext()
-                                    )
-                                    saveData(
-                                        "username",
-                                        response.body()?.data?.email.toString(),
-                                        requireContext()
-                                    )
-                                    saveData(
-                                        "dp",
-                                        response.body()?.data?.dp.toString(),
-                                        requireContext()
-                                    )
-                                    saveData(
-                                        "user_id",
-                                        response.body()?.data?._id.toString(),
-                                        requireContext()
-                                    )
-
-                                    Picasso.get()
-                                        .load(
-                                            getData(
-                                                "rootPath",
-                                                requireContext()
-                                            ) + Enums.Dp.value + response.body()?.data?.dp
-                                        )
-                                        .error(R.drawable.ic_dummy_profile)
-                                        .placeholder(R.drawable.ic_dummy_profile)
-                                        .into(img_profile)
-                                } catch (e: Exception) {
-                                    Log.d("Profile", e.toString())
-                                    e.printStackTrace()
-                                }
-                            }
-                            else -> {
-                                Log.e("Response", response.message())
-                            }
-                        }
-                    }
-                    response.code() == 422 || response.code() == 400 -> {
-                        try {
-                            val moshi: Moshi = Moshi.Builder().build()
-                            val adapter: JsonAdapter<ErrorMsgDto> =
-                                moshi.adapter(ErrorMsgDto::class.java)
-                            val errorResponse =
-                                adapter.fromJson(response.errorBody()!!.string())
-                            if (errorResponse != null) {
-                                if (errorResponse.status == 400) {
-                                    Log.e("Response", errorResponse.message)
-                                } else {
-                                    Log.e("Response", errorResponse.message)
-                                }
-
-                            } else {
-                                Log.e("Response", response.body()!!.toString())
-                            }
-                        } catch (e: Exception) {
-                            Log.e("Exception", e.toString())
-                        }
-                    }
-                    response.code() == 401 -> {
-                        sessionExpired(requireActivity())
-                    }
-                    else -> {
-                        Log.e("Response", response.message().toString())
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<ProDto>, t: Throwable) {
-                Log.e("onFailure", t.message.toString())
-            }
-        })
     }
 
     companion object {

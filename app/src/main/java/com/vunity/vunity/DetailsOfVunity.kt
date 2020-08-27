@@ -16,7 +16,6 @@ import com.vunity.book.StringAdapter
 import com.vunity.general.*
 import com.vunity.server.InternetDetector
 import com.vunity.server.RetrofitClient
-import com.vunity.server.RetrofitWithBar
 import com.vunity.user.ErrorMsgDto
 import kotlinx.android.synthetic.main.act_detailsof_vunity.*
 import kotlinx.android.synthetic.main.toolbar.*
@@ -36,6 +35,7 @@ class DetailsOfVunity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_detailsof_vunity)
+
         layout_refresh.setOnRefreshListener {
             finish()
             reloadActivity(this@DetailsOfVunity)
@@ -43,7 +43,14 @@ class DetailsOfVunity : AppCompatActivity() {
         }
 
         txt_title.text = getString(R.string.app_name)
-        txt_edit.visibility = View.GONE
+
+        val role = getData(Enums.Role.value, applicationContext)
+        if (role == Enums.Admin.value) {
+            txt_edit.visibility = View.VISIBLE
+        } else {
+            txt_edit.visibility = View.GONE
+        }
+
         im_back.setOnClickListener {
             onBackPressed()
         }
@@ -52,11 +59,6 @@ class DetailsOfVunity : AppCompatActivity() {
         try {
             val receivedId = intent.getStringExtra(getString(R.string.userId))
             if (receivedId != null) {
-//                if (receivedId == userId) {
-//                    txt_edit.visibility == View.VISIBLE
-//                } else {
-//                    txt_edit.visibility == View.GONE
-//                }
                 getByUser(receivedId)
             }
         } catch (e: Exception) {
@@ -66,8 +68,8 @@ class DetailsOfVunity : AppCompatActivity() {
 
     private fun getByUser(receivedId: String) {
         if (internetDetector?.checkMobileInternetConn(applicationContext)!!) {
-            getByUser = RetrofitClient.instanceClient.vunityGetByUser(receivedId)
-            getByUser?.enqueue(RetrofitWithBar(this@DetailsOfVunity, object : Callback<VunityDto> {
+            getByUser = RetrofitClient.instanceClient.getVunityUserById(receivedId)
+            getByUser?.enqueue(object : Callback<VunityDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(
                     call: Call<VunityDto>,
@@ -95,6 +97,12 @@ class DetailsOfVunity : AppCompatActivity() {
                                     txt_vedham.text = response.body()!!.data?.vedham.toString()
                                     txt_sampradhayam.text =
                                         response.body()!!.data?.samprdhayam.toString()
+
+                                    if (response.body()!!.data?.isMobileVisible!!) {
+                                        lay_mobile.visibility = View.VISIBLE
+                                    } else {
+                                        lay_mobile.visibility = View.GONE
+                                    }
 
                                     val shaka = response.body()!!.data?.shakha!!
                                     if (shaka.isNotEmpty()) {
@@ -268,7 +276,7 @@ class DetailsOfVunity : AppCompatActivity() {
                         )
                     }
                 }
-            }))
+            })
 
         } else {
             lay_no_data.visibility = View.GONE
@@ -282,11 +290,6 @@ class DetailsOfVunity : AppCompatActivity() {
         try {
             val receivedId = intent.getStringExtra(getString(R.string.userId))
             if (receivedId != null) {
-//                if (receivedId == userId) {
-//                    txt_edit.visibility == View.VISIBLE
-//                } else {
-//                    txt_edit.visibility == View.GONE
-//                }
                 getByUser(receivedId)
             }
         } catch (e: Exception) {

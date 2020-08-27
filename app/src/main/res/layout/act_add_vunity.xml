@@ -80,29 +80,82 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/MaterialInputLayout"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:hint="@string/city">
+                android:layout_height="wrap_content">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/edt_city"
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:digits=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                    android:fontFamily="@font/lato_regular"
-                    android:imeOptions="actionDone"
-                    android:inputType="text"
-                    android:maxLength="32"
-                    android:maxLines="1"
-                    android:paddingStart="1dp"
-                    android:paddingEnd="1dp"
-                    android:textColor="@color/theme_dark_grey"
-                    android:textSize="16sp"
-                    tools:targetApi="lollipop" />
+                    android:layout_alignParentStart="true"
+                    android:layout_centerInParent="true"
+                    android:orientation="horizontal">
 
-            </com.google.android.material.textfield.TextInputLayout>
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/img_info"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:padding="2.5dp"
+                        android:tint="@color/yellow"
+                        app:srcCompat="@drawable/ic_about" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="5dp"
+                        android:fontFamily="@font/lato_regular"
+                        android:padding="5dp"
+                        android:text="@string/mobile_number_visibility"
+                        android:textColor="@color/theme_light_grey"
+                        android:textSize="16sp"
+                        tools:ignore="UnusedAttribute" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/swt_mobile"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_centerInParent="true"
+                    android:scaleX="0.8"
+                    android:scaleY="0.8" />
+
+            </RelativeLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="10dp"
+                android:fontFamily="@font/lato_bold"
+                android:text="@string/city"
+                android:textColor="@color/theme_dark_grey"
+                android:textSize="16sp"
+                tools:ignore="RelativeOverlap" />
+
+            <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                android:id="@+id/edt_city"
+                android:layout_width="match_parent"
+                android:layout_height="55dp"
+                android:background="@drawable/bg_bottom_line"
+                android:digits=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                android:fontFamily="@font/lato_regular"
+                android:gravity="center_vertical"
+                android:hint="@string/enter_city_name"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:maxLength="32"
+                android:maxLines="1"
+                android:paddingStart="1dp"
+                android:paddingEnd="1dp"
+                android:textColor="@color/theme_dark_grey"
+                android:textColorHint="@color/theme_light_grey"
+                android:textSize="16sp"
+                tools:targetApi="lollipop" />
 
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/MaterialInputLayout"

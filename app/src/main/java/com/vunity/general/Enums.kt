@@ -8,4 +8,10 @@ enum class Enums(var value: String) {
     Role("role"),
     Admin("ADMIN"),
     User("USER"),
+    Approved("Approved"),
+    Pending("Pending"),
+    Blocked("Blocked"),
+
+//    FCM topics
+    TopicAnnouncement("unity-announcement")
 }

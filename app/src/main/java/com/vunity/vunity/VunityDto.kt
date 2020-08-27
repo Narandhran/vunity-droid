@@ -11,10 +11,9 @@ data class VunityBody(
     var name: String?,
     var prayogam: MutableList<Any>?,
     var samprdhayam: String?,
-    var shadanga_adhyayanam: Boolean?,
+    var shadanga_adhyayanam: String?,
     var shakha: MutableList<Any>?,
     var shastra_adhyayanam: MutableList<Any>?,
-    var user_id: String?,
     var vedha_adhyayanam: MutableList<Any>?,
     var vedham: String?
 )
@@ -49,7 +48,7 @@ data class VunityData(
     var photo: Any?,
     var prayogam: MutableList<Any>?,
     var samprdhayam: String?,
-    var shadanga_adhyayanam: Boolean?,
+    var shadanga_adhyayanam: String?,
     var shakha: MutableList<Any>?,
     var shastra_adhyayanam: MutableList<Any>?,
     var updatedAt: String?,
@@ -82,6 +81,33 @@ data class Verify(
     var expire: String?,
     var otp: Int?
 )
+
+@JsonClass(generateAdapter = true)
+data class FilterBody(
+    var city: String?,
+    var mother_tongue: String?,
+    var prayogam: MutableList<Any>?,
+    var samprdhayam: String?,
+    var shadanga_adhyayanam: String?,
+    var shakha: MutableList<Any>?,
+    var shastra_adhyayanam: MutableList<Any>?,
+    var vedha_adhyayanam: MutableList<Any>?,
+    var vedham: String?,
+    var marital_status: String?
+)
+data class CityDto(
+    var contentFound: Boolean?,
+    var `data`: List<CityData>?,
+    var message: String?,
+    var status: Int?
+)
+
+data class CityData(
+    var _id: String?,
+    var city: String?,
+    var pincode: String?
+)
+
 
 
 

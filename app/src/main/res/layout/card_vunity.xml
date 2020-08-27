@@ -31,7 +31,7 @@
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:layout_marginEnd="10dp"
-                android:src="@drawable/index"
+                android:src="@drawable/ic_dummy_profile"
                 app:siBorderColor="@color/theme_light_grey"
                 app:siBorderWidth="1dp" />
 
@@ -49,7 +49,6 @@
                     android:fontFamily="@font/lato_regular"
                     android:gravity="center_vertical"
                     android:maxLines="1"
-                    android:text="Vijayakumar V"
                     android:textColor="@color/theme_dark_grey"
                     android:textSize="14sp" />
 
@@ -61,7 +60,6 @@
                     android:fontFamily="@font/lato_regular"
                     android:gravity="center_vertical"
                     android:maxLines="1"
-                    android:text="Bengaluru North"
                     android:textColor="@color/theme_dark_grey"
                     android:textSize="14sp" />
 
@@ -73,7 +71,6 @@
                     android:fontFamily="@font/lato_regular"
                     android:gravity="center_vertical"
                     android:maxLines="1"
-                    android:text="91 8883361771"
                     android:textColor="@color/theme_dark_grey"
                     android:textSize="12sp"
                     android:visibility="visible" />
@@ -114,7 +111,6 @@
                 android:fontFamily="@font/lato_regular"
                 android:gravity="center_vertical"
                 android:maxLines="1"
-                android:text="Krushna yajus"
                 android:textColor="@color/theme_dark_grey"
                 android:textSize="14sp" />
 
@@ -141,7 +137,6 @@
                 android:fontFamily="@font/lato_regular"
                 android:gravity="center_vertical"
                 android:maxLines="1"
-                android:text="Shree vaishnavam  (thenkalai) (telugu)"
                 android:textColor="@color/theme_dark_grey"
                 android:textSize="14sp" />
 

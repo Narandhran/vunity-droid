@@ -11,15 +11,15 @@
 
     <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="500dp"
         android:layout_gravity="bottom|center"
         android:horizontalSpacing="1dp"
         android:orientation="vertical"
         app:cardBackgroundColor="@color/white"
-        app:cardCornerRadius="10dp"
         app:cardElevation="2.5dp"
         app:cardUseCompatPadding="true"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHeight_percent="0.65"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -40,9 +40,10 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_centerInParent="true"
-                    android:fontFamily="@font/lato_regular"
+                    android:fontFamily="@font/lato_bold"
                     android:padding="5dp"
                     android:text="@string/msg_filter"
+                    android:textAllCaps="true"
                     android:textColor="@color/theme_dark_grey"
                     android:textSize="16sp"
                     tools:ignore="RelativeOverlap"
@@ -63,7 +64,7 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:fontFamily="@font/lato_regular"
-                        android:gravity="end"
+                        android:gravity="center"
                         android:padding="5dp"
                         android:text="@string/clear"
                         android:textColor="@color/ios_red_dark"
@@ -96,29 +97,36 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <com.google.android.material.textfield.TextInputLayout
-                        style="@style/MaterialInputLayout"
-                        android:layout_width="match_parent"
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:hint="@string/city">
+                        android:layout_alignParentStart="true"
+                        android:layout_centerInParent="true"
+                        android:layout_marginTop="5dp"
+                        android:fontFamily="@font/lato_bold"
+                        android:text="@string/city"
+                        android:textColor="@color/theme_dark_grey"
+                        android:textSize="14sp"
+                        tools:ignore="RelativeOverlap" />
 
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/edt_city"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:digits=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                            android:fontFamily="@font/lato_regular"
-                            android:imeOptions="actionDone"
-                            android:inputType="text"
-                            android:maxLength="32"
-                            android:maxLines="1"
-                            android:paddingStart="1dp"
-                            android:paddingEnd="1dp"
-                            android:textColor="@color/theme_dark_grey"
-                            android:textSize="14sp"
-                            tools:targetApi="lollipop" />
-
-                    </com.google.android.material.textfield.TextInputLayout>
+                    <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                        android:id="@+id/edt_city"
+                        android:layout_width="match_parent"
+                        android:layout_height="55dp"
+                        android:background="@drawable/bg_bottom_line"
+                        android:digits=" abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                        android:fontFamily="@font/lato_regular"
+                        android:hint="@string/enter_city_name"
+                        android:imeOptions="actionDone"
+                        android:inputType="text"
+                        android:maxLength="32"
+                        android:maxLines="1"
+                        android:paddingStart="1dp"
+                        android:paddingEnd="1dp"
+                        android:textColor="@color/theme_dark_grey"
+                        android:textColorHint="@color/theme_light_grey"
+                        android:textSize="14sp"
+                        tools:targetApi="lollipop" />
 
                     <com.google.android.material.textfield.TextInputLayout
                         style="@style/MaterialInputLayout"

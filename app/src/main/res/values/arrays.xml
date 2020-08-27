@@ -30,13 +30,6 @@
         <item>Other</item>
     </string-array>
 
-    <string-array name="city">
-        <item>Chennai</item>
-        <item>Madurai</item>
-        <item>Tiruchy</item>
-        <item>Tiruppur</item>
-    </string-array>
-
     <string-array name="shakha">
         <item>Shakalam (shaishireeyam) (rug)</item>
         <item>Shankhyayanam (rug)</item>
@@ -66,7 +59,7 @@
         <item>No</item>
     </string-array>
 
-    <string-array name="shastra_adhyayana">
+    <string-array name="shastra_adhyayanam">
         <item>Vyakaranam</item>
         <item>Poorva mimamsa</item>
         <item>Utthara mimamsa</item>

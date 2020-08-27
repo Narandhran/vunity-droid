@@ -13,64 +13,132 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="5dp">
+        android:orientation="vertical">
 
-        <com.github.siyamed.shapeimageview.CircularImageView
-            android:id="@+id/img_profile"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerInParent="true"
-            android:layout_gravity="center"
-            android:layout_marginEnd="10dp"
-            android:src="@drawable/ic_dummy_profile"
-            app:siBorderColor="@color/theme_light_grey"
-            app:siBorderWidth="1dp" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="75dp"
-            android:layout_gravity="center"
-            android:orientation="vertical"
-            android:weightSum="3">
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:padding="5dp">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/txt_fullname"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:fontFamily="@font/lato_bold"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:textColor="@color/theme_dark_grey"
-                android:textSize="16sp" />
+            <com.github.siyamed.shapeimageview.CircularImageView
+                android:id="@+id/img_profile"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center"
+                android:layout_marginEnd="10dp"
+                android:src="@drawable/ic_dummy_profile"
+                app:siBorderColor="@color/theme_light_grey"
+                app:siBorderWidth="1dp" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/txt_email"
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:fontFamily="@font/lato_regular"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:textColor="@color/theme_dark_grey"
-                android:textSize="14sp" />
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:orientation="vertical"
+                android:weightSum="3">
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/txt_mobile"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:fontFamily="@font/lato_regular"
-                android:gravity="center_vertical"
-                android:maxLines="1"
-                android:textColor="@color/theme_dark_grey"
-                android:textSize="12sp" />
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/txt_fullname"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/lato_bold"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:padding="2.5dp"
+                    android:text="Vijayakumar V"
+                    android:textColor="@color/theme_dark_grey"
+                    android:textSize="16sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/txt_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/lato_regular"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:padding="2.5dp"
+                    android:text="vijay.v@appraamlabs.com"
+                    android:textColor="@color/theme_dark_grey"
+                    android:textSize="14sp" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/txt_mobile"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/lato_regular"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:padding="2.5dp"
+                    android:text="55484134134"
+                    android:textColor="@color/theme_dark_grey"
+                    android:textSize="12sp" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
         </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <RelativeLayout
+            android:id="@+id/lay_cms"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginStart="70dp"
+            android:layout_marginBottom="5dp"
+            android:layout_weight="1">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerInParent="true"
+                android:orientation="horizontal">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:ellipsize="end"
+                    android:fontFamily="@font/lato_bold"
+                    android:gravity="center_vertical"
+                    android:maxLines="1"
+                    android:text="Block"
+                    android:textColor="@color/ios_red_dark"
+                    android:textSize="16sp" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/swt_block"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:scaleX="0.8"
+                    android:layout_marginStart="15dp"
+                    android:scaleY="0.8" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/btn_approve"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:layout_alignParentStart="true"
+                android:layout_centerInParent="true"
+                android:background="@drawable/bg_theme_btn"
+                android:gravity="center"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="Approve"
+                android:textColor="@color/white"
+                android:textSize="14dp"
+                android:visibility="visible" />
+
+        </RelativeLayout>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

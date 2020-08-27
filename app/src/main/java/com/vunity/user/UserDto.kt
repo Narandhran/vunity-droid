@@ -54,12 +54,13 @@ data class ProListDto(
 )
 
 data class ProData(
-    var _id: String,
-    var dp: Any?,
-    var email: String,
-    var fname: String,
-    var lname: String,
-    var mobile: String
+    var _id: String?,
+    var dp: String?,
+    var email: String?,
+    var fname: String?,
+    var lname: String?,
+    var mobile: String?,
+    var status: String?
 )
 
 // for get update profile

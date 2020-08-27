@@ -4,10 +4,11 @@
     android:layout_height="match_parent">
 
     <include
-        layout="@layout/content_list_vunity"
+        layout="@layout/content_vunity_users"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <include layout="@layout/bottomsheet_vunity_filter" />
+    <include
+        layout="@layout/filter_vunity_users" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

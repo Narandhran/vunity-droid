@@ -16,4 +16,9 @@
     <color name="ios_blue_light">#007AFF</color>
     <color name="ios_red_dark">#FF453A</color>
 
+    <color name="yellow">#F9A825</color>
+    <color name="orange">#F7931D</color>
+    <color name="light_orange">#0DFF453A</color>
+    <color name="green">#558B2F</color>
+
 </resources>

@@ -11,6 +11,7 @@ import android.text.TextUtils
 import android.util.Patterns
 import android.view.Gravity
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatImageView
@@ -24,6 +25,10 @@ import com.squareup.picasso.Picasso
 import com.vunity.R
 import com.vunity.user.Login
 
+var shakhaList: MutableList<Any> = arrayListOf()
+var vedhaAdhyayanamList: MutableList<Any> = arrayListOf()
+var shastraAdhyayanamList: MutableList<Any> = arrayListOf()
+var prayogamList: MutableList<Any> = arrayListOf()
 
 fun isValidEmail(target: CharSequence?): Boolean {
     return !TextUtils.isEmpty(target) && Patterns.EMAIL_ADDRESS.matcher(target).matches()
@@ -124,4 +129,10 @@ fun loadImage(context: Context, path: String, image: PorterShapeImageView) {
         .load(getData("rootPath", context) + path)
         .placeholder(R.drawable.img_place_holder)
         .into(image)
+}
+
+fun hideKeyboardFrom(context: Context, view: View) {
+    val imm: InputMethodManager =
+        context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(view.windowToken, 0)
 }

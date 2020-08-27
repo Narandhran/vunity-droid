@@ -1,10 +1,14 @@
 package com.vunity.user
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
+import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,12 +16,15 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.vunity.R
+import com.vunity.general.Enums
 import com.vunity.general.coordinatorErrorMessage
 import com.vunity.general.reloadActivity
 import com.vunity.general.sessionExpired
 import com.vunity.server.InternetDetector
 import com.vunity.server.RetrofitClient
 import kotlinx.android.synthetic.main.act_users.*
+import kotlinx.android.synthetic.main.content_users.*
+import kotlinx.android.synthetic.main.filter_users.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -35,7 +42,9 @@ class Users : AppCompatActivity() {
     var userData: MutableList<ProData> = arrayListOf()
     private lateinit var userAdapter: UserAdapter
     private var queryTextListener: SearchView.OnQueryTextListener? = null
+    private var status: String? = null
 
+    @SuppressLint("WrongConstant")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_users)
@@ -53,8 +62,6 @@ class Users : AppCompatActivity() {
         }
 
         internet = InternetDetector.getInstance(this@Users)
-        allUsers()
-
         queryTextListener = object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String?): Boolean {
                 filter(newText!!)
@@ -67,6 +74,62 @@ class Users : AppCompatActivity() {
             }
         }
         search_book.setOnQueryTextListener(queryTextListener)
+
+        img_filter.setOnClickListener {
+            drawer_users.openDrawer(Gravity.END)
+            val actionBarDrawerToggle =
+                object :
+                    ActionBarDrawerToggle(this@Users, drawer_users, R.string.open, R.string.close) {
+                    private val scaleFactor = 8f
+
+                    override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+                        super.onDrawerSlide(drawerView, slideOffset)
+                        val slideX = drawerView.width * slideOffset
+                        content_users.translationX = -slideX
+                        content_users.scaleX = 1 - slideOffset / scaleFactor
+                        content_users.scaleY = 1 - slideOffset / scaleFactor
+                    }
+                }
+            drawer_users.setScrimColor(Color.TRANSPARENT)
+            drawer_users.drawerElevation = 0f
+            drawer_users.addDrawerListener(actionBarDrawerToggle)
+        }
+
+        radio_users.setOnCheckedChangeListener { group, checkedId ->
+            when (checkedId) {
+                R.id.radio_approved -> {
+                    status = Enums.Approved.value
+                }
+                R.id.radio_pending -> {
+                    status = Enums.Pending.value
+                }
+                R.id.radio_blocked -> {
+                    status = Enums.Blocked.value
+                }
+            }
+        }
+
+        btn_apply.setOnClickListener {
+            if (radio_users.checkedRadioButtonId == -1) {
+                coordinatorErrorMessage(
+                    layout_refresh,
+                    "Please select the given filter option to search."
+                )
+            } else {
+                drawer_users.closeDrawer(Gravity.END)
+                allUsers()
+            }
+        }
+
+        btn_clear.setOnClickListener {
+            drawer_users.closeDrawer(Gravity.END)
+            Handler().postDelayed({
+                radio_users.clearCheck()
+                reloadActivity(this@Users)
+            }, 200)
+        }
+        
+        allUsers()
     }
 
     override fun onStop() {
@@ -85,10 +148,10 @@ class Users : AppCompatActivity() {
         val filteredTeam: MutableList<ProData> = arrayListOf()
         if (userData.isNotEmpty()) {
             for (data in userData) {
-                if (data.fname.toLowerCase(Locale.getDefault())
-                        .contains(text.toLowerCase(Locale.getDefault()))
-                    || data.lname.toLowerCase(Locale.getDefault())
-                        .contains(text.toLowerCase(Locale.getDefault()))
+                if (data.fname?.toLowerCase(Locale.getDefault())
+                        ?.contains(text.toLowerCase(Locale.getDefault()))!!
+                    || data.lname?.toLowerCase(Locale.getDefault())
+                        ?.contains(text.toLowerCase(Locale.getDefault()))!!
                 ) {
                     filteredTeam.add(data)
                 }
@@ -102,7 +165,11 @@ class Users : AppCompatActivity() {
             lay_shimmer.startShimmer()
         }
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            users = RetrofitClient.instanceClient.listOfUsers()
+            users = if (status == null) {
+                RetrofitClient.instanceClient.listOfUsers()
+            } else {
+                RetrofitClient.instanceClient.filterUsers(status.toString())
+            }
             users?.enqueue(object : Callback<ProListDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(
@@ -127,7 +194,11 @@ class Users : AppCompatActivity() {
                                             false
                                         )
                                         view_users?.setHasFixedSize(true)
-                                        userAdapter = UserAdapter(userData, this@Users)
+                                        userAdapter = UserAdapter(
+                                            dataList = userData,
+                                            activity = this@Users,
+                                            view = layout_refresh
+                                        )
                                         view_users?.adapter = userAdapter
                                     }
                                 }

@@ -6,9 +6,9 @@ import com.vunity.book.*
 import com.vunity.category.CategoryDto
 import com.vunity.category.CategoryListDto
 import com.vunity.category.GenreDto
-import com.vunity.vunity.*
 import com.vunity.favourite.FavListDto
 import com.vunity.user.*
+import com.vunity.vunity.*
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -31,6 +31,9 @@ interface ResponseService {
 
     @GET("user/list")
     fun listOfUsers(): Call<ProListDto>
+
+    @GET("user/filter_status/{value}")
+    fun filterUsers(@Path("value") value: String): Call<ProListDto>
 
     @Multipart
     @PUT("user/update_dp")
@@ -130,13 +133,34 @@ interface ResponseService {
     @PUT("vunity/update/{id}")
     fun updateVunity(@Path("id") id: String, @Body body: VunityBody): Call<ResDto>
 
+    @FormUrlEncoded
+    @PUT("vunity/mobile_visible_update/{id}")
+    fun mobileVisibility(@Path("id") id: String,@FieldMap params: Map<String, @JvmSuppressWildcards Any>): Call<ResDto>
+
     @Multipart
     @PUT("vunity/update_photo")
     fun updateVunityPhoto(@Part dp: MultipartBody.Part): Call<ResDto>
 
     @GET("vunity/get_by_user/{id}")
-    fun vunityGetByUser(@Path("id") id: String): Call<VunityDto>
+    fun getVunityUserById(@Path("id") id: String): Call<VunityDto>
 
     @GET("vunity/list")
-    fun vunityAllUsers(): Call<VunityListDto>
+    fun listOfVunityUsers(): Call<VunityListDto>
+
+    @POST("vunity/filter")
+    fun filterVunityUsers(@Body filterBody: FilterBody): Call<VunityListDto>
+
+    @GET("vunity/search/{value}")
+    fun searchVunityUsers(@Path("value") value: String): Call<VunityListDto>
+
+    @GET("city/search/{value}")
+    fun searchCities(@Path("value") value: String): Call<CityDto>
+
+    @FormUrlEncoded
+    @PUT("cms/review")
+    fun cmsReview(@FieldMap params: Map<String, @JvmSuppressWildcards String>): Call<ResDto>
+
+    @FormUrlEncoded
+    @POST("cms/announcement")
+    fun cmsAnnouncement(@FieldMap params: Map<String, @JvmSuppressWildcards String>): Call<ResDto>
 }

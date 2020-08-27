@@ -4,6 +4,8 @@ import android.Manifest
 
 object Constants {
 
+    const val PUSH_NOTIFICATION = "pushNotification"
+
     // Permissions
     const val PERMISSION_ALL = 1
     val PERMISSIONS = arrayOf(

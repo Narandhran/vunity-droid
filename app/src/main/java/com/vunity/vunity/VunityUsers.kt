@@ -7,11 +7,15 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.annotation.RequiresApi
+import androidx.appcompat.widget.SearchView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -28,40 +32,58 @@ import com.vunity.server.InternetDetector
 import com.vunity.server.RetrofitClient
 import com.vunity.user.ErrorMsgDto
 import com.vunity.user.Login
-import com.vunity.user.ProDto
 import com.vunity.user.Profile
 import kotlinx.android.synthetic.main.act_home.*
-import kotlinx.android.synthetic.main.bottomsheet_vunity_filter.*
-import kotlinx.android.synthetic.main.content_list_vunity.*
-import org.apache.commons.lang3.StringUtils
+import kotlinx.android.synthetic.main.content_vunity_users.*
+import kotlinx.android.synthetic.main.filter_vunity_users.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.util.*
 
-class UsersVunity : Fragment(), IOnBackPressed {
+class VunityUsers : Fragment(), IOnBackPressed {
 
-    private var profile: Call<ProDto>? = null
-    private var loadUsers: Call<VunityListDto>? = null
+    private var vunityUsers: Call<VunityListDto>? = null
     var internetDetector: InternetDetector? = null
     private val moshi: Moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
         .build()
     var userData: MutableList<VunityData> = arrayListOf()
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<ConstraintLayout>
+    var adapter: ArrayAdapter<String>? = null
+    val listOfCities = arrayListOf<String>()
+    private var queryTextListener: SearchView.OnQueryTextListener? = null
+    private var queryValue: String? = null
+    private var filterBody: FilterBody? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.frag_users_vuinty, container, false)
+        return inflater.inflate(R.layout.frag_vuinty_users, container, false)
     }
 
     @SuppressLint("WrongConstant")
     @RequiresApi(Build.VERSION_CODES.M)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        shakhaList.clear()
+        vedhaAdhyayanamList.clear()
+        shastraAdhyayanamList.clear()
+        prayogamList.clear()
+
+        Picasso.get()
+            .load(
+                getData(
+                    "rootPath",
+                    requireContext()
+                ) + Enums.Dp.value + getData("dp", requireContext())
+            )
+            .error(R.drawable.ic_dummy_profile)
+            .placeholder(R.drawable.ic_dummy_profile)
+            .into(img_profile)
 
         img_profile.setOnClickListener {
             val isLoggedIn = getData("logged_user", requireContext())
@@ -77,23 +99,47 @@ class UsersVunity : Fragment(), IOnBackPressed {
         layout_refresh.setOnRefreshListener {
             reloadFragment(
                 activity?.supportFragmentManager!!,
-                this@UsersVunity
+                this@VunityUsers
             )
             layout_refresh.isRefreshing = false
         }
 
         internetDetector = InternetDetector.getInstance(activity!!)
-        loadUsers()
 
-        if (internetDetector?.checkMobileInternetConn(requireActivity())!!) {
-            loadProfileInfo()
-        } else {
-            lay_shimmer.visibility = View.GONE
-            lay_shimmer.stopShimmer()
-            lay_no_data.visibility = View.GONE
-            lay_data.visibility = View.GONE
-            lay_no_internet.visibility = View.VISIBLE
+        queryTextListener = object : SearchView.OnQueryTextListener {
+            override fun onQueryTextChange(newText: String?): Boolean {
+                when {
+                    newText.toString().length >= 3 -> {
+                        filterBody = null
+                        queryValue = newText.toString()
+                        loadUsers()
+                    }
+                    else -> {
+                        queryValue = null
+                        filterBody = null
+                        loadUsers()
+                    }
+                }
+                return true
+            }
+
+            override fun onQueryTextSubmit(newText: String?): Boolean {
+                when {
+                    newText.toString().length >= 3 -> {
+                        filterBody = null
+                        queryValue = newText.toString()
+                        loadUsers()
+                    }
+                    else -> {
+                        queryValue = null
+                        filterBody = null
+                        loadUsers()
+                    }
+                }
+                return true
+            }
         }
+        requireActivity().search.setOnQueryTextListener(queryTextListener)
 
         bottomSheetBehavior = BottomSheetBehavior.from(bottomsheet_filter)
         bottomSheetBehavior.setBottomSheetCallback(object :
@@ -102,13 +148,17 @@ class UsersVunity : Fragment(), IOnBackPressed {
             override fun onStateChanged(bottomSheet: View, newState: Int) {
                 when (newState) {
                     BottomSheetBehavior.STATE_COLLAPSED -> {
+                        hideKeyboardFrom(requireContext(), requireActivity().search)
                         requireActivity().navigationView.visibility = View.VISIBLE
+                        lay_main.alpha = 1.0f
                     }
                     BottomSheetBehavior.STATE_HIDDEN -> {
 
                     }
                     BottomSheetBehavior.STATE_EXPANDED -> {
+                        hideKeyboardFrom(requireContext(), requireActivity().search)
                         requireActivity().navigationView.visibility = View.GONE
+                        lay_main.alpha = 0.5f
                     }
                     BottomSheetBehavior.STATE_DRAGGING -> {
 
@@ -123,25 +173,23 @@ class UsersVunity : Fragment(), IOnBackPressed {
             }
         })
 
-//        val staggeredGridLayoutManager = StaggeredGridLayoutManager(3, StaggeredGridLayoutManager.VERTICAL)
-
-        edt_city.setOnClickListener {
-            val data: ArrayList<String> = arrayListOf()
-            data.addAll(resources.getStringArray(R.array.city))
-            val spinnerDialog = SpinnerDialog(
-                requireActivity(),
-                data,
-                "Select city.",
-                R.style.DialogAnimations_SmileWindow, // For slide animation
-                "Cancel"
-            )
-            spinnerDialog.setCancellable(true) // for cancellable
-            spinnerDialog.setShowKeyboard(false)// for open keyboard by default
-            spinnerDialog.bindOnSpinerListener { item, position ->
-                edt_city.setText(item)
+        edt_city.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(value: CharSequence?, arg1: Int, arg2: Int, arg3: Int) {
+                if (value.toString().length >= 3) {
+                    searchCities(value.toString())
+                } else {
+                    listOfCities.clear()
+                    adapter?.clear()
+                    adapter?.notifyDataSetChanged()
+                }
             }
-            spinnerDialog.showSpinerDialog()
-        }
+
+            override fun beforeTextChanged(arg0: CharSequence?, arg1: Int, arg2: Int, arg3: Int) {
+            }
+
+            override fun afterTextChanged(arg0: Editable?) {
+            }
+        })
 
         edt_vedham.setOnClickListener {
             val data: ArrayList<String> = arrayListOf()
@@ -189,7 +237,8 @@ class UsersVunity : Fragment(), IOnBackPressed {
             val adapter =
                 CheckBoxAdapter(
                     resources.getStringArray(R.array.shakha).toMutableList(),
-                    requireActivity()
+                    requireActivity(),
+                    getString(R.string.shaka)
                 )
             view_shaka?.adapter = adapter
         }
@@ -204,7 +253,8 @@ class UsersVunity : Fragment(), IOnBackPressed {
             val adapter =
                 CheckBoxAdapter(
                     resources.getStringArray(R.array.vedha_adhyayanam).toMutableList(),
-                    requireActivity()
+                    requireActivity(),
+                    getString(R.string.vedha_adhyayanam)
                 )
             view_vedha_adhyayanam?.adapter = adapter
         }
@@ -236,8 +286,9 @@ class UsersVunity : Fragment(), IOnBackPressed {
             view_shastra_adhyayanam?.setHasFixedSize(true)
             val adapter =
                 CheckBoxAdapter(
-                    resources.getStringArray(R.array.shastra_adhyayana).toMutableList(),
-                    requireActivity()
+                    resources.getStringArray(R.array.shastra_adhyayanam).toMutableList(),
+                    requireActivity(),
+                    getString(R.string.shastra_adhyayanam)
                 )
             view_shastra_adhyayanam?.adapter = adapter
         }
@@ -252,7 +303,8 @@ class UsersVunity : Fragment(), IOnBackPressed {
             val adapter =
                 CheckBoxAdapter(
                     resources.getStringArray(R.array.prayogam).toMutableList(),
-                    requireActivity()
+                    requireActivity(),
+                    getString(R.string.prayogam)
                 )
             view_prayogam?.adapter = adapter
         }
@@ -305,6 +357,19 @@ class UsersVunity : Fragment(), IOnBackPressed {
                 bottomSheetBehavior.state =
                     BottomSheetBehavior.STATE_COLLAPSED
             }
+            filterBody = FilterBody(
+                city = edt_city.text.toString(),
+                mother_tongue = edt_mothertongue.text.toString(),
+                marital_status = edt_marital_status.text.toString(),
+                prayogam = prayogamList,
+                shastra_adhyayanam = shastraAdhyayanamList,
+                shadanga_adhyayanam = edt_shadanga_adhyayanam.text.toString(),
+                vedha_adhyayanam = vedhaAdhyayanamList,
+                shakha = shakhaList,
+                samprdhayam = edt_sampradhayam.text.toString(),
+                vedham = edt_vedham.text.toString()
+            )
+            loadUsers()
         }
 
         btn_clear.setOnClickListener {
@@ -312,31 +377,29 @@ class UsersVunity : Fragment(), IOnBackPressed {
                 bottomSheetBehavior.state =
                     BottomSheetBehavior.STATE_COLLAPSED
             }
+            filterBody = null
+            loadUsers()
         }
+
+        loadUsers()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if (profile != null) {
-            profile?.cancel()
-        }
-        if (loadUsers != null) {
-            loadUsers?.cancel()
+        if (vunityUsers != null) {
+            vunityUsers?.cancel()
         }
     }
 
     override fun onStop() {
         super.onStop()
-        if (profile != null) {
-            profile?.cancel()
-        }
-        if (loadUsers != null) {
-            loadUsers?.cancel()
+        if (vunityUsers != null) {
+            vunityUsers?.cancel()
         }
     }
 
     companion object {
-        fun newInstance(): UsersVunity = UsersVunity()
+        fun newInstance(): VunityUsers = VunityUsers()
     }
 
     override fun onBackPressed(): Boolean {
@@ -348,8 +411,18 @@ class UsersVunity : Fragment(), IOnBackPressed {
             if (!lay_shimmer.isShimmerStarted) {
                 lay_shimmer.startShimmer()
             }
-            loadUsers = RetrofitClient.instanceClient.vunityAllUsers()
-            loadUsers?.enqueue(object : Callback<VunityListDto> {
+            vunityUsers = when {
+                filterBody != null -> {
+                    RetrofitClient.instanceClient.filterVunityUsers(filterBody = filterBody!!)
+                }
+                queryValue != null -> {
+                    RetrofitClient.instanceClient.searchVunityUsers(queryValue.toString())
+                }
+                else -> {
+                    RetrofitClient.instanceClient.listOfVunityUsers()
+                }
+            }
+            vunityUsers?.enqueue(object : Callback<VunityListDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(
                     call: Call<VunityListDto>,
@@ -465,104 +538,115 @@ class UsersVunity : Fragment(), IOnBackPressed {
         }
     }
 
-    private fun loadProfileInfo() {
-        if (!lay_shimmer.isShimmerStarted) {
-            lay_shimmer.startShimmer()
-        }
-        profile = RetrofitClient.instanceClient.profile()
-        profile?.enqueue(object : Callback<ProDto> {
-            @SuppressLint("DefaultLocale", "SetTextI18n")
-            override fun onResponse(
-                call: Call<ProDto>,
-                response: Response<ProDto>
-            ) {
-                Log.e("onResponse", response.toString())
-                when {
-                    response.code() == 200 -> {
-                        when (response.body()?.status) {
-                            200 -> {
-                                try {
-                                    saveData(
-                                        "fullname",
-                                        StringUtils.capitalize(response.body()?.data?.fname?.toLowerCase()) + " " + StringUtils.capitalize(
-                                            response.body()?.data?.lname?.toLowerCase()
-                                        ),
-                                        requireContext()
+    private fun searchCities(value: String) {
+        if (internetDetector?.checkMobileInternetConn(requireContext())!!) {
+            try {
+                val requestOtp = RetrofitClient.instanceClient.searchCities(value)
+                requestOtp.enqueue(object : Callback<CityDto> {
+                    @SuppressLint("SimpleDateFormat")
+                    @RequiresApi(Build.VERSION_CODES.O)
+                    override fun onResponse(
+                        call: Call<CityDto>,
+                        response: Response<CityDto>
+                    ) {
+                        if (response.code() == 200) {
+                            when (response.body()?.status) {
+                                200 -> {
+                                    listOfCities.clear()
+                                    adapter = ArrayAdapter(
+                                        requireActivity(),
+                                        android.R.layout.select_dialog_item,
+                                        listOfCities
                                     )
-                                    saveData(
-                                        "mobile",
-                                        response.body()?.data?.mobile.toString(),
-                                        requireContext()
+                                    for (i in response.body()?.data!!) {
+                                        listOfCities.add(i.city.toString())
+                                    }
+                                    if (listOfCities.size < 40) edt_city.threshold = 1
+                                    else edt_city.threshold = 2
+                                    edt_city.setAdapter(adapter)
+                                    adapter?.notifyDataSetChanged()
+                                    Log.e("listOfCities", listOfCities.toString())
+                                }
+                                204 -> {
+                                    listOfCities.clear()
+                                    adapter?.clear()
+                                    adapter?.notifyDataSetChanged()
+                                }
+                                else -> {
+                                    coordinatorErrorMessage(
+                                        layout_refresh,
+                                        response.message()
                                     )
-                                    saveData(
-                                        "username",
-                                        response.body()?.data?.email.toString(),
-                                        requireContext()
-                                    )
-                                    saveData(
-                                        "dp",
-                                        response.body()?.data?.dp.toString(),
-                                        requireContext()
-                                    )
-                                    saveData(
-                                        "user_id",
-                                        response.body()?.data?._id.toString(),
-                                        requireContext()
-                                    )
+                                }
+                            }
 
-                                    Picasso.get()
-                                        .load(
-                                            getData(
-                                                "rootPath",
-                                                requireContext()
-                                            ) + Enums.Dp.value + response.body()?.data?.dp
+                        } else if (response.code() == 422 || response.code() == 400) {
+                            try {
+                                val adapter: JsonAdapter<ErrorMsgDto> =
+                                    moshi.adapter(ErrorMsgDto::class.java)
+                                val errorResponse =
+                                    adapter.fromJson(response.errorBody()!!.string())
+                                if (errorResponse != null) {
+                                    if (errorResponse.status == 400) {
+                                        coordinatorErrorMessage(
+                                            layout_refresh,
+                                            errorResponse.message
                                         )
-                                        .error(R.drawable.ic_dummy_profile)
-                                        .placeholder(R.drawable.ic_dummy_profile)
-                                        .into(img_profile)
-                                } catch (e: Exception) {
-                                    Log.d("Profile", e.toString())
-                                    e.printStackTrace()
-                                }
-                            }
-                            else -> {
-                                Log.e("Response", response.message())
-                            }
-                        }
-                    }
-                    response.code() == 422 || response.code() == 400 -> {
-                        try {
-                            val moshi: Moshi = Moshi.Builder().build()
-                            val adapter: JsonAdapter<ErrorMsgDto> =
-                                moshi.adapter(ErrorMsgDto::class.java)
-                            val errorResponse =
-                                adapter.fromJson(response.errorBody()!!.string())
-                            if (errorResponse != null) {
-                                if (errorResponse.status == 400) {
-                                    Log.e("Response", errorResponse.message)
+                                    } else {
+                                        coordinatorErrorMessage(
+                                            layout_refresh,
+                                            errorResponse.message
+                                        )
+                                    }
+
                                 } else {
-                                    Log.e("Response", errorResponse.message)
+                                    coordinatorErrorMessage(
+                                        layout_refresh,
+                                        getString(R.string.msg_something_wrong)
+                                    )
+                                    Log.e(
+                                        "Response",
+                                        response.body()!!.toString()
+                                    )
                                 }
-
-                            } else {
-                                Log.e("Response", response.body()!!.toString())
+                            } catch (e: Exception) {
+                                coordinatorErrorMessage(
+                                    layout_refresh,
+                                    getString(R.string.msg_something_wrong)
+                                )
+                                Log.e("Exception", e.toString())
                             }
-                        } catch (e: Exception) {
-                            Log.e("Exception", e.toString())
+
+                        } else if (response.code() == 401) {
+                            sessionExpired(
+                                requireActivity()
+                            )
+                        } else {
+                            coordinatorErrorMessage(
+                                layout_refresh,
+                                response.message()
+                            )
                         }
                     }
-                    response.code() == 401 -> {
-                        sessionExpired(requireActivity())
-                    }
-                    else -> {
-                        Log.e("Response", response.message().toString())
-                    }
-                }
-            }
 
-            override fun onFailure(call: Call<ProDto>, t: Throwable) {
-                Log.e("onFailure", t.message.toString())
+                    override fun onFailure(call: Call<CityDto>, t: Throwable) {
+                        Log.e("onResponse", t.message.toString())
+                        coordinatorErrorMessage(
+                            layout_refresh,
+                            getString(R.string.msg_something_wrong)
+                        )
+                    }
+                })
+
+            } catch (e: Exception) {
+                Log.d("ParseException", e.toString())
+                e.printStackTrace()
             }
-        })
+        } else {
+            coordinatorErrorMessage(
+                layout_refresh,
+                getString(R.string.msg_no_internet)
+            )
+        }
     }
 }

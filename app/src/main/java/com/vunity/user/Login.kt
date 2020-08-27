@@ -14,7 +14,7 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import com.vunity.Home
+import com.vunity.general.Home
 import com.vunity.R
 import com.vunity.general.saveData
 import com.vunity.general.sessionExpired

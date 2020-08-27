@@ -29,10 +29,9 @@ import com.vunity.server.InternetDetector
 import com.vunity.server.RetrofitClient
 import com.vunity.user.ErrorMsgDto
 import com.vunity.user.Login
-import com.vunity.user.ProDto
 import com.vunity.user.Profile
+import kotlinx.android.synthetic.main.act_home.*
 import kotlinx.android.synthetic.main.frag_discover.view.*
-import org.apache.commons.lang3.StringUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -41,7 +40,6 @@ import java.util.*
 
 class Discover : Fragment(), IOnBackPressed {
 
-    private var profile: Call<ProDto>? = null
     private var category: Call<CategoryListDto>? = null
     private var banner: Call<BannerListDto>? = null
     private var books: Call<HomeDto>? = null
@@ -65,6 +63,8 @@ class Discover : Fragment(), IOnBackPressed {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        requireActivity().navigationView.visibility = View.VISIBLE
         view.layout_refresh.setOnRefreshListener {
             reloadFragment(
                 activity?.supportFragmentManager!!,
@@ -73,19 +73,16 @@ class Discover : Fragment(), IOnBackPressed {
             view.layout_refresh.isRefreshing = false
         }
 
-        internetDetector = InternetDetector.getInstance(activity!!)
-        if (internetDetector?.checkMobileInternetConn(requireActivity())!!) {
-            category(view)
-            books(view)
-            loadProfileInfo(view)
-            banner(view)
-        } else {
-            view.lay_shimmer.visibility = View.GONE
-            view.lay_shimmer.stopShimmer()
-            view.lay_no_data.visibility = View.GONE
-            view.lay_data.visibility = View.GONE
-            view.lay_no_internet.visibility = View.VISIBLE
-        }
+        Picasso.get()
+            .load(
+                getData(
+                    "rootPath",
+                    requireContext()
+                ) + Enums.Dp.value + getData("dp",requireContext())
+            )
+            .error(R.drawable.ic_dummy_profile)
+            .placeholder(R.drawable.ic_dummy_profile)
+            .into(view.img_profile)
 
         view.img_profile.setOnClickListener {
             val isLoggedIn = getData("logged_user", requireContext())
@@ -96,6 +93,19 @@ class Discover : Fragment(), IOnBackPressed {
             } else {
                 requireActivity().startActivity(Intent(requireActivity(), Profile::class.java))
             }
+        }
+
+        internetDetector = InternetDetector.getInstance(activity!!)
+        if (internetDetector?.checkMobileInternetConn(requireActivity())!!) {
+            category(view)
+            books(view)
+            banner(view)
+        } else {
+            view.lay_shimmer.visibility = View.GONE
+            view.lay_shimmer.stopShimmer()
+            view.lay_no_data.visibility = View.GONE
+            view.lay_data.visibility = View.GONE
+            view.lay_no_internet.visibility = View.VISIBLE
         }
 
         view.btn_seeall.setOnClickListener {
@@ -490,107 +500,6 @@ class Discover : Fragment(), IOnBackPressed {
         })
     }
 
-    private fun loadProfileInfo(view: View) {
-        if (!view.lay_shimmer.isShimmerStarted) {
-            view.lay_shimmer.startShimmer()
-        }
-        profile = RetrofitClient.instanceClient.profile()
-        profile?.enqueue(object : Callback<ProDto> {
-            @SuppressLint("DefaultLocale", "SetTextI18n")
-            override fun onResponse(
-                call: Call<ProDto>,
-                response: Response<ProDto>
-            ) {
-                Log.e("onResponse", response.toString())
-                when {
-                    response.code() == 200 -> {
-                        when (response.body()?.status) {
-                            200 -> {
-                                try {
-                                    saveData(
-                                        "fullname",
-                                        StringUtils.capitalize(response.body()?.data?.fname?.toLowerCase()) + " " + StringUtils.capitalize(
-                                            response.body()?.data?.lname?.toLowerCase()
-                                        ),
-                                        requireContext()
-                                    )
-                                    saveData(
-                                        "mobile",
-                                        response.body()?.data?.mobile.toString(),
-                                        requireContext()
-                                    )
-                                    saveData(
-                                        "username",
-                                        response.body()?.data?.email.toString(),
-                                        requireContext()
-                                    )
-                                    saveData(
-                                        "dp",
-                                        response.body()?.data?.dp.toString(),
-                                        requireContext()
-                                    )
-                                    saveData(
-                                        "user_id",
-                                        response.body()?.data?._id.toString(),
-                                        requireContext()
-                                    )
-
-                                    Picasso.get()
-                                        .load(
-                                            getData(
-                                                "rootPath",
-                                                requireContext()
-                                            ) + Enums.Dp.value + response.body()?.data?.dp
-                                        )
-                                        .error(R.drawable.ic_dummy_profile)
-                                        .placeholder(R.drawable.ic_dummy_profile)
-                                        .into(view.img_profile)
-                                } catch (e: Exception) {
-                                    Log.d("Profile", e.toString())
-                                    e.printStackTrace()
-                                }
-                            }
-                            else -> {
-                                Log.e("Response", response.message())
-                            }
-                        }
-                    }
-                    response.code() == 422 || response.code() == 400 -> {
-                        try {
-                            val moshi: Moshi = Moshi.Builder().build()
-                            val adapter: JsonAdapter<ErrorMsgDto> =
-                                moshi.adapter(ErrorMsgDto::class.java)
-                            val errorResponse =
-                                adapter.fromJson(response.errorBody()!!.string())
-                            if (errorResponse != null) {
-                                if (errorResponse.status == 400) {
-                                    Log.e("Response", errorResponse.message)
-                                } else {
-                                    Log.e("Response", errorResponse.message)
-                                }
-
-                            } else {
-                                Log.e("Response", response.body()!!.toString())
-                            }
-                        } catch (e: Exception) {
-                            Log.e("Exception", e.toString())
-                        }
-                    }
-                    response.code() == 401 -> {
-                        sessionExpired(requireActivity())
-                    }
-                    else -> {
-                        Log.e("Response", response.message().toString())
-                    }
-                }
-            }
-
-            override fun onFailure(call: Call<ProDto>, t: Throwable) {
-                Log.e("onFailure", t.message.toString())
-            }
-        })
-    }
-
     override fun onStop() {
         super.onStop()
         try {
@@ -601,9 +510,6 @@ class Discover : Fragment(), IOnBackPressed {
             println("Timer Ex: $e")
         }
 
-        if (profile != null) {
-            profile?.cancel()
-        }
         if (category != null) {
             category?.cancel()
         }
@@ -624,10 +530,6 @@ class Discover : Fragment(), IOnBackPressed {
         } catch (e: Exception) {
             println("Timer Ex: $e")
         }
-
-        if (profile != null) {
-            profile?.cancel()
-        }
         if (category != null) {
             category?.cancel()
         }
@@ -647,10 +549,6 @@ class Discover : Fragment(), IOnBackPressed {
             timer = null
         } catch (e: Exception) {
             println("Timer Ex: $e")
-        }
-
-        if (profile != null) {
-            profile?.cancel()
         }
         if (category != null) {
             category?.cancel()

@@ -10,10 +10,10 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/action_users"
+        android:id="@+id/action_vunity_users"
         android:enabled="true"
         android:icon="@drawable/ic_connection"
-        android:title="@string/vunity"
+        android:title="@string/vunity_users"
         app:showAsAction="ifRoom" />
 
     <item

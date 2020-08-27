@@ -119,7 +119,7 @@ class Register : AppCompatActivity() {
                 println(profileData)
                 if (profileData != null) {
                     lay_msg.visibility = View.GONE
-                    id = profileData._id
+                    id = profileData._id.toString()
                     btn_register.text = getString(R.string.update)
                     edt_fname.setText(profileData.fname)
                     edt_lname.setText(profileData.lname)

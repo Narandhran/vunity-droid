@@ -8,7 +8,7 @@
     <string name="msg_something_wrong">Something went wrong!, Try again later.</string>
     <string name="msg_no_internet">No internet connection found!, Please check your connection or try again.</string>
     <string name="search_in_discover">Search in \'Titles\' or \'Keyword\'</string>
-    <string name="filter_with_vunity">Filter with \'Name\' or \'City\'</string>
+    <string name="search_in_vunity">Search in \'Name\' or \'Mobile\'</string>
     <string name="oh_uh">Oh. Uh.</string>
 
     <string name="choose_photo">Choose Photo</string>
@@ -46,6 +46,7 @@
     <string name="add_genre">Add Genre</string>
     <string name="add_book">Add Book</string>
     <string name="user">User</string>
+    <string name="announcement">Announcement</string>
 
     <string name="msg_tip">Tap here to select image \n Tip: 320 * 320</string>
     <string name="banner">Banner</string>
@@ -54,7 +55,7 @@
     <string name="genre">Genre</string>
     <string name="category">Category</string>
     <string name="book">Book</string>
-    <string name="title">title</string>
+    <string name="title">Title</string>
     <string name="msg_genre">Add genres to filter book efficiently.</string>
     <string name="msg_keyword">Add keywords to filter book efficiently.</string>
     <string name="star">****</string>
@@ -88,7 +89,7 @@
     <string name="see_all">See all</string>
     <string name="next">Next</string>
     <string name="amount">Amount</string>
-    <string name="msg_thanks">Thank you for helping us out, We really appreciate your kindness and support.</string>
+    <string name="msg_thanks">Thank you for helping us out, we really appreciate your kindness and support.</string>
     <string name="razorpay_key">rzp_live_D2mNOwytBENsMa</string>
     <string name="about_us">About Us</string>
     <string name="ok">OK</string>
@@ -105,6 +106,20 @@
     <string name="clear">Clear</string>
     <string name="apply">Apply</string>
 
-    <string name="msg_filter">Filter with \'keywords\'</string>
+    <string name="msg_filter">Filter</string>
+    <string name="mobile_number_visibility">Mobile number visibility</string>
+    <string name="approved">Approved</string>
+    <string name="pending">Pending</string>
+    <string name="blocked">Blocked</string>
+    <string name="open">open</string>
+    <string name="close">close</string>
+    <string name="vunity_users">Vunity users</string>
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="msg_create_announcement">Send an announcement to v-unity members!</string>
+    <string name="send">Send</string>
+    <string name="msg_work_in_progress">Work-in progress</string>
+    <string name="msg_receive_announcement">An announcement from v-unity members!</string>
+    <string name="type_city">Type city</string>
+    <string name="enter_city_name">Enter city name</string>
 
 </resources>

@@ -39,6 +39,7 @@ import com.vunity.server.RetrofitClient
 import com.vunity.server.RetrofitWithBar
 import kotlinx.android.synthetic.main.act_profile.*
 import kotlinx.android.synthetic.main.dialog_amount.*
+import kotlinx.android.synthetic.main.dialog_create_announcement.*
 import kotlinx.android.synthetic.main.dialog_thanks.*
 import org.apache.commons.lang3.StringUtils
 import org.json.JSONObject
@@ -338,6 +339,15 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                 .create()
         )
 
+        fab_admin.addActionItem(
+            SpeedDialActionItem.Builder(R.id.fab_vunity_announcement, R.drawable.ic_megaphone)
+                .setLabel(getString(R.string.announcement))
+                .setFabImageTintColor(ResourcesCompat.getColor(resources, R.color.white, theme))
+                .setLabelColor(getColor(R.color.theme_dark_grey))
+                .setTheme(R.style.FabTheme)
+                .create()
+        )
+
 
         fab_admin.setOnActionSelectedListener(SpeedDialView.OnActionSelectedListener { actionItem ->
             when (actionItem.id) {
@@ -362,6 +372,12 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                 R.id.fab_user -> {
                     startActivity(Intent(this@Profile, Users::class.java))
                     fab_admin.close()
+                    return@OnActionSelectedListener true
+                }
+
+                R.id.fab_vunity_announcement -> {
+                    fab_admin.close()
+                    vunityAnnouncement()
                     return@OnActionSelectedListener true
                 }
             }
@@ -519,8 +535,8 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                         val mapData: HashMap<String, Int> = HashMap()
                         mapData["amount"] = dialog.edt_amount.text.toString().toInt() * 100
                         Log.e("mapData", mapData.toString())
-                        val placeOrder = RetrofitClient.instanceClient.donate(mapData)
-                        placeOrder.enqueue(
+                        val donate = RetrofitClient.instanceClient.donate(mapData)
+                        donate.enqueue(
                             RetrofitWithBar(this@Profile, object :
                                 Callback<DonateDto> {
                                 @SuppressLint("SetTextI18n")
@@ -537,9 +553,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                                                         getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
                                                     imm?.hideSoftInputFromWindow(v.windowToken, 0)
                                                 }
-                                                Handler().postDelayed({
-                                                    dialog.edt_amount
-                                                }, 200)
                                                 dialog.cancel()
                                                 startPayment(
                                                     order_id = response.body()!!.data?.id.toString(),
@@ -650,6 +663,150 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
             Toast.makeText(activity, "Error in payment: " + e.message, Toast.LENGTH_LONG).show()
             e.printStackTrace()
         }
+    }
+
+    private fun vunityAnnouncement() {
+        val dialog = Dialog(this@Profile, R.style.DialogTheme)
+        dialog.setContentView(R.layout.dialog_create_announcement)
+        dialog.btn_send.setOnClickListener {
+            dialog.lay_title.error = null
+            dialog.lay_description.error = null
+            when {
+                dialog.edt_title.length() < 3 -> {
+                    dialog.lay_title.error = "Title's minimum character is 3."
+                }
+                dialog.edt_description.length() < 3 -> {
+                    dialog.lay_description.error = "Description's minimum character is 3."
+                }
+                else -> {
+                    if (internet?.checkMobileInternetConn(this@Profile)!!) {
+                        try {
+                            val mapData: HashMap<String, String> = HashMap()
+                            mapData["title"] = dialog.edt_title.text.toString()
+                            mapData["message"] = dialog.edt_description.text.toString()
+                            Log.e("mapData", mapData.toString())
+                            val announcement =
+                                RetrofitClient.instanceClient.cmsAnnouncement(mapData)
+                            announcement.enqueue(
+                                RetrofitWithBar(this@Profile, object :
+                                    Callback<ResDto> {
+                                    @SuppressLint("SetTextI18n")
+                                    override fun onResponse(
+                                        call: Call<ResDto>,
+                                        response: Response<ResDto>
+                                    ) {
+                                        Log.e("onResponse", response.toString())
+                                        when {
+                                            response.code() == 200 -> {
+                                                if (response.body()?.status == 200) {
+                                                    showMessage(
+                                                        dialog.lay_title,
+                                                        response.body()!!.message
+                                                    )
+                                                    dialog.edt_title.let { v ->
+                                                        val imm =
+                                                            getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                                                        imm?.hideSoftInputFromWindow(
+                                                            v.windowToken,
+                                                            0
+                                                        )
+                                                    }
+
+                                                    dialog.edt_description.let { v ->
+                                                        val imm =
+                                                            getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
+                                                        imm?.hideSoftInputFromWindow(
+                                                            v.windowToken,
+                                                            0
+                                                        )
+                                                    }
+
+                                                    Handler().postDelayed({
+                                                        dialog.cancel()
+                                                    }, 500)
+                                                } else {
+                                                    showErrorMessage(
+                                                        dialog.lay_title,
+                                                        getString(R.string.msg_something_wrong)
+                                                    )
+                                                    Log.e("Response", response.body().toString())
+                                                }
+                                            }
+
+                                            response.code() == 422 || response.code() == 400 -> {
+                                                try {
+                                                    val moshi: Moshi = Moshi.Builder().build()
+                                                    val adapter: JsonAdapter<ErrorMsgDto> =
+                                                        moshi.adapter(ErrorMsgDto::class.java)
+                                                    val errorResponse =
+                                                        adapter.fromJson(
+                                                            response.errorBody()!!.string()
+                                                        )
+                                                    if (errorResponse != null) {
+                                                        if (errorResponse.status == 422) {
+                                                            showErrorMessage(
+                                                                dialog.lay_title,
+                                                                errorResponse.message
+                                                            )
+                                                        } else {
+                                                            showErrorMessage(
+                                                                dialog.lay_title,
+                                                                errorResponse.message
+                                                            )
+                                                        }
+
+                                                    } else {
+                                                        showErrorMessage(
+                                                            dialog.lay_title,
+                                                            getString(R.string.msg_something_wrong)
+                                                        )
+                                                        Log.e(
+                                                            "Response",
+                                                            response.body()!!.toString()
+                                                        )
+                                                    }
+                                                } catch (e: Exception) {
+                                                    showErrorMessage(
+                                                        dialog.lay_title,
+                                                        getString(R.string.msg_something_wrong)
+                                                    )
+                                                    Log.e("Mapping Exception", e.toString())
+                                                }
+                                            }
+
+                                            response.code() == 401 -> {
+                                                sessionExpired(this@Profile)
+                                            }
+                                            else -> {
+                                                showErrorMessage(
+                                                    dialog.lay_title,
+                                                    response.message()
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    override fun onFailure(call: Call<ResDto>, t: Throwable) {
+                                        Log.e("onFailure", t.toString())
+                                        showErrorMessage(
+                                            dialog.lay_title,
+                                            getString(R.string.msg_something_wrong)
+                                        )
+                                    }
+                                })
+                            )
+                        } catch (e: Exception) {
+                            Log.d("ParseException", e.toString())
+                            e.printStackTrace()
+                        }
+
+                    } else {
+                        showErrorMessage(dialog.lay_title, getString(R.string.msg_no_internet))
+                    }
+                }
+            }
+        }
+        dialog.show()
     }
 
     override fun onPaymentError(

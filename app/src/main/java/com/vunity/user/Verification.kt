@@ -12,10 +12,11 @@ import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import com.google.firebase.messaging.FirebaseMessaging
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import com.vunity.Home
+import com.vunity.general.Home
 import com.vunity.R
 import com.vunity.general.*
 import com.vunity.server.InternetDetector
@@ -344,6 +345,22 @@ class Verification : AppCompatActivity() {
                                             response.body()!!.data.rpath,
                                             applicationContext
                                         )
+
+                                        FirebaseMessaging.getInstance()
+                                            .subscribeToTopic(Enums.TopicAnnouncement.value)
+                                            .addOnCompleteListener { task ->
+                                                if (task.isSuccessful) {
+                                                    Log.e(
+                                                        "subscribeToTopic",
+                                                        Enums.TopicAnnouncement.value + " isSuccessful"
+                                                    )
+                                                } else {
+                                                    Log.e(
+                                                        "subscribeToTopic",
+                                                        Enums.TopicAnnouncement.value + " isFailed"
+                                                    )
+                                                }
+                                            }
 
                                         Handler().postDelayed({
                                             val intent = Intent(this@Verification, Home::class.java)

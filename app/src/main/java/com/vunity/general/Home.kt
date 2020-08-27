@@ -1,6 +1,7 @@
-package com.vunity
+package com.vunity.general
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -15,17 +16,19 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.iid.FirebaseInstanceId
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
+import com.vunity.R
 import com.vunity.discover.Discover
-import com.vunity.general.getData
-import com.vunity.general.saveData
 import com.vunity.interfaces.IOnBackPressed
 import com.vunity.server.RetrofitClient
 import com.vunity.user.ErrorMsgDto
 import com.vunity.user.Login
+import com.vunity.user.ProDto
 import com.vunity.user.ResDto
-import com.vunity.vunity.UsersVunity
 import com.vunity.vunity.Vunity
+import com.vunity.vunity.VunityUsers
 import kotlinx.android.synthetic.main.act_home.*
+import kotlinx.android.synthetic.main.dialog_show_announcement.*
+import org.apache.commons.lang3.StringUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -39,6 +42,7 @@ class Home : AppCompatActivity() {
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         navigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         navigationView.selectedItemId = R.id.action_discover
+        loadProfileInfo()
 
         try {
             FirebaseInstanceId.getInstance().instanceId
@@ -54,6 +58,19 @@ class Home : AppCompatActivity() {
         } catch (exception: Exception) {
             Log.e("Exception from Login", exception.toString())
         }
+
+        val fcmTitle: String? = intent.getStringExtra("title")
+        val fcmBody: String? = intent.getStringExtra("body")
+        if (fcmTitle != null && fcmBody != null) {
+            val dialog = Dialog(this@Home, R.style.DialogTheme)
+            dialog.setContentView(R.layout.dialog_show_announcement)
+            dialog.txt_title.text = fcmTitle
+            dialog.txt_body.text = fcmBody
+            dialog.btn_ok.setOnClickListener {
+                dialog.dismiss()
+            }
+            dialog.show()
+        }
     }
 
     private val mOnNavigationItemSelectedListener =
@@ -65,14 +82,14 @@ class Home : AppCompatActivity() {
                     return@OnNavigationItemSelectedListener true
                 }
 
-                R.id.action_users -> {
+                R.id.action_vunity_users -> {
                     val isLoggedIn = getData("logged_user", applicationContext)
                     if (isLoggedIn == getString(R.string.skip)) {
                         val intent = Intent(this@Home, Login::class.java)
                         intent.putExtra(getString(R.string.data), getString(R.string.new_user))
                         startActivity(intent)
                     } else {
-                        val fragment = UsersVunity.newInstance()
+                        val fragment = VunityUsers.newInstance()
                         openFragment(fragment)
                         return@OnNavigationItemSelectedListener true
                     }
@@ -184,6 +201,94 @@ class Home : AppCompatActivity() {
 
             override fun onFailure(call: Call<ResDto>, t: Throwable) {
                 Log.e("onResponse", t.message.toString())
+            }
+        })
+    }
+
+    private fun loadProfileInfo() {
+        val profile = RetrofitClient.instanceClient.profile()
+        profile.enqueue(object : Callback<ProDto> {
+            @SuppressLint("DefaultLocale", "SetTextI18n")
+            override fun onResponse(
+                call: Call<ProDto>,
+                response: Response<ProDto>
+            ) {
+                Log.e("onResponse", response.toString())
+                when {
+                    response.code() == 200 -> {
+                        when (response.body()?.status) {
+                            200 -> {
+                                try {
+                                    saveData(
+                                        "fullname",
+                                        StringUtils.capitalize(response.body()?.data?.fname?.toLowerCase()) + " " + StringUtils.capitalize(
+                                            response.body()?.data?.lname?.toLowerCase()
+                                        ),
+                                        applicationContext
+                                    )
+                                    saveData(
+                                        "mobile",
+                                        response.body()?.data?.mobile.toString(),
+                                        applicationContext
+                                    )
+                                    saveData(
+                                        "username",
+                                        response.body()?.data?.email.toString(),
+                                        applicationContext
+                                    )
+                                    saveData(
+                                        "dp",
+                                        response.body()?.data?.dp.toString(),
+                                        applicationContext
+                                    )
+                                    saveData(
+                                        "user_id",
+                                        response.body()?.data?._id.toString(),
+                                        applicationContext
+                                    )
+
+                                } catch (e: Exception) {
+                                    Log.d("Profile", e.toString())
+                                    e.printStackTrace()
+                                }
+                            }
+                            else -> {
+                                Log.e("Response", response.message())
+                            }
+                        }
+                    }
+                    response.code() == 422 || response.code() == 400 -> {
+                        try {
+                            val moshi: Moshi = Moshi.Builder().build()
+                            val adapter: JsonAdapter<ErrorMsgDto> =
+                                moshi.adapter(ErrorMsgDto::class.java)
+                            val errorResponse =
+                                adapter.fromJson(response.errorBody()!!.string())
+                            if (errorResponse != null) {
+                                if (errorResponse.status == 400) {
+                                    Log.e("Response", errorResponse.message)
+                                } else {
+                                    Log.e("Response", errorResponse.message)
+                                }
+
+                            } else {
+                                Log.e("Response", response.body()!!.toString())
+                            }
+                        } catch (e: Exception) {
+                            Log.e("Exception", e.toString())
+                        }
+                    }
+                    response.code() == 401 -> {
+                        sessionExpired(this@Home)
+                    }
+                    else -> {
+                        Log.e("Response", response.message().toString())
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<ProDto>, t: Throwable) {
+                Log.e("onFailure", t.message.toString())
             }
         })
     }

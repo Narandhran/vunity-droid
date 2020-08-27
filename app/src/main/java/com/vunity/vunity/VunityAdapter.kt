@@ -41,16 +41,14 @@ class VunityAdapter(
                     activity.applicationContext
                 ) + Enums.Dp.value + data.photo
             ).placeholder(R.drawable.ic_dummy_profile).into(holder.imgProfile)
-            Log.e(
-                "PicassoPath",
-                getData(
-                    "rootPath",
-                    activity.applicationContext
-                ) + Enums.Dp.value + data.photo.toString()
-            )
             holder.txtName.text =
                 StringUtils.capitalize(data.user_id?.fname) + " " + StringUtils.capitalize(data.user_id?.lname)
             holder.txtCity.text = data.city
+            if (data.isMobileVisible!!) {
+                holder.txtMobile.visibility = View.VISIBLE
+            } else {
+                holder.txtMobile.visibility = View.GONE
+            }
             holder.txtMobile.text = data.mobile
             holder.txtVedham.text = data.vedham
             holder.txtSampradhayam.text = data.samprdhayam
@@ -66,11 +64,6 @@ class VunityAdapter(
         }
     }
 
-    fun filterList(filteredList: MutableList<VunityData>) {
-        this.dataList = filteredList
-        notifyDataSetChanged()
-    }
-
     override fun getItemId(position: Int): Long {
         return position.toLong()
     }
@@ -83,7 +76,7 @@ class VunityAdapter(
         return dataList.size
     }
 
-    inner class Holder(view: View) : RecyclerView.ViewHolder(view) {
+    class Holder(view: View) : RecyclerView.ViewHolder(view) {
         var imgProfile: CircularImageView = view.findViewById(R.id.img_profile)
         var txtName: MaterialTextView = view.findViewById(R.id.txt_fullname)
         var txtCity: MaterialTextView = view.findViewById(R.id.txt_city)

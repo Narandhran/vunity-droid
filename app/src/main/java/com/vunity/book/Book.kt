@@ -478,4 +478,10 @@ class Book : AppCompatActivity() {
             showMessage(lay_root, getString(R.string.unable_to_fetch))
         }
     }
+
+    override fun onBackPressed() {
+        val intent = Intent()
+        setResult(Activity.RESULT_OK, intent)
+        super.onBackPressed()
+    }
 }

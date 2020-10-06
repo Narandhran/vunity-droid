@@ -7,7 +7,8 @@ data class BookBody(
     var genre: List<Any>,
     var keywords: List<Any>,
     var name: String,
-    var yearOfPublish: String
+    var yearOfPublish: String,
+    var makeAnnouncement: Boolean
 )
 
 data class HomeDto(

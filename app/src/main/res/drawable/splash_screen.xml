@@ -6,7 +6,7 @@
     <item>
         <bitmap
             android:gravity="center"
-            android:src="@drawable/im_applogo" />
+            android:src="@drawable/im_company_logo" />
 
     </item>
 </layer-list>

@@ -91,7 +91,7 @@
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="140dp"
                     android:layout_height="90dp"
-                    android:src="@drawable/im_applogo" />
+                    android:src="@drawable/im_company_logo" />
 
                 <com.google.android.material.textview.MaterialTextView
                     android:layout_width="match_parent"

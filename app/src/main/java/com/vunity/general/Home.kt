@@ -1,6 +1,7 @@
 package com.vunity.general
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.Dialog
 import android.content.Intent
 import android.os.Build
@@ -17,6 +18,7 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.vunity.R
+import com.vunity.book.Book
 import com.vunity.discover.Discover
 import com.vunity.interfaces.IOnBackPressed
 import com.vunity.server.RetrofitClient
@@ -48,7 +50,7 @@ class Home : AppCompatActivity() {
             FirebaseInstanceId.getInstance().instanceId
                 .addOnCompleteListener(OnCompleteListener { task ->
                     if (!task.isSuccessful) {
-                        Log.w("FirebaseInstanceId", "getInstanceId failed", task.exception)
+                        Log.e("FirebaseInstanceId", "getInstanceId failed "+ task.exception)
                         return@OnCompleteListener
                     }
                     // Get new Instance ID token
@@ -61,15 +63,28 @@ class Home : AppCompatActivity() {
 
         val fcmTitle: String? = intent.getStringExtra("title")
         val fcmBody: String? = intent.getStringExtra("body")
-        if (fcmTitle != null && fcmBody != null) {
-            val dialog = Dialog(this@Home, R.style.DialogTheme)
-            dialog.setContentView(R.layout.dialog_show_announcement)
-            dialog.txt_title.text = fcmTitle
-            dialog.txt_body.text = fcmBody
-            dialog.btn_ok.setOnClickListener {
-                dialog.dismiss()
+        val fcmBookId: String? = intent.getStringExtra("bookId")
+
+        try {
+            if (fcmTitle != null && fcmBody != null) {
+                if (fcmTitle == getString(R.string.vunity_notifier)) {
+                    val intent = Intent(this@Home, Book::class.java)
+                    intent.putExtra(getString(R.string.data), fcmBookId.toString())
+                    startActivityForResult(intent, 1)
+                } else {
+                    val dialog = Dialog(this@Home, R.style.DialogTheme)
+                    dialog.setContentView(R.layout.dialog_show_announcement)
+                    dialog.txt_title.text = fcmTitle
+                    dialog.txt_body.text = fcmBody
+                    dialog.btn_ok.setOnClickListener {
+                        dialog.dismiss()
+                    }
+                    dialog.show()
+                }
             }
-            dialog.show()
+        } catch (e: InterruptedException) {
+            // Process exception
+            Log.e("InterruptedException", e.toString())
         }
     }
 
@@ -291,5 +306,27 @@ class Home : AppCompatActivity() {
                 Log.e("onFailure", t.message.toString())
             }
         })
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == 1) {
+            if (resultCode == RESULT_OK) {
+                intent.replaceExtras(Bundle())
+                intent.action = ""
+                intent.data = null
+                intent.flags = 0
+                reloadActivity(this@Home)
+            }
+
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+                intent.replaceExtras(Bundle())
+                intent.action = ""
+                intent.data = null
+                intent.flags = 0
+                reloadActivity(this@Home)
+            }
+        }
     }
 }

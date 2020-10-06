@@ -12,8 +12,9 @@ import com.vunity.user.Login
 
 class Splash : AppCompatActivity() {
     private var isLoggedIn: String? = null
-    var fcmTitle: String? = null
-    var fcmBody: String? = null
+    private var fcmTitle: String? = null
+    private var fcmBody: String? = null
+    private var fcmBookId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,12 +30,18 @@ class Splash : AppCompatActivity() {
         if (bundle != null) {
             for (key in bundle.keySet()!!) {
                 val value = bundle[key]
-                Log.e("Splash", "$key $value")
-                if (key == "title") {
-                    fcmTitle = bundle[key].toString()
-                } else if (key == "body") {
-                    fcmBody = bundle[key].toString()
+                when (key) {
+                    "title" -> {
+                        fcmTitle = bundle[key].toString()
+                    }
+                    "body" -> {
+                        fcmBody = bundle[key].toString()
+                    }
+                    "bookId" -> {
+                        fcmBookId = bundle[key].toString()
+                    }
                 }
+                Log.e("Splash", "$key $value")
             }
         }
         if (isLoggedIn != null) {
@@ -45,9 +52,10 @@ class Splash : AppCompatActivity() {
                         val homeIndent = Intent(this@Splash, Home::class.java)
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        Log.e("fcmTitle", "$fcmTitle $fcmBody")
+                        Log.e("Notification data", "$fcmTitle $fcmBody $fcmBookId")
                         homeIndent.putExtra("title", fcmTitle)
                         homeIndent.putExtra("body", fcmBody)
+                        homeIndent.putExtra("bookId", fcmBookId)
                         startActivity(homeIndent)
                         this@Splash.overridePendingTransition(
                             R.anim.fade_in,

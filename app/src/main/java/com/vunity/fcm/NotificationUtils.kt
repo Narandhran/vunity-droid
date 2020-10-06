@@ -6,6 +6,7 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
@@ -17,12 +18,12 @@ import java.util.*
 
 
 class NotificationUtils {
-    fun sendNotification(context: Context, title: String?, body: String?, data: String?) {
+    fun sendNotification(context: Context, title: String?, body: String?, bookId: String?) {
         val intent = Intent(context, Splash::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
         intent.putExtra("title", title)
         intent.putExtra("body", body)
-        intent.putExtra("data", data)
+        intent.putExtra("bookId", bookId)
         val pendingIntent = PendingIntent.getActivity(
             context, 0 /* Request code */, intent,
             PendingIntent.FLAG_ONE_SHOT
@@ -30,10 +31,12 @@ class NotificationUtils {
 
         val sound =
             Uri.parse("android.resource://" + context.packageName.toString() + "/" + R.raw.custom_sound)
+        val largeIcon = BitmapFactory.decodeResource(context.resources, R.drawable.im_company_logo)
         try {
             val notificationBuilder =
                 NotificationCompat.Builder(context, context.getString(R.string.app_name))
-            notificationBuilder.setSmallIcon(R.drawable.ic_notification)
+            notificationBuilder.setSmallIcon(R.drawable.ic_stat_notification)
+                .setLargeIcon(largeIcon)
                 .setContentTitle(title)
                 .setContentText(body)
                 .setAutoCancel(true)

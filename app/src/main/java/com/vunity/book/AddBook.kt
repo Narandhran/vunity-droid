@@ -71,6 +71,7 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
     private lateinit var categoryId: String
     var pickiT: PickiT? = null
     var bookId: String = ""
+    var announcement = false
 
     @SuppressLint("SetTextI18n")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -158,6 +159,10 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                 lay_root,
                 getString(R.string.unable_to_fetch)
             )
+        }
+
+        swt_announcement.setOnCheckedChangeListener { buttonView, isChecked ->
+            announcement = isChecked
         }
 
         img_image_add.setOnClickListener {
@@ -376,7 +381,8 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                         author = edt_author.text.toString(),
                         yearOfPublish = edt_publish.text.toString(),
                         keywords = keywordList,
-                        description = edt_description.text.toString()
+                        description = edt_description.text.toString(),
+                        makeAnnouncement = announcement
                     )
                     val jsonAdapter: JsonAdapter<BookBody> =
                         moshi.adapter(BookBody::class.java)
@@ -556,7 +562,8 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                         author = edt_author.text.toString(),
                         yearOfPublish = edt_publish.text.toString(),
                         keywords = keywordList,
-                        description = edt_description.text.toString()
+                        description = edt_description.text.toString(),
+                        makeAnnouncement = announcement
                     )
                     Log.e("bookBody", bookBody.toString())
                     if (internet?.checkMobileInternetConn(applicationContext)!!) {

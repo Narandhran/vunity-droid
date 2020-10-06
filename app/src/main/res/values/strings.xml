@@ -117,9 +117,9 @@
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
     <string name="msg_create_announcement">Send an announcement to v-unity members!</string>
     <string name="send">Send</string>
-    <string name="msg_work_in_progress">Work-in progress</string>
     <string name="msg_receive_announcement">An announcement from v-unity members!</string>
-    <string name="type_city">Type city</string>
     <string name="enter_city_name">Enter city name</string>
+    <string name="make_announcement">Make announcement</string>
+    <string name="vunity_notifier">Vunity Notifier</string>
 
 </resources>

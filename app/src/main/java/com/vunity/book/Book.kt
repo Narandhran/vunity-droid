@@ -72,7 +72,6 @@ class Book : AppCompatActivity() {
                 books(book)
             }
         } catch (e: Exception) {
-            Log.e("Exception", e.toString())
             showMessage(lay_root, getString(R.string.unable_to_fetch))
         }
 

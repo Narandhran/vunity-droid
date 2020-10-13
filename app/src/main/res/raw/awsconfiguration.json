@@ -1,0 +1,20 @@
+{
+  "Version": "1.0",
+  "CredentialsProvider": {
+    "CognitoIdentity": {
+      "Default": {
+        "PoolId": "ap-south-1:73ce1555-fb47-487a-abef-f453f543fe54",
+        "Region": "ap-south-1"
+      }
+    }
+  },
+  "IdentityManager" : {
+    "Default" : { }
+  },
+  "S3TransferUtility": {
+    "Default": {
+      "Bucket": "vunity",
+      "Region": "ap-south-1"
+    }
+  }
+}

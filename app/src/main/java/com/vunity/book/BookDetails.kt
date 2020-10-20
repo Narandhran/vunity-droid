@@ -6,7 +6,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -26,13 +25,13 @@ import com.vunity.server.RetrofitWithBar
 import com.vunity.user.ErrorMsgDto
 import com.vunity.user.Login
 import com.vunity.user.ResDto
-import kotlinx.android.synthetic.main.act_book.*
+import kotlinx.android.synthetic.main.act_book_details.*
 import kotlinx.android.synthetic.main.toolbar.txt_title
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class Book : AppCompatActivity() {
+class BookDetails : AppCompatActivity() {
 
     private var internet: InternetDetector? = null
     private val moshi: Moshi = Moshi.Builder()
@@ -44,7 +43,7 @@ class Book : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.act_book)
+        setContentView(R.layout.act_book_details)
 
         val window: Window = this.window
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -55,24 +54,24 @@ class Book : AppCompatActivity() {
 
         layout_refresh.setOnRefreshListener {
             finish()
-            reloadActivity(this@Book)
+            reloadActivity(this@BookDetails)
             layout_refresh.isRefreshing = false
         }
 
-        internet = InternetDetector.getInstance(this@Book)
+        internet = InternetDetector.getInstance(this@BookDetails)
         isLoggedIn = getData("logged_user", applicationContext).toString()
 
         try {
             val data = intent.getStringExtra("data")
             if (data != null) {
-                val book = SingleBook(
+                val book = ReqSingleBookBody(
                     libraryId = data,
                     userId = getData("user_id", applicationContext).toString()
                 )
                 books(book)
             }
         } catch (e: Exception) {
-            Log.e("Exception", e.toString())
+            e.printStackTrace()
             showMessage(lay_root, getString(R.string.unable_to_fetch))
         }
 
@@ -84,16 +83,14 @@ class Book : AppCompatActivity() {
         }
     }
 
-    private fun books(book: SingleBook) {
-        Log.e("book", book.toString())
-        books = RetrofitClient.instanceClientWithoutToken.getOneBook(book)
+    private fun books(bookReq: ReqSingleBookBody) {
+        books = RetrofitClient.bookClient.getOneBook(bookReq)
         books?.enqueue(object : Callback<BookDto> {
             @SuppressLint("DefaultLocale", "SetTextI18n")
             override fun onResponse(
                 call: Call<BookDto>,
                 response: Response<BookDto>
             ) {
-                Log.e("onResponse", response.toString())
                 when {
                     response.code() == 200 -> {
                         when (response.body()?.status) {
@@ -105,7 +102,7 @@ class Book : AppCompatActivity() {
                                     .load(
                                         getData(
                                             "rootPath",
-                                            this@Book
+                                            this@BookDetails
                                         ) + Enums.Book.value + response.body()!!.data.thumbnail
                                     )
                                     .error(R.drawable.img_place_holder)
@@ -118,7 +115,7 @@ class Book : AppCompatActivity() {
                                     if (response.body()!!.data.isBookmark!!) {
                                         img_bookmark.setImageDrawable(
                                             ContextCompat.getDrawable(
-                                                this@Book,
+                                                this@BookDetails,
                                                 R.drawable.ic_heart_fill
                                             )
                                         )
@@ -128,7 +125,7 @@ class Book : AppCompatActivity() {
 
                                 img_bookmark.setOnClickListener {
                                     if (isLoggedIn == getString(R.string.skip)) {
-                                        val intent = Intent(this@Book, Login::class.java)
+                                        val intent = Intent(this@BookDetails, Login::class.java)
                                         intent.putExtra(
                                             getString(R.string.data),
                                             getString(R.string.new_user)
@@ -138,7 +135,7 @@ class Book : AppCompatActivity() {
                                         if (favorite) {
                                             img_bookmark.setImageDrawable(
                                                 ContextCompat.getDrawable(
-                                                    this@Book,
+                                                    this@BookDetails,
                                                     R.drawable.ic_heart_fill
                                                 )
                                             )
@@ -147,7 +144,7 @@ class Book : AppCompatActivity() {
                                         } else {
                                             img_bookmark.setImageDrawable(
                                                 ContextCompat.getDrawable(
-                                                    this@Book,
+                                                    this@BookDetails,
                                                     R.drawable.ic_heart
                                                 )
                                             )
@@ -158,12 +155,21 @@ class Book : AppCompatActivity() {
                                 }
 
                                 btn_read.setOnClickListener {
-                                    val intent = Intent(this@Book, Reader::class.java)
-                                    intent.putExtra(
-                                        this@Book.getString(R.string.data),
-                                        response.body()!!.data.content
-                                    )
-                                    startActivity(intent)
+                                    if (isLoggedIn == getString(R.string.skip)) {
+                                        val intent = Intent(this@BookDetails, Login::class.java)
+                                        intent.putExtra(
+                                            getString(R.string.data),
+                                            getString(R.string.new_user)
+                                        )
+                                        startActivity(intent)
+                                    } else {
+                                        val intent = Intent(this@BookDetails, Reader::class.java)
+                                        intent.putExtra(
+                                            this@BookDetails.getString(R.string.data),
+                                            response.body()!!.data.content
+                                        )
+                                        startActivity(intent)
+                                    }
                                 }
 
                                 img_edit.setOnClickListener {
@@ -172,7 +178,7 @@ class Book : AppCompatActivity() {
                                             moshi.adapter(BookData::class.java)
                                         val json: String =
                                             jsonAdapter.toJson(response.body()!!.data)
-                                        val intent = Intent(this@Book, AddBook::class.java)
+                                        val intent = Intent(this@BookDetails, AddBook::class.java)
                                         intent.putExtra("data", json)
                                         startActivityForResult(intent, 1)
                                         overridePendingTransition(
@@ -180,7 +186,7 @@ class Book : AppCompatActivity() {
                                             R.anim.fade_out
                                         )
                                     } catch (e: Exception) {
-                                        Log.e("Exception", e.toString())
+                                        e.printStackTrace()
                                     }
                                 }
                             }
@@ -217,23 +223,19 @@ class Book : AppCompatActivity() {
                                     lay_root,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e(
-                                    "Response",
-                                    response.body()!!.toString()
-                                )
                             }
                         } catch (e: Exception) {
+                            e.printStackTrace()
                             showErrorMessage(
                                 lay_root,
                                 getString(R.string.msg_something_wrong)
                             )
-                            Log.e("Exception", e.toString())
                         }
 
                     }
 
                     response.code() == 401 -> {
-                        sessionExpired(this@Book)
+                        sessionExpired(this@BookDetails)
                     }
                     else -> {
                         showErrorMessage(
@@ -245,7 +247,6 @@ class Book : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<BookDto>, t: Throwable) {
-                Log.e("onFailure", t.message.toString())
                 if (!call.isCanceled) {
                     showErrorMessage(
                         lay_root,
@@ -258,16 +259,15 @@ class Book : AppCompatActivity() {
 
     private fun addFav(id: String) {
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            val addFav = RetrofitClient.instanceClient.addFavourite(id)
+            val addFav = RetrofitClient.favouriteClient.addFavourite(id)
             addFav.enqueue(
-                RetrofitWithBar(this@Book, object : Callback<ResDto> {
+                RetrofitWithBar(this@BookDetails, object : Callback<ResDto> {
                     @SuppressLint("SimpleDateFormat")
                     @RequiresApi(Build.VERSION_CODES.O)
                     override fun onResponse(
                         call: Call<ResDto>,
                         response: Response<ResDto>
                     ) {
-                        Log.e("onResponse", response.toString())
                         if (response.code() == 200) {
                             when (response.body()?.status) {
                                 200 -> {
@@ -305,22 +305,18 @@ class Book : AppCompatActivity() {
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
+                                e.printStackTrace()
                                 showErrorMessage(
                                     lay_root,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         } else if (response.code() == 401) {
                             sessionExpired(
-                                this@Book
+                                this@BookDetails
                             )
                         } else {
                             showErrorMessage(
@@ -331,7 +327,6 @@ class Book : AppCompatActivity() {
                     }
 
                     override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                        Log.e("onResponse", t.message.toString())
                         showErrorMessage(
                             lay_root,
                             getString(R.string.msg_something_wrong)
@@ -350,16 +345,15 @@ class Book : AppCompatActivity() {
 
     private fun removeFav(id: String) {
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            val removeFav = RetrofitClient.instanceClient.removeFavourite(id)
+            val removeFav = RetrofitClient.favouriteClient.removeFavourite(id)
             removeFav.enqueue(
-                RetrofitWithBar(this@Book, object : Callback<ResDto> {
+                RetrofitWithBar(this@BookDetails, object : Callback<ResDto> {
                     @SuppressLint("SimpleDateFormat")
                     @RequiresApi(Build.VERSION_CODES.O)
                     override fun onResponse(
                         call: Call<ResDto>,
                         response: Response<ResDto>
                     ) {
-                        Log.e("onResponse", response.toString())
                         if (response.code() == 200) {
                             when (response.body()?.status) {
                                 200 -> {
@@ -397,22 +391,18 @@ class Book : AppCompatActivity() {
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
+                                e.printStackTrace()
                                 showErrorMessage(
                                     lay_root,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         } else if (response.code() == 401) {
                             sessionExpired(
-                                this@Book
+                                this@BookDetails
                             )
                         } else {
                             showErrorMessage(
@@ -423,7 +413,6 @@ class Book : AppCompatActivity() {
                     }
 
                     override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                        Log.e("onResponse", t.message.toString())
                         showErrorMessage(
                             lay_root,
                             getString(R.string.msg_something_wrong)
@@ -448,14 +437,14 @@ class Book : AppCompatActivity() {
                     try {
                         val id = data.getStringExtra(getString(R.string.data))
                         if (id != null) {
-                            val book = SingleBook(
+                            val book = ReqSingleBookBody(
                                 libraryId = id,
                                 userId = getData("user_id", applicationContext).toString()
                             )
                             books(book)
                         }
                     } catch (e: Exception) {
-                        Log.e("Exception", e.toString())
+                        e.printStackTrace()
                     }
                 }
             }
@@ -467,14 +456,14 @@ class Book : AppCompatActivity() {
         try {
             val data = intent.getStringExtra("data")
             if (data != null) {
-                val book = SingleBook(
+                val book = ReqSingleBookBody(
                     libraryId = data,
                     userId = getData("user_id", applicationContext).toString()
                 )
                 books(book)
             }
         } catch (e: Exception) {
-            Log.e("Exception", e.toString())
+            e.printStackTrace()
             showMessage(lay_root, getString(R.string.unable_to_fetch))
         }
     }

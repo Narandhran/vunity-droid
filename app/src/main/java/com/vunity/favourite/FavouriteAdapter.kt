@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,7 +19,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.squareup.picasso.Picasso
 import com.vunity.R
-import com.vunity.book.Book
+import com.vunity.book.BookDetails
 import com.vunity.general.*
 import com.vunity.server.InternetDetector
 import com.vunity.server.RetrofitClient
@@ -68,7 +67,7 @@ class FavouriteAdapter(
 
             holder.cardFav.setOnClickListener {
                 data = dataList[position]
-                val intent = Intent(activity, Book::class.java)
+                val intent = Intent(activity, BookDetails::class.java)
                 intent.putExtra(activity.getString(R.string.data), data.libraryId._id)
                 activity.startActivity(intent)
             }
@@ -78,7 +77,6 @@ class FavouriteAdapter(
             }
 
         } catch (e: Exception) {
-            Log.d("Exception", e.toString())
             e.printStackTrace()
         }
     }
@@ -104,7 +102,7 @@ class FavouriteAdapter(
 
     private fun removeFav(id: String) {
         if (internet?.checkMobileInternetConn(activity)!!) {
-            val removeFav = RetrofitClient.instanceClient.removeFavourite(id)
+            val removeFav = RetrofitClient.favouriteClient.removeFavourite(id)
             removeFav.enqueue(
                 RetrofitWithBar(activity, object : Callback<ResDto> {
                     @SuppressLint("SimpleDateFormat")
@@ -113,7 +111,6 @@ class FavouriteAdapter(
                         call: Call<ResDto>,
                         response: Response<ResDto>
                     ) {
-                        Log.e("onResponse", response.toString())
                         if (response.code() == 200) {
                             when (response.body()?.status) {
                                 200 -> {
@@ -155,17 +152,12 @@ class FavouriteAdapter(
                                         view,
                                         activity.getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 showErrorMessage(
                                     view,
                                     activity.getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         } else if (response.code() == 401) {
@@ -181,7 +173,6 @@ class FavouriteAdapter(
                     }
 
                     override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                        Log.e("onResponse", t.message.toString())
                         showErrorMessage(
                             view,
                             activity.getString(R.string.msg_something_wrong)

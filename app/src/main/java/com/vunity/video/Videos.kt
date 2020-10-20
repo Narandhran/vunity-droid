@@ -1,10 +1,9 @@
-package com.vunity.discover
+package com.vunity.video
 
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,11 +14,6 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.squareup.picasso.Picasso
 import com.vunity.R
-import com.vunity.banner.Banner
-import com.vunity.banner.BannerListDto
-import com.vunity.book.BookParentAdapter
-import com.vunity.book.HomeData
-import com.vunity.book.HomeDto
 import com.vunity.category.CategoryAdapter
 import com.vunity.category.CategoryData
 import com.vunity.category.CategoryListDto
@@ -38,11 +32,10 @@ import retrofit2.Response
 import java.util.*
 
 
-class Discover : Fragment(), IOnBackPressed {
+class Videos : Fragment(), IOnBackPressed {
 
     private var category: Call<CategoryListDto>? = null
-    private var banner: Call<BannerListDto>? = null
-    private var books: Call<HomeDto>? = null
+    private var videos: Call<HomeDto>? = null
     var internetDetector: InternetDetector? = null
     private val moshi: Moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
@@ -58,7 +51,7 @@ class Discover : Fragment(), IOnBackPressed {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.frag_discover, container, false)
+        return inflater.inflate(R.layout.frag_videos, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,7 +61,7 @@ class Discover : Fragment(), IOnBackPressed {
         view.layout_refresh.setOnRefreshListener {
             reloadFragment(
                 activity?.supportFragmentManager!!,
-                this@Discover
+                this@Videos
             )
             view.layout_refresh.isRefreshing = false
         }
@@ -78,7 +71,7 @@ class Discover : Fragment(), IOnBackPressed {
                 getData(
                     "rootPath",
                     requireContext()
-                ) + Enums.Dp.value + getData("dp",requireContext())
+                ) + Enums.Dp.value + getData("dp", requireContext())
             )
             .error(R.drawable.ic_dummy_profile)
             .placeholder(R.drawable.ic_dummy_profile)
@@ -98,8 +91,7 @@ class Discover : Fragment(), IOnBackPressed {
         internetDetector = InternetDetector.getInstance(activity!!)
         if (internetDetector?.checkMobileInternetConn(requireActivity())!!) {
             category(view)
-            books(view)
-            banner(view)
+            videos(view)
         } else {
             view.lay_shimmer.visibility = View.GONE
             view.lay_shimmer.stopShimmer()
@@ -109,182 +101,37 @@ class Discover : Fragment(), IOnBackPressed {
         }
 
         view.btn_seeall.setOnClickListener {
-            val intent = Intent(requireActivity(), SeeAll::class.java)
+            val intent = Intent(requireActivity(), VideoSeeAll::class.java)
             intent.putExtra(getString(R.string.data), getString(R.string.loadAllCategory))
             startActivity(intent)
         }
 
         view.txt_search.setOnClickListener {
-            val intent = Intent(requireActivity(), Search::class.java)
+            val intent = Intent(requireActivity(), VideoSearch::class.java)
             startActivity(intent)
             requireActivity().overridePendingTransition(R.anim.bottom_up, R.anim.nothing)
         }
     }
 
     companion object {
-        fun newInstance(): Discover = Discover()
+        fun newInstance(): Videos = Videos()
     }
 
     override fun onBackPressed(): Boolean {
         return false
     }
 
-    private fun banner(view: View) {
-        if (!view.lay_shimmer.isShimmerStarted) {
-            view.lay_shimmer.startShimmer()
-        }
-        banner = RetrofitClient.instanceClient.getBanners()
-        banner?.enqueue(object : Callback<BannerListDto> {
-            @SuppressLint("DefaultLocale", "SetTextI18n")
-            override fun onResponse(
-                call: Call<BannerListDto>,
-                response: Response<BannerListDto>
-            ) {
-                Log.e("onResponse", response.toString())
-                when {
-                    response.code() == 200 -> {
-                        when (response.body()?.status) {
-                            200 -> {
-                                val banner = arrayListOf<String>()
-                                for (i in response.body()!!.data?.toMutableList()!!) {
-                                    banner.add(i.banner.toString())
-                                }
-                                view.view_pager.adapter = ViewPagerAdapter(requireContext(), banner)
-                                view.worm_dots_indicator.setViewPager(view.view_pager)
-                                try {
-                                    var currentPage = 0
-                                    val update = Runnable {
-                                        if (currentPage == banner.size) {
-                                            currentPage = 0
-                                        }
-                                        view.view_pager.setCurrentItem(currentPage++, true)
-                                    }
-                                    timer?.schedule(object : TimerTask() {
-                                        override fun run() {
-                                            handler.post(update)
-                                        }
-                                    }, 1000, 3000)
-                                } catch (exception: java.lang.Exception) {
-                                    Log.e("Exception", exception.message.toString())
-                                }
-                                view.view_pager.setOnItemClickListener(object :
-                                    ClickableViewPager.OnItemClickListener {
-                                    override fun onItemClick(position: Int) {
-                                        val role = getData(Enums.Role.value, requireContext())
-                                        if (role == Enums.Admin.value) {
-                                            startActivity(
-                                                Intent(
-                                                    requireActivity(),
-                                                    Banner::class.java
-                                                )
-                                            )
-                                        }
-                                        if (role == Enums.User.value) {
-                                            try {
-                                                if (position == 1) {
-                                                    val intent =
-                                                        Intent(activity, Profile::class.java)
-                                                    intent.putExtra(
-                                                        getString(R.string.data),
-                                                        getString(R.string.profile)
-                                                    )
-                                                    startActivity(intent)
-                                                }
-                                            } catch (exception: java.lang.Exception) {
-                                                Log.e("Exception", exception.message.toString())
-                                            }
-                                        }
-                                    }
-                                })
-                            }
-//                            else -> {
-//                                coordinatorErrorMessage(
-//                                    view.lay_root,
-//                                    response.message()
-//                                )
-//                            }
-                        }
-                    }
-
-                    response.code() == 422 || response.code() == 400 -> {
-                        try {
-                            val adapter: JsonAdapter<ErrorMsgDto> =
-                                moshi.adapter(ErrorMsgDto::class.java)
-                            val errorResponse =
-                                adapter.fromJson(response.errorBody()!!.string())
-                            if (errorResponse != null) {
-                                if (errorResponse.status == 400) {
-                                    coordinatorErrorMessage(
-                                        view.lay_root,
-                                        errorResponse.message
-                                    )
-                                } else {
-                                    coordinatorErrorMessage(
-                                        view.lay_root,
-                                        errorResponse.message
-                                    )
-                                }
-
-                            } else {
-                                coordinatorErrorMessage(
-                                    view.lay_root,
-                                    getString(R.string.msg_something_wrong)
-                                )
-                                Log.e(
-                                    "Response",
-                                    response.body()!!.toString()
-                                )
-                            }
-                        } catch (e: Exception) {
-                            coordinatorErrorMessage(
-                                view.lay_root,
-                                getString(R.string.msg_something_wrong)
-                            )
-                            Log.e("Exception", e.toString())
-                        }
-
-                    }
-
-                    response.code() == 401 -> {
-                        sessionExpired(activity!!)
-                    }
-                    else -> {
-                        coordinatorErrorMessage(
-                            view.lay_root,
-                            response.message()
-                        )
-                    }
-                }
-                view.lay_shimmer.visibility = View.GONE
-                view.lay_shimmer.stopShimmer()
-            }
-
-            override fun onFailure(call: Call<BannerListDto>, t: Throwable) {
-                Log.e("onFailure", t.message.toString())
-                if (!call.isCanceled) {
-                    coordinatorErrorMessage(
-                        view.lay_root,
-                        getString(R.string.msg_something_wrong)
-                    )
-                    view.lay_shimmer.visibility = View.GONE
-                    view.lay_shimmer.stopShimmer()
-                }
-            }
-        })
-    }
-
     private fun category(view: View) {
         if (!view.lay_shimmer.isShimmerStarted) {
             view.lay_shimmer.startShimmer()
         }
-        category = RetrofitClient.instanceClient.category()
+        category = RetrofitClient.categoryClient.category()
         category?.enqueue(object : Callback<CategoryListDto> {
             @SuppressLint("DefaultLocale", "SetTextI18n")
             override fun onResponse(
                 call: Call<CategoryListDto>,
                 response: Response<CategoryListDto>
             ) {
-                Log.e("onResponse", response.toString())
                 when {
                     response.code() == 200 -> {
                         when (response.body()?.status) {
@@ -302,7 +149,7 @@ class Discover : Fragment(), IOnBackPressed {
                                         )
                                     view.view_category?.setHasFixedSize(true)
                                     val categoryAdapter =
-                                        CategoryAdapter(categoryData, requireActivity())
+                                        CategoryAdapter(categoryData, requireActivity(), false)
                                     view.view_category?.adapter = categoryAdapter
                                 }
                             }
@@ -311,12 +158,6 @@ class Discover : Fragment(), IOnBackPressed {
                                 view.lay_data.visibility = View.GONE
                                 view.lay_no_internet.visibility = View.GONE
                             }
-//                            else -> {
-//                                coordinatorErrorMessage(
-//                                    view.lay_root,
-//                                    response.message()
-//                                )
-//                            }
                         }
                     }
 
@@ -344,17 +185,12 @@ class Discover : Fragment(), IOnBackPressed {
                                     view.lay_root,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e(
-                                    "Response",
-                                    response.body()!!.toString()
-                                )
                             }
                         } catch (e: Exception) {
                             coordinatorErrorMessage(
                                 view.lay_root,
                                 getString(R.string.msg_something_wrong)
                             )
-                            Log.e("Exception", e.toString())
                         }
 
                     }
@@ -374,7 +210,6 @@ class Discover : Fragment(), IOnBackPressed {
             }
 
             override fun onFailure(call: Call<CategoryListDto>, t: Throwable) {
-                Log.e("onFailure", t.message.toString())
                 if (!call.isCanceled) {
                     coordinatorErrorMessage(
                         view.lay_root,
@@ -387,18 +222,17 @@ class Discover : Fragment(), IOnBackPressed {
         })
     }
 
-    private fun books(view: View) {
+    private fun videos(view: View) {
         if (!view.lay_shimmer.isShimmerStarted) {
             view.lay_shimmer.startShimmer()
         }
-        books = RetrofitClient.instanceClientWithoutToken.getHome()
-        books?.enqueue(object : Callback<HomeDto> {
+        videos = RetrofitClient.videoClient.getHome()
+        videos?.enqueue(object : Callback<HomeDto> {
             @SuppressLint("DefaultLocale", "SetTextI18n")
             override fun onResponse(
                 call: Call<HomeDto>,
                 response: Response<HomeDto>
             ) {
-                Log.e("onResponse", response.toString())
                 when {
                     response.code() == 200 -> {
                         when (response.body()?.status) {
@@ -412,24 +246,11 @@ class Discover : Fragment(), IOnBackPressed {
                                             false
                                         )
                                     view.view_book_parent?.setHasFixedSize(true)
-                                    val bookParentAdapter =
-                                        BookParentAdapter(homeData, requireActivity())
-                                    view.view_book_parent?.adapter = bookParentAdapter
+                                    val videoParentAdapter =
+                                        VideoParentAdapter(homeData, requireActivity())
+                                    view.view_book_parent?.adapter = videoParentAdapter
                                 }
                             }
-                            204 -> {
-                                saveData(
-                                    "default_address",
-                                    "false",
-                                    activity!!
-                                )
-                            }
-//                            else -> {
-//                                coordinatorErrorMessage(
-//                                    view.lay_root,
-//                                    response.message()
-//                                )
-//                            }
                         }
                     }
 
@@ -457,17 +278,12 @@ class Discover : Fragment(), IOnBackPressed {
                                     view.lay_root,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e(
-                                    "Response",
-                                    response.body()!!.toString()
-                                )
                             }
                         } catch (e: Exception) {
                             coordinatorErrorMessage(
                                 view.lay_root,
                                 getString(R.string.msg_something_wrong)
                             )
-                            Log.e("Exception", e.toString())
                         }
 
                     }
@@ -487,7 +303,6 @@ class Discover : Fragment(), IOnBackPressed {
             }
 
             override fun onFailure(call: Call<HomeDto>, t: Throwable) {
-                Log.e("onFailure", t.message.toString())
                 if (!call.isCanceled) {
                     coordinatorErrorMessage(
                         view.lay_root,
@@ -513,11 +328,8 @@ class Discover : Fragment(), IOnBackPressed {
         if (category != null) {
             category?.cancel()
         }
-        if (books != null) {
-            books?.cancel()
-        }
-        if (banner != null) {
-            banner?.cancel()
+        if (videos != null) {
+            videos?.cancel()
         }
     }
 
@@ -533,11 +345,8 @@ class Discover : Fragment(), IOnBackPressed {
         if (category != null) {
             category?.cancel()
         }
-        if (books != null) {
-            books?.cancel()
-        }
-        if (banner != null) {
-            banner?.cancel()
+        if (videos != null) {
+            videos?.cancel()
         }
     }
 
@@ -553,11 +362,8 @@ class Discover : Fragment(), IOnBackPressed {
         if (category != null) {
             category?.cancel()
         }
-        if (books != null) {
-            books?.cancel()
-        }
-        if (banner != null) {
-            banner?.cancel()
+        if (videos != null) {
+            videos?.cancel()
         }
     }
 

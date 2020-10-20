@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -117,7 +116,6 @@ class UserAdapter(
             }
 
         } catch (e: Exception) {
-            Log.d("Exception", e.toString())
             e.printStackTrace()
         }
     }
@@ -151,9 +149,8 @@ class UserAdapter(
     }
 
     private fun reviewUser(data: HashMap<String, String>) {
-        Log.e("data", data.toString())
         if (internet?.checkMobileInternetConn(activity)!!) {
-            val reviewUser = RetrofitClient.instanceClient.cmsReview(data)
+            val reviewUser = RetrofitClient.userClient.cmsReview(data)
             reviewUser.enqueue(
                 RetrofitWithBar(activity, object : Callback<ResDto> {
                     @SuppressLint("SimpleDateFormat")
@@ -162,7 +159,6 @@ class UserAdapter(
                         call: Call<ResDto>,
                         response: Response<ResDto>
                     ) {
-                        Log.e("onResponse", response.toString())
                         if (response.code() == 200) {
                             when (response.body()?.status) {
                                 200 -> {
@@ -204,17 +200,12 @@ class UserAdapter(
                                         view,
                                         activity.getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 coordinatorErrorMessage(
                                     view,
                                     activity.getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         } else if (response.code() == 401) {
@@ -230,7 +221,6 @@ class UserAdapter(
                     }
 
                     override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                        Log.e("onResponse", t.message.toString())
                         coordinatorErrorMessage(
                             view,
                             activity.getString(R.string.msg_something_wrong)

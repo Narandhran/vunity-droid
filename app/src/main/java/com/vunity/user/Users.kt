@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.graphics.Color
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
@@ -128,7 +127,7 @@ class Users : AppCompatActivity() {
                 reloadActivity(this@Users)
             }, 200)
         }
-        
+
         allUsers()
     }
 
@@ -166,9 +165,9 @@ class Users : AppCompatActivity() {
         }
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
             users = if (status == null) {
-                RetrofitClient.instanceClient.listOfUsers()
+                RetrofitClient.userClient.listOfUsers()
             } else {
-                RetrofitClient.instanceClient.filterUsers(status.toString())
+                RetrofitClient.userClient.filterUsers(status.toString())
             }
             users?.enqueue(object : Callback<ProListDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
@@ -176,7 +175,6 @@ class Users : AppCompatActivity() {
                     call: Call<ProListDto>,
                     response: Response<ProListDto>
                 ) {
-                    Log.e("onResponse", response.toString())
                     when {
                         response.code() == 200 -> {
                             when (response.body()?.status) {
@@ -241,17 +239,12 @@ class Users : AppCompatActivity() {
                                         layout_refresh,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 coordinatorErrorMessage(
                                     layout_refresh,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         }
@@ -271,7 +264,6 @@ class Users : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<ProListDto>, t: Throwable) {
-                    Log.e("onFailure", t.message.toString())
                     if (!call.isCanceled) {
                         coordinatorErrorMessage(
                             layout_refresh,

@@ -23,6 +23,7 @@ object Constants {
 
     // PdfUpload
     const val PICK_PDF_REQUEST_CODE = 23
+    const val PICK_VIDEO_REQUEST_CODE = 24
 
     // SharedPreferences
     const val PUBLIC_KEY = "com.vunity"
@@ -31,4 +32,9 @@ object Constants {
     const val ALGORITHM = "AES"
     const val KEY = "7961616d6c697465"
 
+    // Notification ids
+    const val UPLOAD_NOTIFICATION_ID = 1
+    const val SUCCESS_NOTIFICATION_ID = 2
+
+    const val DELAY_MILLIS: Long = 2800
 }

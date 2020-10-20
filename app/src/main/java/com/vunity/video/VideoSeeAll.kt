@@ -1,10 +1,9 @@
-package com.vunity.discover
+package com.vunity.video
 
 import android.animation.Animator
 import android.animation.AnimatorListenerAdapter
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.animation.LinearInterpolator
 import androidx.appcompat.app.AppCompatActivity
@@ -13,8 +12,6 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.vunity.R
-import com.vunity.book.BookData
-import com.vunity.book.BookListDto
 import com.vunity.category.CategoryAdapter
 import com.vunity.category.CategoryData
 import com.vunity.category.CategoryListDto
@@ -25,14 +22,14 @@ import com.vunity.general.showErrorMessage
 import com.vunity.server.InternetDetector
 import com.vunity.server.RetrofitClient
 import com.vunity.user.ErrorMsgDto
-import kotlinx.android.synthetic.main.act_see_all.*
+import kotlinx.android.synthetic.main.act_book_see_all.*
 import org.apache.commons.lang3.StringUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
 
-class SeeAll : AppCompatActivity() {
+class VideoSeeAll : AppCompatActivity() {
 
     private var internet: InternetDetector? = null
     private val moshi: Moshi = Moshi.Builder()
@@ -41,9 +38,9 @@ class SeeAll : AppCompatActivity() {
     var loadCategory: Call<CategoryListDto>? = null
     var categoryData: MutableList<CategoryData> = arrayListOf()
     lateinit var categoryAdapter: CategoryAdapter
-    var loadBooks: Call<BookListDto>? = null
-    var bookData: MutableList<BookData> = arrayListOf()
-    lateinit var searchAdapter: SearchAdapter
+    var loadVideos: Call<VideoListDto>? = null
+    var videoData: MutableList<VideoData> = arrayListOf()
+    lateinit var videoSearchAdapter: VideoSearchAdapter
 
     val spanCount = 3 //  columns
     val spacing = 15 // pixel
@@ -52,11 +49,11 @@ class SeeAll : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.act_see_all)
+        setContentView(R.layout.act_book_see_all)
 
         layout_refresh.setOnRefreshListener {
             finish()
-            reloadActivity(this@SeeAll)
+            reloadActivity(this@VideoSeeAll)
             layout_refresh.isRefreshing = false
         }
 
@@ -65,7 +62,7 @@ class SeeAll : AppCompatActivity() {
             overridePendingTransition(R.anim.bottom_up, R.anim.nothing)
         }
 
-        internet = InternetDetector.getInstance(this@SeeAll)
+        internet = InternetDetector.getInstance(this@VideoSeeAll)
 
         try {
             val data = intent.getStringExtra(getString(R.string.data))
@@ -83,7 +80,7 @@ class SeeAll : AppCompatActivity() {
                         }
                         val title = intent.getStringExtra(getString(R.string.title))
                         if (title != null) {
-                            loadBooksByGenre(title)
+                            loadVideosByGenre(title)
                         }
                     }
 
@@ -94,7 +91,7 @@ class SeeAll : AppCompatActivity() {
                         val title = intent.getStringExtra(getString(R.string.name))
                         val id = intent.getStringExtra(getString(R.string.id))
                         if (title != null && id != null) {
-                            loadBookByCategory(title = title, id = id)
+                            loadVideoByCategory(title = title, id = id)
                         }
                     }
                 }
@@ -109,21 +106,20 @@ class SeeAll : AppCompatActivity() {
         if (loadCategory != null) {
             loadCategory?.cancel()
         }
-        if (loadBooks != null) {
-            loadBooks?.cancel()
+        if (loadVideos != null) {
+            loadVideos?.cancel()
         }
     }
 
     private fun loadCategory() {
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            loadCategory = RetrofitClient.instanceClient.category()
+            loadCategory = RetrofitClient.categoryClient.category()
             loadCategory?.enqueue(object : Callback<CategoryListDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(
                     call: Call<CategoryListDto>,
                     response: Response<CategoryListDto>
                 ) {
-                    Log.e("onResponse", response.toString())
                     when {
                         response.code() == 200 -> {
                             when (response.body()?.status) {
@@ -149,7 +145,7 @@ class SeeAll : AppCompatActivity() {
                                         )
                                         view_more?.setHasFixedSize(true)
                                         categoryAdapter =
-                                            CategoryAdapter(categoryData, this@SeeAll)
+                                            CategoryAdapter(categoryData, this@VideoSeeAll, false)
                                         view_more?.adapter = categoryAdapter
 
                                         im_sort.setOnClickListener {
@@ -166,13 +162,21 @@ class SeeAll : AppCompatActivity() {
                                             if (ascending) {
                                                 categoryData.sortBy { it.name }
                                                 categoryAdapter =
-                                                    CategoryAdapter(categoryData, this@SeeAll)
+                                                    CategoryAdapter(
+                                                        categoryData,
+                                                        this@VideoSeeAll,
+                                                        false
+                                                    )
                                                 view_more?.adapter = categoryAdapter
                                                 ascending = false
                                             } else {
                                                 categoryData.reverse()
                                                 categoryAdapter =
-                                                    CategoryAdapter(categoryData, this@SeeAll)
+                                                    CategoryAdapter(
+                                                        categoryData,
+                                                        this@VideoSeeAll,
+                                                        false
+                                                    )
                                                 view_more?.adapter = categoryAdapter
                                                 ascending = true
                                             }
@@ -217,23 +221,18 @@ class SeeAll : AppCompatActivity() {
                                         layout_refresh,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 showErrorMessage(
                                     layout_refresh,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         }
 
                         response.code() == 401 -> {
-                            sessionExpired(this@SeeAll)
+                            sessionExpired(this@VideoSeeAll)
                         }
                         else -> {
                             showErrorMessage(
@@ -247,7 +246,6 @@ class SeeAll : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<CategoryListDto>, t: Throwable) {
-                    Log.e("onFailure", t.message.toString())
                     if (!call.isCanceled) {
                         showErrorMessage(
                             layout_refresh,
@@ -268,22 +266,21 @@ class SeeAll : AppCompatActivity() {
         }
     }
 
-    private fun loadBooksByGenre(title: String) {
+    private fun loadVideosByGenre(title: String) {
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            loadBooks = RetrofitClient.instanceClient.getBookByGenre(title)
-            loadBooks?.enqueue(object : Callback<BookListDto> {
+            loadVideos = RetrofitClient.videoClient.getVideoByGenre(title)
+            loadVideos?.enqueue(object : Callback<VideoListDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(
-                    call: Call<BookListDto>,
-                    response: Response<BookListDto>
+                    call: Call<VideoListDto>,
+                    response: Response<VideoListDto>
                 ) {
-                    Log.e("onResponse", response.toString())
                     when {
                         response.code() == 200 -> {
                             when (response.body()?.status) {
                                 200 -> {
                                     txt_title.text = StringUtils.capitalize(title)
-                                    bookData = response.body()!!.data.toMutableList()
+                                    videoData = response.body()!!.data.toMutableList()
                                     lay_no_data.visibility = View.GONE
                                     lay_no_internet.visibility = View.GONE
                                     lay_data.visibility = View.VISIBLE
@@ -302,9 +299,9 @@ class SeeAll : AppCompatActivity() {
                                             )
                                         )
                                         view_more?.setHasFixedSize(true)
-                                        searchAdapter =
-                                            SearchAdapter(bookData, this@SeeAll)
-                                        view_more?.adapter = searchAdapter
+                                        videoSearchAdapter =
+                                            VideoSearchAdapter(videoData, this@VideoSeeAll)
+                                        view_more?.adapter = videoSearchAdapter
 
                                         im_sort.setOnClickListener {
                                             im_sort.animate()
@@ -318,16 +315,16 @@ class SeeAll : AppCompatActivity() {
                                                     }
                                                 })
                                             if (ascending) {
-                                                bookData.sortBy { it.name }
-                                                searchAdapter =
-                                                    SearchAdapter(bookData, this@SeeAll)
-                                                view_more?.adapter = searchAdapter
+                                                videoData.sortBy { it.name }
+                                                videoSearchAdapter =
+                                                    VideoSearchAdapter(videoData, this@VideoSeeAll)
+                                                view_more?.adapter = videoSearchAdapter
                                                 ascending = false
                                             } else {
-                                                bookData.reverse()
-                                                searchAdapter =
-                                                    SearchAdapter(bookData, this@SeeAll)
-                                                view_more?.adapter = searchAdapter
+                                                videoData.reverse()
+                                                videoSearchAdapter =
+                                                    VideoSearchAdapter(videoData, this@VideoSeeAll)
+                                                view_more?.adapter = videoSearchAdapter
                                                 ascending = true
                                             }
                                         }
@@ -371,23 +368,18 @@ class SeeAll : AppCompatActivity() {
                                         layout_refresh,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 showErrorMessage(
                                     layout_refresh,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         }
 
                         response.code() == 401 -> {
-                            sessionExpired(this@SeeAll)
+                            sessionExpired(this@VideoSeeAll)
                         }
                         else -> {
                             showErrorMessage(
@@ -400,8 +392,7 @@ class SeeAll : AppCompatActivity() {
                     lay_shimmer.stopShimmer()
                 }
 
-                override fun onFailure(call: Call<BookListDto>, t: Throwable) {
-                    Log.e("onFailure", t.message.toString())
+                override fun onFailure(call: Call<VideoListDto>, t: Throwable) {
                     if (!call.isCanceled) {
                         showErrorMessage(
                             layout_refresh,
@@ -422,22 +413,21 @@ class SeeAll : AppCompatActivity() {
         }
     }
 
-    private fun loadBookByCategory(title: String, id: String) {
+    private fun loadVideoByCategory(title: String, id: String) {
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            loadBooks = RetrofitClient.instanceClient.getBookByCategory(id)
-            loadBooks?.enqueue(object : Callback<BookListDto> {
+            loadVideos = RetrofitClient.videoClient.getVideoByCategory(id)
+            loadVideos?.enqueue(object : Callback<VideoListDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(
-                    call: Call<BookListDto>,
-                    response: Response<BookListDto>
+                    call: Call<VideoListDto>,
+                    response: Response<VideoListDto>
                 ) {
-                    Log.e("onResponse", response.toString())
                     when {
                         response.code() == 200 -> {
                             when (response.body()?.status) {
                                 200 -> {
                                     txt_title.text = title
-                                    bookData = response.body()!!.data.toMutableList()
+                                    videoData = response.body()!!.data.toMutableList()
                                     lay_no_data.visibility = View.GONE
                                     lay_no_internet.visibility = View.GONE
                                     lay_data.visibility = View.VISIBLE
@@ -456,9 +446,9 @@ class SeeAll : AppCompatActivity() {
                                             )
                                         )
                                         view_more?.setHasFixedSize(true)
-                                        searchAdapter =
-                                            SearchAdapter(bookData, this@SeeAll)
-                                        view_more?.adapter = searchAdapter
+                                        videoSearchAdapter =
+                                            VideoSearchAdapter(videoData, this@VideoSeeAll)
+                                        view_more?.adapter = videoSearchAdapter
 
                                         im_sort.setOnClickListener {
                                             im_sort.animate()
@@ -472,16 +462,16 @@ class SeeAll : AppCompatActivity() {
                                                     }
                                                 })
                                             if (ascending) {
-                                                bookData.sortBy { it.name }
-                                                searchAdapter =
-                                                    SearchAdapter(bookData, this@SeeAll)
-                                                view_more?.adapter = searchAdapter
+                                                videoData.sortBy { it.name }
+                                                videoSearchAdapter =
+                                                    VideoSearchAdapter(videoData, this@VideoSeeAll)
+                                                view_more?.adapter = videoSearchAdapter
                                                 ascending = false
                                             } else {
-                                                bookData.reverse()
-                                                searchAdapter =
-                                                    SearchAdapter(bookData, this@SeeAll)
-                                                view_more?.adapter = searchAdapter
+                                                videoData.reverse()
+                                                videoSearchAdapter =
+                                                    VideoSearchAdapter(videoData, this@VideoSeeAll)
+                                                view_more?.adapter = videoSearchAdapter
                                                 ascending = true
                                             }
                                         }
@@ -525,23 +515,18 @@ class SeeAll : AppCompatActivity() {
                                         layout_refresh,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 showErrorMessage(
                                     layout_refresh,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         }
 
                         response.code() == 401 -> {
-                            sessionExpired(this@SeeAll)
+                            sessionExpired(this@VideoSeeAll)
                         }
                         else -> {
                             showErrorMessage(
@@ -554,8 +539,7 @@ class SeeAll : AppCompatActivity() {
                     lay_shimmer.stopShimmer()
                 }
 
-                override fun onFailure(call: Call<BookListDto>, t: Throwable) {
-                    Log.e("onFailure", t.message.toString())
+                override fun onFailure(call: Call<VideoListDto>, t: Throwable) {
                     if (!call.isCanceled) {
                         showErrorMessage(
                             layout_refresh,

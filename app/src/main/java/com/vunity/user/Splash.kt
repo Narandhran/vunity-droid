@@ -1,14 +1,14 @@
-package com.vunity.general
+package com.vunity.user
 
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.vunity.R
-import com.vunity.user.Login
+import com.vunity.general.Home
+import com.vunity.general.getData
 
 class Splash : AppCompatActivity() {
     private var isLoggedIn: String? = null
@@ -41,18 +41,15 @@ class Splash : AppCompatActivity() {
                         fcmBookId = bundle[key].toString()
                     }
                 }
-                Log.e("Splash", "$key $value")
             }
         }
         if (isLoggedIn != null) {
-            Log.d("isLoggedIn", "$isLoggedIn ")
             when (isLoggedIn) {
                 "true" -> {
                     Handler().postDelayed({
                         val homeIndent = Intent(this@Splash, Home::class.java)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        Log.e("Notification data", "$fcmTitle $fcmBody $fcmBookId")
+                        homeIndent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        homeIndent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         homeIndent.putExtra("title", fcmTitle)
                         homeIndent.putExtra("body", fcmBody)
                         homeIndent.putExtra("bookId", fcmBookId)
@@ -66,9 +63,10 @@ class Splash : AppCompatActivity() {
                 }
                 "skip" -> {
                     Handler().postDelayed({
-                        startActivity(Intent(this@Splash, Home::class.java))
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        val homeIndent = Intent(this@Splash, Home::class.java)
+                        homeIndent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        homeIndent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(homeIndent)
                         this@Splash.overridePendingTransition(
                             R.anim.fade_in,
                             R.anim.fade_out
@@ -78,9 +76,10 @@ class Splash : AppCompatActivity() {
                 }
                 else -> {
                     Handler().postDelayed({
-                        startActivity(Intent(this@Splash, Login::class.java))
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        val loginIntent = Intent(this@Splash, Login::class.java)
+                        loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                        loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                        startActivity(loginIntent)
                         this@Splash.overridePendingTransition(
                             R.anim.fade_in,
                             R.anim.fade_out
@@ -91,9 +90,10 @@ class Splash : AppCompatActivity() {
             }
         } else {
             Handler().postDelayed({
-                startActivity(Intent(this@Splash, Login::class.java))
-                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                val loginIntent = Intent(this@Splash, Login::class.java)
+                loginIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
+                loginIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                startActivity(loginIntent)
                 this@Splash.overridePendingTransition(
                     R.anim.fade_in,
                     R.anim.fade_out

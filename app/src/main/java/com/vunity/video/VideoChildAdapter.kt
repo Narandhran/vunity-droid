@@ -1,9 +1,8 @@
-package com.vunity.discover
+package com.vunity.video
 
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,19 +11,18 @@ import com.github.siyamed.shapeimageview.mask.PorterShapeImageView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textview.MaterialTextView
 import com.vunity.R
-import com.vunity.book.Book
-import com.vunity.book.BookData
 import com.vunity.general.Enums
 import com.vunity.general.loadImage
 import org.apache.commons.lang3.StringUtils
 
-class SearchAdapter(
-    private var dataList: List<BookData>,
+
+class VideoChildAdapter(
+    private var dataList: List<HomeVideoData>,
     private val activity: Activity
 
 ) :
-    RecyclerView.Adapter<SearchAdapter.Holder>() {
-    lateinit var data: BookData
+    RecyclerView.Adapter<VideoChildAdapter.Holder>() {
+    lateinit var data: HomeVideoData
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val itemView = LayoutInflater.from(parent.context)
@@ -39,17 +37,16 @@ class SearchAdapter(
             holder.txtName.text = StringUtils.capitalize(data.name)
             loadImage(
                 activity.applicationContext,
-                Enums.Book.value + data.thumbnail,
-                holder.imgBook
+                Enums.VideoThumb.value + data.thumbnail,
+                holder.imgVideo
             )
-            holder.cardBook.setOnClickListener {
+            holder.cardVideo.setOnClickListener {
                 data = dataList[position]
-                val intent = Intent(activity, Book::class.java)
-                intent.putExtra(activity.getString(R.string.data), data._id.toString())
+                val intent = Intent(activity, VideoDetails::class.java)
+                intent.putExtra(activity.getString(R.string.data), data._id)
                 activity.startActivity(intent)
             }
         } catch (e: Exception) {
-            Log.d("Exception", e.toString())
             e.printStackTrace()
         }
     }
@@ -67,8 +64,8 @@ class SearchAdapter(
     }
 
     inner class Holder(view: View) : RecyclerView.ViewHolder(view) {
-        var imgBook: PorterShapeImageView = view.findViewById(R.id.img_book)
+        var imgVideo: PorterShapeImageView = view.findViewById(R.id.img_book)
         var txtName: MaterialTextView = view.findViewById(R.id.txt_name)
-        var cardBook: MaterialCardView = view.findViewById(R.id.card_book)
+        var cardVideo: MaterialCardView = view.findViewById(R.id.card_book)
     }
 }

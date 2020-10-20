@@ -25,8 +25,7 @@ class FCMInstanceIdService : FirebaseMessagingService() {
     private fun sendRegistrationToServer(token: String) {
         val mapData: HashMap<String, String> = HashMap()
         mapData["fcm"] = token
-        Log.e("data", mapData.toString())
-        val updateToken = RetrofitClient.instanceClient.updateProfile(mapData)
+        val updateToken = RetrofitClient.userClient.updateProfile(mapData)
         updateToken.enqueue(object : Callback<ResDto> {
             @SuppressLint("SimpleDateFormat")
             @RequiresApi(Build.VERSION_CODES.O)
@@ -34,7 +33,6 @@ class FCMInstanceIdService : FirebaseMessagingService() {
                 call: Call<ResDto>,
                 response: Response<ResDto>
             ) {
-                Log.e("onResponse", response.toString())
                 if (response.code() == 200) {
                     when (response.body()?.status) {
                         200 -> {

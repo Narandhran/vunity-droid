@@ -73,6 +73,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
+    implementation 'com.google.android.exoplayer:exoplayer:2.10.4'
 
     //Moshi
     implementation "com.squareup.moshi:moshi:$moshiVersion"
@@ -86,7 +87,7 @@ dependencies {
 
     // Firebase Crashlytics SDK.
     implementation 'com.google.firebase:firebase-analytics-ktx:17.6.0'
-//    implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
+    //implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
     implementation 'com.google.firebase:firebase-messaging:20.3.0'
 
     //Material widgets by third parties
@@ -105,7 +106,7 @@ dependencies {
     implementation 'com.razorpay:checkout:1.6.4'
 
     //AWS
-    implementation ('com.amazonaws:aws-android-sdk-mobile-client:2.6.7@aar') { transitive = true }
+    implementation('com.amazonaws:aws-android-sdk-mobile-client:2.6.7@aar') { transitive = true }
     implementation 'com.amazonaws:aws-android-sdk-s3:2.6.31'
     implementation 'com.amazonaws:aws-android-sdk-cognito:2.6.31'
 

@@ -11,6 +11,8 @@ enum class Enums(var value: String) {
     Approved("Approved"),
     Pending("Pending"),
     Blocked("Blocked"),
+    VideoThumb("video-thumb/"),
+    Videos("videos/"),
 
 //    FCM topics
     TopicAnnouncement("unity-announcement")

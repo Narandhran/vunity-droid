@@ -14,12 +14,8 @@ import com.google.firebase.iid.FirebaseInstanceId
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import com.vunity.general.Home
 import com.vunity.R
-import com.vunity.general.saveData
-import com.vunity.general.sessionExpired
-import com.vunity.general.showErrorMessage
-import com.vunity.general.showMessage
+import com.vunity.general.*
 import com.vunity.server.InternetDetector
 import com.vunity.server.RetrofitClient
 import com.vunity.server.RetrofitWithBar
@@ -76,15 +72,14 @@ class Login : AppCompatActivity() {
             FirebaseInstanceId.getInstance().instanceId
                 .addOnCompleteListener(OnCompleteListener { task ->
                     if (!task.isSuccessful) {
-                        Log.w("FirebaseInstanceId", "getInstanceId failed", task.exception)
+                        Log.d("FirebaseInstanceId", "getInstanceId failed", task.exception)
                         return@OnCompleteListener
                     }
                     // Get new Instance ID token
                     saveData("fcm_token", task.result?.token.toString(), applicationContext)
-                    Log.e("FirebaseInstanceId", task.result?.token.toString())
                 })
         } catch (exception: Exception) {
-            Log.e("Exception from Login", exception.toString())
+            exception.printStackTrace()
         }
     }
 
@@ -92,8 +87,7 @@ class Login : AppCompatActivity() {
         val internet = InternetDetector.getInstance(this@Login)
         if (internet.checkMobileInternetConn(this@Login)) {
             try {
-                Log.e("mobile", mobile)
-                val requestOtp = RetrofitClient.instanceClientWithoutToken.requestOtp(mobile)
+                val requestOtp = RetrofitClient.userClient.requestOtp(mobile)
                 requestOtp.enqueue(
                     RetrofitWithBar(this@Login, object : Callback<ResDto> {
                         @SuppressLint("SimpleDateFormat")
@@ -102,7 +96,6 @@ class Login : AppCompatActivity() {
                             call: Call<ResDto>,
                             response: Response<ResDto>
                         ) {
-                            Log.e("onResponse", response.toString())
                             if (response.code() == 200) {
                                 when (response.body()?.status) {
                                     200 -> {
@@ -156,17 +149,12 @@ class Login : AppCompatActivity() {
                                             lay_root,
                                             getString(R.string.msg_something_wrong)
                                         )
-                                        Log.e(
-                                            "Response",
-                                            response.body()!!.toString()
-                                        )
                                     }
                                 } catch (e: Exception) {
                                     showErrorMessage(
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e("Exception", e.toString())
                                 }
 
                             } else if (response.code() == 401) {
@@ -182,7 +170,6 @@ class Login : AppCompatActivity() {
                         }
 
                         override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                            Log.e("onResponse", t.message.toString())
                             showErrorMessage(
                                 lay_root,
                                 getString(R.string.msg_something_wrong)
@@ -192,7 +179,6 @@ class Login : AppCompatActivity() {
                 )
 
             } catch (e: Exception) {
-                Log.d("ParseException", e.toString())
                 e.printStackTrace()
             }
         } else {

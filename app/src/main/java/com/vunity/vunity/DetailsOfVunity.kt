@@ -3,7 +3,6 @@ package com.vunity.vunity
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -68,14 +67,13 @@ class DetailsOfVunity : AppCompatActivity() {
 
     private fun getByUser(receivedId: String) {
         if (internetDetector?.checkMobileInternetConn(applicationContext)!!) {
-            getByUser = RetrofitClient.instanceClient.getVunityUserById(receivedId)
+            getByUser = RetrofitClient.vunityClient.getVunityUserById(receivedId)
             getByUser?.enqueue(object : Callback<VunityDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(
                     call: Call<VunityDto>,
                     response: Response<VunityDto>
                 ) {
-                    Log.e("onResponse", response.toString())
                     when {
                         response.code() == 200 -> {
                             when (response.body()?.status) {
@@ -240,17 +238,12 @@ class DetailsOfVunity : AppCompatActivity() {
                                         layout_refresh,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 showErrorMessage(
                                     layout_refresh,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         }
@@ -268,7 +261,6 @@ class DetailsOfVunity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<VunityDto>, t: Throwable) {
-                    Log.e("onFailure", t.message.toString())
                     if (!call.isCanceled) {
                         showErrorMessage(
                             layout_refresh,

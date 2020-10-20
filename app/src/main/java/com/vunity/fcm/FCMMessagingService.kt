@@ -28,7 +28,7 @@ class FCMMessagingService : FirebaseMessagingService() {
                     val jsonObject = JSONObject(remoteMessage.data as Map<*, *>)
                     bookId = jsonObject.get("bookId").toString()
                 } catch (ex: Exception) {
-                    Log.e("Parse exception", ex.toString())
+                    ex.printStackTrace()
                 }
             }
             val pushNotification = Intent(PUSH_NOTIFICATION)

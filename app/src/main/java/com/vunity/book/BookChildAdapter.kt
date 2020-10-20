@@ -3,7 +3,6 @@ package com.vunity.book
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,12 +42,11 @@ class BookChildAdapter(
             )
             holder.cardBook.setOnClickListener {
                 data = dataList[position]
-                val intent = Intent(activity, Book::class.java)
+                val intent = Intent(activity, BookDetails::class.java)
                 intent.putExtra(activity.getString(R.string.data), data._id)
                 activity.startActivity(intent)
             }
         } catch (e: Exception) {
-            Log.d("Exception", e.toString())
             e.printStackTrace()
         }
     }

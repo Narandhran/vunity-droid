@@ -10,10 +10,9 @@ import android.graphics.BitmapFactory
 import android.media.RingtoneManager
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.vunity.R
-import com.vunity.general.Splash
+import com.vunity.user.Splash
 import java.util.*
 
 
@@ -67,13 +66,12 @@ class NotificationUtils {
                 notificationBuilder.build()
             )
         } catch (e: Exception) {
-            Log.e(FCMMessagingService.TAG, "Exception$ e")
+            e.printStackTrace()
         }
     }
 
     fun playNotificationSound(context: Context) {
         try {
-            Log.e(FCMMessagingService.TAG, "Notification sound received!")
             val sound =
                 Uri.parse("android.resource://" + context.packageName.toString() + "/" + R.raw.custom_sound)
             val r = RingtoneManager.getRingtone(context, sound)

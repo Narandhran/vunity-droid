@@ -16,7 +16,6 @@ import com.google.firebase.messaging.FirebaseMessaging
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import com.vunity.general.Home
 import com.vunity.R
 import com.vunity.general.*
 import com.vunity.server.InternetDetector
@@ -204,8 +203,7 @@ class Verification : AppCompatActivity() {
         val internet = InternetDetector.getInstance(this@Verification)
         if (internet.checkMobileInternetConn(this@Verification)) {
             try {
-                Log.e("mobile", mobile)
-                val requestOtp = RetrofitClient.instanceClientWithoutToken.requestOtp(mobile)
+                val requestOtp = RetrofitClient.userClient.requestOtp(mobile)
                 requestOtp.enqueue(
                     RetrofitWithBar(this@Verification, object : Callback<ResDto> {
                         @SuppressLint("SimpleDateFormat")
@@ -214,7 +212,6 @@ class Verification : AppCompatActivity() {
                             call: Call<ResDto>,
                             response: Response<ResDto>
                         ) {
-                            Log.e("onResponse", response.toString())
                             if (response.code() == 200) {
                                 when (response.body()?.status) {
                                     200 -> {
@@ -256,17 +253,12 @@ class Verification : AppCompatActivity() {
                                             lay_root,
                                             getString(R.string.msg_something_wrong)
                                         )
-                                        Log.e(
-                                            "Response",
-                                            response.body()!!.toString()
-                                        )
                                     }
                                 } catch (e: Exception) {
                                     showErrorMessage(
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e("Exception", e.toString())
                                 }
 
                             } else if (response.code() == 401) {
@@ -282,7 +274,6 @@ class Verification : AppCompatActivity() {
                         }
 
                         override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                            Log.e("onResponse", t.message.toString())
                             showErrorMessage(
                                 lay_root,
                                 getString(R.string.msg_something_wrong)
@@ -292,7 +283,6 @@ class Verification : AppCompatActivity() {
                 )
 
             } catch (e: Exception) {
-                Log.d("ParseException", e.toString())
                 e.printStackTrace()
             }
         } else {
@@ -304,11 +294,10 @@ class Verification : AppCompatActivity() {
     }
 
     private fun login(loginBody: LoginBody) {
-        Log.e("loginBody", loginBody.toString())
         val internet = InternetDetector.getInstance(this@Verification)
         if (internet.checkMobileInternetConn(this@Verification)) {
             try {
-                val login = RetrofitClient.instanceClientWithoutToken.login(loginBody)
+                val login = RetrofitClient.userClient.login(loginBody)
                 login.enqueue(
                     RetrofitWithBar(this@Verification, object : Callback<LoginDto> {
                         @SuppressLint("SimpleDateFormat")
@@ -317,7 +306,6 @@ class Verification : AppCompatActivity() {
                             call: Call<LoginDto>,
                             response: Response<LoginDto>
                         ) {
-                            Log.e("onResponse", response.toString())
                             if (response.code() == 200) {
                                 when (response.body()?.status) {
                                     200 -> {
@@ -406,17 +394,12 @@ class Verification : AppCompatActivity() {
                                             lay_root,
                                             getString(R.string.msg_something_wrong)
                                         )
-                                        Log.e(
-                                            "Response",
-                                            response.body()!!.toString()
-                                        )
                                     }
                                 } catch (e: Exception) {
                                     showErrorMessage(
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e("Exception", e.toString())
                                 }
 
                             } else if (response.code() == 401) {
@@ -432,7 +415,6 @@ class Verification : AppCompatActivity() {
                         }
 
                         override fun onFailure(call: Call<LoginDto>, t: Throwable) {
-                            Log.e("onResponse", t.message.toString())
                             showErrorMessage(
                                 lay_root,
                                 getString(R.string.msg_something_wrong)
@@ -442,7 +424,6 @@ class Verification : AppCompatActivity() {
                 )
 
             } catch (e: Exception) {
-                Log.d("ParseException", e.toString())
                 e.printStackTrace()
             }
         } else {

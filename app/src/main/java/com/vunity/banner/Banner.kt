@@ -2,17 +2,16 @@ package com.vunity.banner
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
@@ -72,14 +71,13 @@ class Banner : AppCompatActivity() {
             lay_shimmer.startShimmer()
         }
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            getBanner = RetrofitClient.instanceClient.getBanners()
+            getBanner = RetrofitClient.bannerClient.getBanners()
             getBanner?.enqueue(object : Callback<BannerListDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(
                     call: Call<BannerListDto>,
                     response: Response<BannerListDto>
                 ) {
-                    Log.e("onResponse", response.toString())
                     when {
                         response.code() == 200 -> {
                             when (response.body()?.status) {
@@ -149,17 +147,13 @@ class Banner : AppCompatActivity() {
                                         layout_refresh,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
+                                e.printStackTrace()
                                 showErrorMessage(
                                     layout_refresh,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         }
@@ -179,7 +173,6 @@ class Banner : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<BannerListDto>, t: Throwable) {
-                    Log.e("onFailure", t.message.toString())
                     if (!call.isCanceled) {
                         showErrorMessage(
                             layout_refresh,
@@ -233,9 +226,9 @@ class Banner : AppCompatActivity() {
                 MultipartBody.Part.createFormData("banner", imageFile.name, imageReqBody)
             if (internet?.checkMobileInternetConn(applicationContext)!!) {
                 banner = if (bannerId == null) {
-                    RetrofitClient.instanceClient.addBanner(image = imagePart)
+                    RetrofitClient.bannerClient.addBanner(image = imagePart)
                 } else {
-                    RetrofitClient.instanceClient.updateBanner(id = bannerId!!, image = imagePart)
+                    RetrofitClient.bannerClient.updateBanner(id = bannerId!!, image = imagePart)
                 }
                 banner!!.enqueue(
                     RetrofitWithBar(this@Banner, object : Callback<BannerDto> {
@@ -245,7 +238,6 @@ class Banner : AppCompatActivity() {
                             call: Call<BannerDto>,
                             response: Response<BannerDto>
                         ) {
-                            Log.e("onResponse", response.toString())
                             if (response.code() == 200) {
                                 when (response.body()?.status) {
                                     200 -> {
@@ -290,17 +282,13 @@ class Banner : AppCompatActivity() {
                                             layout_refresh,
                                             getString(R.string.msg_something_wrong)
                                         )
-                                        Log.e(
-                                            "Response",
-                                            response.body()!!.toString()
-                                        )
                                     }
                                 } catch (e: Exception) {
+                                    e.printStackTrace()
                                     showErrorMessage(
                                         layout_refresh,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e("Exception", e.toString())
                                 }
 
                             } else if (response.code() == 401) {
@@ -314,7 +302,6 @@ class Banner : AppCompatActivity() {
                         }
 
                         override fun onFailure(call: Call<BannerDto>, t: Throwable) {
-                            Log.e("onResponse", t.message.toString())
                             showErrorMessage(
                                 layout_refresh,
                                 getString(R.string.msg_something_wrong)
@@ -329,7 +316,7 @@ class Banner : AppCompatActivity() {
                 )
             }
         } catch (e: Exception) {
-            Log.e("Product Exception", e.toString())
+            e.printStackTrace()
         }
     }
 
@@ -338,22 +325,18 @@ class Banner : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == Constants.PICK_IMAGE_GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
             val sourceUri = data.data // 1
-            val file = getImageFile() // 2
+            val file = getTempFile(applicationContext) // 2
             val destinationUri = Uri.fromFile(file)  // 3
             if (sourceUri != null) {
                 openCropActivity(sourceUri, destinationUri)
             } // 4
-            Log.e("FROM_GALLERY", destinationUri.toString())
         } else if (resultCode == Activity.RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             val resultUri = UCrop.getOutput(data!!)
             banner(imagePath = resultUri?.path.toString())
-            Log.e("FROM_UCROP", resultUri.toString())
         } else if (resultCode == UCrop.RESULT_ERROR) {
             val cropError = UCrop.getError(data!!)
-            Log.e("FROM_UCROP", cropError.toString())
         } else if (resultCode == Activity.RESULT_CANCELED) {
             showMessage(layout_refresh, "Fetching files cancelled.")
-            Log.e("RESULT_CANCELED", data?.data.toString() + " RESULT_CANCELLED")
         }
     }
 
@@ -371,25 +354,20 @@ class Banner : AppCompatActivity() {
         ) // 4
     }
 
-    var currentPhotoPath = ""
-    private fun getImageFile(): File {
-        val imageFileName = System.currentTimeMillis().toString() + "_thumbnail"
-        val mydir = applicationContext?.getDir("get2basket", Context.MODE_PRIVATE)
-        val profile = File(mydir, "profile")
-        if (!profile.exists()) {
-            profile.mkdirs()
-        }
-        val file = File.createTempFile(
-            imageFileName, ".jpg", profile
-        )
-        currentPhotoPath = "file:" + file.absolutePath
-        return file
-    }
-
     private fun openCropActivity(sourceUri: Uri, destinationUri: Uri) {
+        val options = UCrop.Options()
+        options.setToolbarColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
+        options.setStatusBarColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
+        options.setActiveWidgetColor(
+            ContextCompat.getColor(
+                applicationContext,
+                R.color.colorPrimary
+            )
+        )
         this@Banner.let {
             UCrop.of(sourceUri, destinationUri)
-                .withAspectRatio(16f, 9f)
+                .withOptions(options)
+                .withAspectRatio(5f, 5f)
                 .start(this@Banner)
         }
     }

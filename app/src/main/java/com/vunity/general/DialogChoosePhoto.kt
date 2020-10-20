@@ -1,24 +1,23 @@
-package com.vunity.user
+package com.vunity.general
 
 import android.app.Activity.RESULT_CANCELED
 import android.app.Activity.RESULT_OK
-import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider.getUriForFile
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import com.vunity.BuildConfig
-import com.vunity.general.Constants
 import com.vunity.R
 import com.yalantis.ucrop.UCrop
 import kotlinx.android.synthetic.main.frag_choose_photo.*
@@ -61,7 +60,6 @@ open class DialogChoosePhoto : BottomSheetDialogFragment() {
         if (requestCode == Constants.CAMERA_ACTION_PICK_REQUEST_CODE && resultCode == RESULT_OK) {
             val uri = Uri.parse(currentPhotoPath)
             openCropActivity(uri, uri)
-            Log.e("FROM_CAMERA", uri.toString())
 
         } else if (requestCode == Constants.PICK_IMAGE_GALLERY_REQUEST_CODE && resultCode == RESULT_OK && data != null) {
             val sourceUri = data.data // 1
@@ -70,29 +68,22 @@ open class DialogChoosePhoto : BottomSheetDialogFragment() {
             if (sourceUri != null) {
                 openCropActivity(sourceUri, destinationUri)
             }  // 4
-            Log.e("FROM_GALLERY", destinationUri.toString())
 
         } else if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             val resultUri = UCrop.getOutput(data!!)
-            Log.e("FROM_UCROP", resultUri.toString())
-
             val location = Intent(Constants.fileLocation)
             location.putExtra("file_location", resultUri)
             context?.let { LocalBroadcastManager.getInstance(it).sendBroadcast(location) }
             dismiss()
 
         } else if (resultCode == UCrop.RESULT_ERROR) {
-
             val cropError = UCrop.getError(data!!)
-            Log.e("FROM_UCROP", cropError.toString())
         } else if (resultCode == RESULT_CANCELED) {
-
             Toast.makeText(
                 activity?.applicationContext,
                 "Taking picture failed.",
                 Toast.LENGTH_SHORT
             ).show()
-            Log.e("FROM_CAMERA", data?.data.toString() + " RESULT_CANCELLED")
             // User Cancelled the action
         }
 
@@ -129,37 +120,26 @@ open class DialogChoosePhoto : BottomSheetDialogFragment() {
         ) // 4
     }
 
-//    fun cameraIntent() {
-//        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-//        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-//        startActivityForResult(intent, 1888)
-//    }
-
-
     var currentPhotoPath = ""
     private fun getImageFile(): File {
-        val imageFileName = "JPEG_" + System.currentTimeMillis() + "_"
-        val mydir = context?.getDir("yaam-lite", MODE_PRIVATE)
-        val profile = File(mydir, "profile")
-        if (!profile.exists()) {
-            profile.mkdirs()
+        val fileName = System.currentTimeMillis().toString() + ".jpg"
+        val path =
+            context?.getDir(context?.getString(R.string.app_name), AppCompatActivity.MODE_PRIVATE)
+        val tempFiles = File(path, "temp")
+        if (!tempFiles.exists()) {
+            tempFiles.mkdirs()
         }
-
-//        val storageDir = File(
-//            Environment.getExternalStoragePublicDirectory(
-//                Environment.DIRECTORY_DCIM
-//            ), "Camera"
-//        )
-
-        val file = File.createTempFile(
-            imageFileName, ".jpg", profile
-        )
+        val file = File(tempFiles, fileName)
         currentPhotoPath = "file:" + file.absolutePath
         return file
     }
 
     private fun openCropActivity(sourceUri: Uri, destinationUri: Uri) {
         activity?.let {
+            val options = UCrop.Options()
+            options.setToolbarColor(ContextCompat.getColor(context!!, R.color.colorPrimary))
+            options.setStatusBarColor(ContextCompat.getColor(context!!, R.color.colorPrimary))
+            options.setActiveWidgetColor(ContextCompat.getColor(context!!, R.color.colorPrimary))
             UCrop.of(sourceUri, destinationUri)
                 .withAspectRatio(5f, 5f)
                 .start(context!!, this, UCrop.REQUEST_CROP)

@@ -3,10 +3,13 @@
 package com.vunity.general
 
 import android.app.Activity
+import android.app.ActivityManager
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.net.Uri
+import android.provider.OpenableColumns
 import android.text.TextUtils
 import android.util.Patterns
 import android.view.Gravity
@@ -14,6 +17,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.fragment.app.Fragment
@@ -24,6 +28,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.squareup.picasso.Picasso
 import com.vunity.R
 import com.vunity.user.Login
+import java.io.File
 
 var shakhaList: MutableList<Any> = arrayListOf()
 var vedhaAdhyayanamList: MutableList<Any> = arrayListOf()
@@ -135,4 +140,45 @@ fun hideKeyboardFrom(context: Context, view: View) {
     val imm: InputMethodManager =
         context.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
     imm.hideSoftInputFromWindow(view.windowToken, 0)
+}
+
+@Suppress("DEPRECATION")
+fun isMyServiceRunning(context: Context, serviceClass: Class<*>): Boolean {
+    val manager = context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+    for (service in manager.getRunningServices(Integer.MAX_VALUE)) {
+        if (serviceClass.name == service.service.className) {
+            return true
+        }
+    }
+    return false
+}
+
+fun deleteTemps(fileOrDirectory: File) {
+    try {
+        if (fileOrDirectory.isDirectory) for (child in fileOrDirectory.listFiles()) deleteTemps(
+            child
+        )
+        fileOrDirectory.delete()
+    } catch (ex: Exception) {
+        print(ex.message.toString())
+    }
+}
+
+fun getTempFile(context: Context): File {
+    val fileName = System.currentTimeMillis().toString() + ".jpg"
+    val path = context.getDir(context.getString(R.string.app_name), AppCompatActivity.MODE_PRIVATE)
+    val tempFiles = File(path, "temp")
+    if (!tempFiles.exists()) {
+        tempFiles.mkdirs()
+    }
+    return File(tempFiles, fileName)
+}
+
+fun getFileName(uri: Uri, context: Context): String {
+    val returnCursor = context.contentResolver.query(uri, null, null, null, null)
+    val nameIndex = returnCursor?.getColumnIndex(OpenableColumns.DISPLAY_NAME)
+    returnCursor?.moveToFirst()
+    val fileName = nameIndex?.let { returnCursor.getString(it) }
+    returnCursor?.close()
+    return fileName.toString()
 }

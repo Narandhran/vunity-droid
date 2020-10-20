@@ -1,6 +1,6 @@
 package com.vunity.book
 
-data class BookBody(
+data class ReqBookBody(
     var author: String,
     var categoryId: String,
     var description: String,
@@ -34,7 +34,7 @@ data class HomeBookData(
     var yearOfPublish: String
 )
 
-data class SingleBook(
+data class ReqSingleBookBody(
     var libraryId: String,
     var userId: Any
 )

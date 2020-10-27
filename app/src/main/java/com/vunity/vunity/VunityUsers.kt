@@ -9,7 +9,6 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -413,13 +412,13 @@ class VunityUsers : Fragment(), IOnBackPressed {
             }
             vunityUsers = when {
                 filterBody != null -> {
-                    RetrofitClient.instanceClient.filterVunityUsers(filterBody = filterBody!!)
+                    RetrofitClient.vunityClient.filterVunityUsers(filterBody = filterBody!!)
                 }
                 queryValue != null -> {
-                    RetrofitClient.instanceClient.searchVunityUsers(queryValue.toString())
+                    RetrofitClient.vunityClient.searchVunityUsers(queryValue.toString())
                 }
                 else -> {
-                    RetrofitClient.instanceClient.listOfVunityUsers()
+                    RetrofitClient.vunityClient.listOfVunityUsers()
                 }
             }
             vunityUsers?.enqueue(object : Callback<VunityListDto> {
@@ -428,7 +427,6 @@ class VunityUsers : Fragment(), IOnBackPressed {
                     call: Call<VunityListDto>,
                     response: Response<VunityListDto>
                 ) {
-                    Log.e("onResponse", response.toString())
                     when {
                         response.code() == 200 -> {
                             when (response.body()?.status) {
@@ -488,17 +486,12 @@ class VunityUsers : Fragment(), IOnBackPressed {
                                         layout_refresh,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 coordinatorErrorMessage(
                                     layout_refresh,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         }
@@ -518,7 +511,6 @@ class VunityUsers : Fragment(), IOnBackPressed {
                 }
 
                 override fun onFailure(call: Call<VunityListDto>, t: Throwable) {
-                    Log.e("onFailure", t.message.toString())
                     if (!call.isCanceled) {
                         coordinatorErrorMessage(
                             layout_refresh,
@@ -541,7 +533,7 @@ class VunityUsers : Fragment(), IOnBackPressed {
     private fun searchCities(value: String) {
         if (internetDetector?.checkMobileInternetConn(requireContext())!!) {
             try {
-                val requestOtp = RetrofitClient.instanceClient.searchCities(value)
+                val requestOtp = RetrofitClient.vunityClient.searchCities(value)
                 requestOtp.enqueue(object : Callback<CityDto> {
                     @SuppressLint("SimpleDateFormat")
                     @RequiresApi(Build.VERSION_CODES.O)
@@ -565,7 +557,6 @@ class VunityUsers : Fragment(), IOnBackPressed {
                                     else edt_city.threshold = 2
                                     edt_city.setAdapter(adapter)
                                     adapter?.notifyDataSetChanged()
-                                    Log.e("listOfCities", listOfCities.toString())
                                 }
                                 204 -> {
                                     listOfCities.clear()
@@ -604,17 +595,12 @@ class VunityUsers : Fragment(), IOnBackPressed {
                                         layout_refresh,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 coordinatorErrorMessage(
                                     layout_refresh,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         } else if (response.code() == 401) {
@@ -630,7 +616,6 @@ class VunityUsers : Fragment(), IOnBackPressed {
                     }
 
                     override fun onFailure(call: Call<CityDto>, t: Throwable) {
-                        Log.e("onResponse", t.message.toString())
                         coordinatorErrorMessage(
                             layout_refresh,
                             getString(R.string.msg_something_wrong)
@@ -639,7 +624,6 @@ class VunityUsers : Fragment(), IOnBackPressed {
                 })
 
             } catch (e: Exception) {
-                Log.d("ParseException", e.toString())
                 e.printStackTrace()
             }
         } else {

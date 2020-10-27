@@ -1,7 +1,6 @@
 package com.vunity.general
 
 import android.annotation.SuppressLint
-import android.util.Log
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -33,7 +32,7 @@ fun getDate(value: String, outputDateFormat: SimpleDateFormat): String {
     try {
         date = inputDateFormat.parse(value)
     } catch (exception: Exception) {
-        Log.e("Exception from date fun", exception.toString())
+        exception.printStackTrace()
     }
     return outputDateFormat.format(date!!)
 }
@@ -43,7 +42,7 @@ fun getTime(value: String): String {
     try {
         date = inputDateFormat.parse(value)
     } catch (exception: Exception) {
-        Log.e("Exception from date fun", exception.toString())
+        exception.printStackTrace()
     }
     return outputTimeFormat.format(date!!)
 }

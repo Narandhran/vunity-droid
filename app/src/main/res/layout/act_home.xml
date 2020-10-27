@@ -13,11 +13,13 @@
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/navigationView"
-        android:layout_width="175dp"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
         android:background="@drawable/bottom_navigation_background"
         app:itemIconSize="30dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="10dp"
         app:itemIconTint="@color/nav_color_state"
         app:itemTextColor="@color/nav_color_state"
         app:labelVisibilityMode="unlabeled"

@@ -15,7 +15,7 @@
     <string name="take_photo">Take Photo</string>
     <string name="cancel">Cancel</string>
     <string name="update">Update</string>
-    <string name="unable_to_fetch">Unable to fetch you!, Try after some time!.</string>
+    <string name="unable_to_collect">Unable to collect the information, Try after again later.</string>
     <string name="profile">PROFILE</string>
     <string name="bookmarks">Bookmarks</string>
     <string name="about">About</string>
@@ -24,7 +24,6 @@
     <string name="data_not_found_try_after_some_time">Data not found.Try after some time.</string>
     <string name="categories">Categories</string>
     <string name="add">Add</string>
-    <string name="discover">Discover</string>
     <string name="vunity">Vunity</string>
     <string name="welcome_to_swadharmaa">Welcome to V-Unity</string>
     <string name="msg_continue">Continue</string>
@@ -45,6 +44,7 @@
     <string name="add_category">Add Category</string>
     <string name="add_genre">Add Genre</string>
     <string name="add_book">Add Book</string>
+    <string name="add_video">Add Video</string>
     <string name="user">User</string>
     <string name="announcement">Announcement</string>
 
@@ -55,12 +55,15 @@
     <string name="genre">Genre</string>
     <string name="category">Category</string>
     <string name="book">Book</string>
+    <string name="video">Video</string>
     <string name="title">Title</string>
     <string name="msg_genre">Add genres to filter book efficiently.</string>
     <string name="msg_keyword">Add keywords to filter book efficiently.</string>
     <string name="star">****</string>
     <string name="sample_jpg">sample.jpg</string>
     <string name="sample_pdf">sample.pdf</string>
+    <string name="sample_video">sample.mp4</string>
+    <string name="play">Play</string>
     <string name="more">More</string>
     <string name="donate">Donate</string>
 
@@ -121,5 +124,15 @@
     <string name="enter_city_name">Enter city name</string>
     <string name="make_announcement">Make announcement</string>
     <string name="vunity_notifier">Vunity Notifier</string>
+
+    <!--for notification-->
+    <string name="channel_id">Vunity</string>
+    <string name="channel_name">Vunity Notifier</string>
+
+    <!--aws keys-->
+    <string name="access_key">AKIAQXVJ7GKFF4Z4QS5T</string>
+    <string name="secret_key">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</string>
+    <string name="report">Report</string>
+
 
 </resources>

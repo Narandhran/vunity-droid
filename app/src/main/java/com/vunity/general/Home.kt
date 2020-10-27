@@ -9,23 +9,26 @@ import android.os.Bundle
 import android.util.Log
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.iid.FirebaseInstanceId
+import com.hbisoft.pickit.PickiT
+import com.hbisoft.pickit.PickiTCallbacks
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.vunity.R
-import com.vunity.book.Book
-import com.vunity.discover.Discover
+import com.vunity.book.BookDetails
+import com.vunity.book.Books
 import com.vunity.interfaces.IOnBackPressed
 import com.vunity.server.RetrofitClient
 import com.vunity.user.ErrorMsgDto
 import com.vunity.user.Login
 import com.vunity.user.ProDto
 import com.vunity.user.ResDto
+import com.vunity.video.VideoUploadService
+import com.vunity.video.Videos
 import com.vunity.vunity.Vunity
 import com.vunity.vunity.VunityUsers
 import kotlinx.android.synthetic.main.act_home.*
@@ -34,31 +37,35 @@ import org.apache.commons.lang3.StringUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.io.File
 import java.util.*
-import kotlin.system.exitProcess
 
-class Home : AppCompatActivity() {
+class Home : AppCompatActivity(), PickiTCallbacks {
+
+    var pickiT: PickiT? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_home)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
         navigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
-        navigationView.selectedItemId = R.id.action_discover
+        navigationView.selectedItemId = R.id.action_books
         loadProfileInfo()
+
+        pickiT = PickiT(this, this, this)
 
         try {
             FirebaseInstanceId.getInstance().instanceId
                 .addOnCompleteListener(OnCompleteListener { task ->
                     if (!task.isSuccessful) {
-                        Log.e("FirebaseInstanceId", "getInstanceId failed "+ task.exception)
+                        Log.e("FirebaseInstanceId", "getInstanceId failed " + task.exception)
                         return@OnCompleteListener
                     }
                     // Get new Instance ID token
                     sendRegistrationToServer(task.result?.token.toString())
-                    Log.e("FirebaseInstanceId", task.result?.token.toString())
                 })
         } catch (exception: Exception) {
-            Log.e("Exception from Login", exception.toString())
+            exception.printStackTrace()
         }
 
         val fcmTitle: String? = intent.getStringExtra("title")
@@ -68,7 +75,7 @@ class Home : AppCompatActivity() {
         try {
             if (fcmTitle != null && fcmBody != null) {
                 if (fcmTitle == getString(R.string.vunity_notifier)) {
-                    val intent = Intent(this@Home, Book::class.java)
+                    val intent = Intent(this@Home, BookDetails::class.java)
                     intent.putExtra(getString(R.string.data), fcmBookId.toString())
                     startActivityForResult(intent, 1)
                 } else {
@@ -84,15 +91,15 @@ class Home : AppCompatActivity() {
             }
         } catch (e: InterruptedException) {
             // Process exception
-            Log.e("InterruptedException", e.toString())
+            e.printStackTrace()
         }
     }
 
     private val mOnNavigationItemSelectedListener =
         BottomNavigationView.OnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.action_discover -> {
-                    val fragment = Discover.newInstance()
+                R.id.action_books -> {
+                    val fragment = Books.newInstance()
                     openFragment(fragment)
                     return@OnNavigationItemSelectedListener true
                 }
@@ -122,6 +129,12 @@ class Home : AppCompatActivity() {
                         return@OnNavigationItemSelectedListener true
                     }
                 }
+
+                R.id.action_videos -> {
+                    val fragment = Videos.newInstance()
+                    openFragment(fragment)
+                    return@OnNavigationItemSelectedListener true
+                }
             }
             false
         }
@@ -139,37 +152,20 @@ class Home : AppCompatActivity() {
         val selectedItemId = navigationView.selectedItemId
         if (!backPressed) {
             when {
-                selectedItemId != R.id.action_discover -> {
-                    navigationView.selectedItemId = R.id.action_discover
+                selectedItemId != R.id.action_books -> {
+                    navigationView.selectedItemId = R.id.action_books
                 }
-                selectedItemId == R.id.action_discover -> {
-                    exitApp()
+                selectedItemId == R.id.action_books -> {
+                    finish()
                 }
             }
         }
     }
 
-    private fun exitApp() {
-        val builder = AlertDialog.Builder(this@Home)
-        builder.setTitle("Leave " + getString(R.string.app_name) + "?")
-        builder.setMessage("Are you sure you want to exit?")
-        builder.setPositiveButton("YES") { dialog, which ->
-            dialog.cancel()
-            finish()
-            exitProcess(0)
-        }
-        builder.setNegativeButton("No") { dialog, which ->
-            dialog.cancel()
-        }
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
-    }
-
     private fun sendRegistrationToServer(token: String) {
         val mapData: HashMap<String, String> = HashMap()
         mapData["fcm"] = token
-        Log.e("data", mapData.toString())
-        val updateToken = RetrofitClient.instanceClient.updateProfile(mapData)
+        val updateToken = RetrofitClient.userClient.updateProfile(mapData)
         updateToken.enqueue(object : Callback<ResDto> {
             @SuppressLint("SimpleDateFormat")
             @RequiresApi(Build.VERSION_CODES.O)
@@ -177,11 +173,9 @@ class Home : AppCompatActivity() {
                 call: Call<ResDto>,
                 response: Response<ResDto>
             ) {
-                Log.e("onResponse", response.toString())
                 if (response.code() == 200) {
                     when (response.body()?.status) {
                         200 -> {
-                            Log.e("onNewToken", response.body()!!.message.toString())
                             saveData("fcm_token", token, applicationContext)
                         }
                         else -> {
@@ -206,7 +200,7 @@ class Home : AppCompatActivity() {
                             Log.e("onNewToken", response.body().toString())
                         }
                     } catch (e: Exception) {
-                        Log.e("Exception", e.toString())
+                        e.printStackTrace()
                     }
 
                 } else {
@@ -221,14 +215,13 @@ class Home : AppCompatActivity() {
     }
 
     private fun loadProfileInfo() {
-        val profile = RetrofitClient.instanceClient.profile()
+        val profile = RetrofitClient.userClient.profile()
         profile.enqueue(object : Callback<ProDto> {
             @SuppressLint("DefaultLocale", "SetTextI18n")
             override fun onResponse(
                 call: Call<ProDto>,
                 response: Response<ProDto>
             ) {
-                Log.e("onResponse", response.toString())
                 when {
                     response.code() == 200 -> {
                         when (response.body()?.status) {
@@ -263,7 +256,6 @@ class Home : AppCompatActivity() {
                                     )
 
                                 } catch (e: Exception) {
-                                    Log.d("Profile", e.toString())
                                     e.printStackTrace()
                                 }
                             }
@@ -290,7 +282,7 @@ class Home : AppCompatActivity() {
                                 Log.e("Response", response.body()!!.toString())
                             }
                         } catch (e: Exception) {
-                            Log.e("Exception", e.toString())
+                            e.printStackTrace()
                         }
                     }
                     response.code() == 401 -> {
@@ -306,6 +298,16 @@ class Home : AppCompatActivity() {
                 Log.e("onFailure", t.message.toString())
             }
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+//        if (!isMyServiceRunning(applicationContext, VideoUploadService::class.java)) {
+//            val path = applicationContext?.getDir(getString(R.string.app_name), MODE_PRIVATE)
+//            val tempFiles = File(path, "temp")
+//            deleteTemps(tempFiles)
+//            pickiT?.deleteTemporaryFile()
+//        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -328,5 +330,27 @@ class Home : AppCompatActivity() {
                 reloadActivity(this@Home)
             }
         }
+    }
+
+    override fun PickiTonUriReturned() {
+        TODO("Not yet implemented")
+    }
+
+    override fun PickiTonStartListener() {
+        TODO("Not yet implemented")
+    }
+
+    override fun PickiTonProgressUpdate(progress: Int) {
+        TODO("Not yet implemented")
+    }
+
+    override fun PickiTonCompleteListener(
+        path: String?,
+        wasDriveFile: Boolean,
+        wasUnknownProvider: Boolean,
+        wasSuccessful: Boolean,
+        Reason: String?
+    ) {
+        TODO("Not yet implemented")
     }
 }

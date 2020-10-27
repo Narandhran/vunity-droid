@@ -3,7 +3,6 @@ package com.vunity.vunity
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -90,14 +89,13 @@ class Vunity : Fragment(), IOnBackPressed {
     private fun getByUser() {
         if (internetDetector?.checkMobileInternetConn(requireContext())!!) {
             val userId = getData("user_id", requireContext()).toString()
-            getByUser = RetrofitClient.instanceClient.getVunityUserById(userId)
+            getByUser = RetrofitClient.vunityClient.getVunityUserById(userId)
             getByUser?.enqueue(object : Callback<VunityDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(
                     call: Call<VunityDto>,
                     response: Response<VunityDto>
                 ) {
-                    Log.e("onResponse", response.toString())
                     when {
                         response.code() == 200 -> {
                             when (response.body()?.status) {
@@ -254,17 +252,12 @@ class Vunity : Fragment(), IOnBackPressed {
                                         layout_refresh,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 coordinatorErrorMessage(
                                     layout_refresh,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         }
@@ -282,7 +275,6 @@ class Vunity : Fragment(), IOnBackPressed {
                 }
 
                 override fun onFailure(call: Call<VunityDto>, t: Throwable) {
-                    Log.e("onFailure", t.message.toString())
                     if (!call.isCanceled) {
                         coordinatorErrorMessage(
                             layout_refresh,

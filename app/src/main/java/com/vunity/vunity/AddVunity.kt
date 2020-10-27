@@ -13,7 +13,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
@@ -38,7 +37,6 @@ import com.vunity.general.*
 import com.vunity.server.InternetDetector
 import com.vunity.server.RetrofitClient
 import com.vunity.server.RetrofitWithBar
-import com.vunity.user.DialogChoosePhoto
 import com.vunity.user.ErrorMsgDto
 import com.vunity.user.ResDto
 import kotlinx.android.synthetic.main.act_add_vunity.*
@@ -256,7 +254,7 @@ class AddVunity : AppCompatActivity() {
                 edt_mothertongue.setText(vunityData.mother_tongue.toString())
             }
         } catch (exception: Exception) {
-            Log.e("Exception", exception.toString())
+            exception.printStackTrace()
         }
 
         edt_city.addTextChangedListener(object : TextWatcher {
@@ -319,7 +317,6 @@ class AddVunity : AppCompatActivity() {
                             }
 
                         } catch (e: Exception) {
-                            Log.d("ParseException", e.toString())
                             e.printStackTrace()
                         }
                     }
@@ -374,7 +371,6 @@ class AddVunity : AppCompatActivity() {
                             }
 
                         } catch (e: Exception) {
-                            Log.d("ParseException", e.toString())
                             e.printStackTrace()
                         }
                     }
@@ -445,7 +441,6 @@ class AddVunity : AppCompatActivity() {
                             }
 
                         } catch (e: Exception) {
-                            Log.d("ParseException", e.toString())
                             e.printStackTrace()
                         }
                     }
@@ -528,7 +523,6 @@ class AddVunity : AppCompatActivity() {
                             }
 
                         } catch (e: Exception) {
-                            Log.d("ParseException", e.toString())
                             e.printStackTrace()
                         }
                     }
@@ -599,7 +593,6 @@ class AddVunity : AppCompatActivity() {
                             }
 
                         } catch (e: Exception) {
-                            Log.d("ParseException", e.toString())
                             e.printStackTrace()
                         }
                     }
@@ -670,7 +663,6 @@ class AddVunity : AppCompatActivity() {
                             }
 
                         } catch (e: Exception) {
-                            Log.d("ParseException", e.toString())
                             e.printStackTrace()
                         }
                     }
@@ -757,7 +749,6 @@ class AddVunity : AppCompatActivity() {
                             }
 
                         } catch (e: Exception) {
-                            Log.d("ParseException", e.toString())
                             e.printStackTrace()
                         }
                     }
@@ -824,7 +815,6 @@ class AddVunity : AppCompatActivity() {
                             }
 
                         } catch (e: Exception) {
-                            Log.d("ParseException", e.toString())
                             e.printStackTrace()
                         }
                     }
@@ -879,7 +869,6 @@ class AddVunity : AppCompatActivity() {
                             }
 
                         } catch (e: Exception) {
-                            Log.d("ParseException", e.toString())
                             e.printStackTrace()
                         }
                     }
@@ -905,8 +894,7 @@ class AddVunity : AppCompatActivity() {
             try {
                 val mapData: HashMap<String, Boolean> = HashMap()
                 mapData["isMobileVisible"] = isChecked
-                Log.e("mapData", mapData.toString())
-                val mobileVisibility = RetrofitClient.instanceClient.mobileVisibility(vunityId.toString(),mapData)
+                val mobileVisibility = RetrofitClient.vunityClient.mobileVisibility(vunityId.toString(),mapData)
                 mobileVisibility.enqueue(
                     RetrofitWithBar(this@AddVunity, object : Callback<ResDto> {
                         @SuppressLint("SimpleDateFormat")
@@ -915,7 +903,6 @@ class AddVunity : AppCompatActivity() {
                             call: Call<ResDto>,
                             response: Response<ResDto>
                         ) {
-                            Log.e("onResponse", response.toString())
                             if (response.code() == 200) {
                                 when (response.body()?.status) {
                                     200 -> {
@@ -953,17 +940,12 @@ class AddVunity : AppCompatActivity() {
                                             lay_root,
                                             getString(R.string.msg_something_wrong)
                                         )
-                                        Log.e(
-                                            "Response",
-                                            response.body()!!.toString()
-                                        )
                                     }
                                 } catch (e: Exception) {
                                     showErrorMessage(
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e("Exception", e.toString())
                                 }
 
                             } else if (response.code() == 401) {
@@ -979,7 +961,6 @@ class AddVunity : AppCompatActivity() {
                         }
 
                         override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                            Log.e("onResponse", t.message.toString())
                             showErrorMessage(
                                 lay_root,
                                 getString(R.string.msg_something_wrong)
@@ -989,7 +970,6 @@ class AddVunity : AppCompatActivity() {
                 )
 
             } catch (e: Exception) {
-                Log.d("ParseException", e.toString())
                 e.printStackTrace()
             }
         } else {
@@ -1051,11 +1031,10 @@ class AddVunity : AppCompatActivity() {
     private fun create(data: VunityBody) {
         if (internet!!.checkMobileInternetConn(this@AddVunity)) {
             try {
-                Log.e("body", data.toString())
                 unityFrom = if (vunityId == null) {
-                    RetrofitClient.instanceClient.createVunity(body = data)
+                    RetrofitClient.vunityClient.createVunity(body = data)
                 } else {
-                    RetrofitClient.instanceClient.updateVunity(
+                    RetrofitClient.vunityClient.updateVunity(
                         id = vunityId.toString(),
                         body = data
                     )
@@ -1068,7 +1047,6 @@ class AddVunity : AppCompatActivity() {
                             call: Call<ResDto>,
                             response: Response<ResDto>
                         ) {
-                            Log.e("onResponse", response.toString())
                             if (response.code() == 200) {
                                 when (response.body()?.status) {
                                     200 -> {
@@ -1110,17 +1088,12 @@ class AddVunity : AppCompatActivity() {
                                             lay_root,
                                             getString(R.string.msg_something_wrong)
                                         )
-                                        Log.e(
-                                            "Response",
-                                            response.body()!!.toString()
-                                        )
                                     }
                                 } catch (e: Exception) {
                                     showErrorMessage(
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e("Exception", e.toString())
                                 }
 
                             } else if (response.code() == 401) {
@@ -1136,7 +1109,6 @@ class AddVunity : AppCompatActivity() {
                         }
 
                         override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                            Log.e("onResponse", t.message.toString())
                             showErrorMessage(
                                 lay_root,
                                 getString(R.string.msg_something_wrong)
@@ -1146,7 +1118,6 @@ class AddVunity : AppCompatActivity() {
                 )
 
             } catch (e: Exception) {
-                Log.d("ParseException", e.toString())
                 e.printStackTrace()
             }
         } else {
@@ -1160,7 +1131,7 @@ class AddVunity : AppCompatActivity() {
     private fun searchCities(value: String) {
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
             try {
-                val requestOtp = RetrofitClient.instanceClient.searchCities(value)
+                val requestOtp = RetrofitClient.vunityClient.searchCities(value)
                 requestOtp.enqueue(object : Callback<CityDto> {
                     @SuppressLint("SimpleDateFormat")
                     @RequiresApi(Build.VERSION_CODES.O)
@@ -1184,7 +1155,6 @@ class AddVunity : AppCompatActivity() {
                                     else edt_city.threshold = 2
                                     edt_city.setAdapter(adapter)
                                     adapter?.notifyDataSetChanged()
-                                    Log.e("listOfCities", listOfCities.toString())
                                 }
                                 204 -> {
                                     listOfCities.clear()
@@ -1223,17 +1193,12 @@ class AddVunity : AppCompatActivity() {
                                         layout_refresh,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 showErrorMessage(
                                     layout_refresh,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         } else if (response.code() == 401) {
@@ -1249,7 +1214,6 @@ class AddVunity : AppCompatActivity() {
                     }
 
                     override fun onFailure(call: Call<CityDto>, t: Throwable) {
-                        Log.e("onResponse", t.message.toString())
                         showErrorMessage(
                             layout_refresh,
                             getString(R.string.msg_something_wrong)
@@ -1258,7 +1222,6 @@ class AddVunity : AppCompatActivity() {
                 })
 
             } catch (e: Exception) {
-                Log.d("ParseException", e.toString())
                 e.printStackTrace()
             }
         } else {
@@ -1285,9 +1248,8 @@ class AddVunity : AppCompatActivity() {
                 val part: MultipartBody.Part =
                     MultipartBody.Part.createFormData("dp", file.name, fileReqBody)
 
-                Log.e("fileLocationReceiver", uri.toString())
                 if (internet?.checkMobileInternetConn(context)!!) {
-                    val uploadProfile = RetrofitClient.instanceClient.updateVunityPhoto(part)
+                    val uploadProfile = RetrofitClient.vunityClient.updateVunityPhoto(part)
                     uploadProfile.enqueue(
                         RetrofitWithBar(this@AddVunity, object : Callback<ResDto> {
                             @SuppressLint("SimpleDateFormat")
@@ -1296,7 +1258,6 @@ class AddVunity : AppCompatActivity() {
                                 call: Call<ResDto>,
                                 response: Response<ResDto>
                             ) {
-                                Log.e("onResponse", response.toString())
                                 if (response.code() == 200) {
                                     when (response.body()?.status) {
                                         200 -> {
@@ -1348,17 +1309,12 @@ class AddVunity : AppCompatActivity() {
                                                 lay_root,
                                                 getString(R.string.msg_something_wrong)
                                             )
-                                            Log.e(
-                                                "Response",
-                                                response.body()!!.toString()
-                                            )
                                         }
                                     } catch (e: Exception) {
                                         showErrorMessage(
                                             lay_root,
                                             getString(R.string.msg_something_wrong)
                                         )
-                                        Log.e("Exception", e.toString())
                                     }
 
                                 } else if (response.code() == 401) {
@@ -1374,7 +1330,6 @@ class AddVunity : AppCompatActivity() {
                             }
 
                             override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                                Log.e("onResponse", t.message.toString())
                                 showErrorMessage(
                                     lay_root,
                                     getString(R.string.msg_something_wrong)

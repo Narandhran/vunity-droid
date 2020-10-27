@@ -12,15 +12,17 @@ import com.github.siyamed.shapeimageview.mask.PorterShapeImageView
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.textview.MaterialTextView
 import com.vunity.R
-import com.vunity.discover.SeeAll
+import com.vunity.book.BookSeeAll
 import com.vunity.general.Enums
 import com.vunity.general.loadImage
+import com.vunity.video.VideoSeeAll
 import org.apache.commons.lang3.StringUtils
 
 
 class CategoryAdapter(
     private var dataList: List<CategoryData>,
-    private val activity: Activity
+    private val activity: Activity,
+    private var isBook: Boolean
 
 ) :
     RecyclerView.Adapter<CategoryAdapter.Holder>() {
@@ -44,17 +46,27 @@ class CategoryAdapter(
             )
             holder.cardCategory.setOnClickListener {
                 data = dataList[position]
-                val intent = Intent(activity, SeeAll::class.java)
-                intent.putExtra(
-                    activity.getString(R.string.data),
-                    activity.getString(R.string.loadBooksByCategory)
-                )
-                intent.putExtra(activity.getString(R.string.id), data._id)
-                intent.putExtra(activity.getString(R.string.name), data.name)
-                activity.startActivity(intent)
+                if (isBook) {
+                    val intent = Intent(activity, BookSeeAll::class.java)
+                    intent.putExtra(
+                        activity.getString(R.string.data),
+                        activity.getString(R.string.loadBooksByCategory)
+                    )
+                    intent.putExtra(activity.getString(R.string.id), data._id)
+                    intent.putExtra(activity.getString(R.string.name), data.name)
+                    activity.startActivity(intent)
+                } else {
+                    val intent = Intent(activity, VideoSeeAll::class.java)
+                    intent.putExtra(
+                        activity.getString(R.string.data),
+                        activity.getString(R.string.loadBooksByCategory)
+                    )
+                    intent.putExtra(activity.getString(R.string.id), data._id)
+                    intent.putExtra(activity.getString(R.string.name), data.name)
+                    activity.startActivity(intent)
+                }
             }
         } catch (e: Exception) {
-            Log.d("Exception", e.toString())
             e.printStackTrace()
         }
     }

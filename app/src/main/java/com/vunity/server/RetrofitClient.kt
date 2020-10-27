@@ -4,8 +4,16 @@ import android.annotation.SuppressLint
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import com.vunity.banner.BannerResponse
+import com.vunity.book.BookResponse
+import com.vunity.category.CategoryResponse
+import com.vunity.favourite.FavouriteResponse
 import com.vunity.general.Application
 import com.vunity.general.getToken
+import com.vunity.report.ReportResponse
+import com.vunity.user.UserResponse
+import com.vunity.video.VideoResponse
+import com.vunity.vunity.VunityResponse
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Response
@@ -48,26 +56,42 @@ object RetrofitClient {
         .addInterceptor(SupportInterceptor())
         .build()
 
-    val instanceClient: ResponseService by lazy {
-        val retrofit = Retrofit.Builder()
-            .client(client)
-            .baseUrl(HOST)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .addCallAdapterFactory(CoroutineCallAdapterFactory())
-            .build()
-//        Log.d("Interceptor", getToken("user_token", Application.appContext) + " vijay")
-        retrofit.create(ResponseService::class.java)
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(HOST)
+        .client(client)
+        .addConverterFactory(MoshiConverterFactory.create(moshi))
+        .addCallAdapterFactory(CoroutineCallAdapterFactory())
+        .build()
+
+    val bannerClient: BannerResponse by lazy {
+        retrofit.create(BannerResponse::class.java)
     }
 
-    //Without Authorization token
-    val instanceClientWithoutToken: ResponseService by lazy {
-        val retrofit = Retrofit.Builder()
-            .baseUrl(HOST)
-            .client(client)
-            .addConverterFactory(MoshiConverterFactory.create(moshi))
-            .addCallAdapterFactory(CoroutineCallAdapterFactory())
-            .build()
-        retrofit.create(ResponseService::class.java)
+    val bookClient: BookResponse by lazy {
+        retrofit.create(BookResponse::class.java)
     }
 
+    val categoryClient: CategoryResponse by lazy {
+        retrofit.create(CategoryResponse::class.java)
+    }
+
+    val favouriteClient: FavouriteResponse by lazy {
+        retrofit.create(FavouriteResponse::class.java)
+    }
+
+    val userClient: UserResponse by lazy {
+        retrofit.create(UserResponse::class.java)
+    }
+
+    val videoClient: VideoResponse by lazy {
+        retrofit.create(VideoResponse::class.java)
+    }
+
+    val vunityClient: VunityResponse by lazy {
+        retrofit.create(VunityResponse::class.java)
+    }
+
+    val reportClient: ReportResponse by lazy {
+        retrofit.create(ReportResponse::class.java)
+    }
 }

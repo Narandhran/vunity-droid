@@ -2,17 +2,16 @@ package com.vunity.category
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -91,7 +90,6 @@ class AddCategory : AppCompatActivity() {
             val jsonAdapter: JsonAdapter<CategoryBody> =
                 moshi.adapter(CategoryBody::class.java)
             val json: String = jsonAdapter.toJson(categoryData)
-            Log.e("CategoryBody", uri.toString() + " " + json)
 
             val file = File(uri!!.path!!)
             val fileReqBody = RequestBody.create(MediaType.parse("image/*"), file)
@@ -100,7 +98,7 @@ class AddCategory : AppCompatActivity() {
             val text = RequestBody.create(MediaType.parse("text/plain"), json)
 
             if (internet?.checkMobileInternetConn(applicationContext)!!) {
-                val category = RetrofitClient.instanceClient.addCategory(part, text)
+                val category = RetrofitClient.categoryClient.addCategory(part, text)
                 category.enqueue(
                     RetrofitWithBar(this@AddCategory, object : Callback<CategoryDto> {
                         @SuppressLint("SimpleDateFormat")
@@ -109,7 +107,6 @@ class AddCategory : AppCompatActivity() {
                             call: Call<CategoryDto>,
                             response: Response<CategoryDto>
                         ) {
-                            Log.e("onResponse", response.toString())
                             if (response.code() == 200) {
                                 when (response.body()?.status) {
                                     200 -> {
@@ -157,17 +154,12 @@ class AddCategory : AppCompatActivity() {
                                             lay_root,
                                             getString(R.string.msg_something_wrong)
                                         )
-                                        Log.e(
-                                            "Response",
-                                            response.body()!!.toString()
-                                        )
                                     }
                                 } catch (e: Exception) {
                                     showErrorMessage(
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e("Exception", e.toString())
                                 }
 
                             } else if (response.code() == 401) {
@@ -183,7 +175,6 @@ class AddCategory : AppCompatActivity() {
                         }
 
                         override fun onFailure(call: Call<CategoryDto>, t: Throwable) {
-                            Log.e("onResponse", t.message.toString())
                             showErrorMessage(
                                 lay_root,
                                 getString(R.string.msg_something_wrong)
@@ -204,16 +195,14 @@ class AddCategory : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == Constants.PICK_IMAGE_GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
             val sourceUri = data.data // 1
-            val file = getImageFile() // 2
+            val file = getTempFile(applicationContext) // 2
             val destinationUri = Uri.fromFile(file)  // 3
             if (sourceUri != null) {
                 openCropActivity(sourceUri, destinationUri)
             }  // 4
-            Log.e("FROM_GALLERY", destinationUri.toString())
 
         } else if (resultCode == Activity.RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             val resultUri = UCrop.getOutput(data!!)
-            Log.e("FROM_UCROP", resultUri.toString())
             txt_tips.visibility = View.GONE
             uri = resultUri
             Picasso.get().load(resultUri)
@@ -221,18 +210,10 @@ class AddCategory : AppCompatActivity() {
                 .placeholder(R.drawable.img_place_holder)
                 .into(img_category)
         } else if (resultCode == UCrop.RESULT_ERROR) {
-
             val cropError = UCrop.getError(data!!)
-            Log.e("FROM_UCROP", cropError.toString())
         } else if (resultCode == Activity.RESULT_CANCELED) {
-
-            Toast.makeText(
-                applicationContext,
-                "Taking picture failed.",
-                Toast.LENGTH_SHORT
-            ).show()
-            Log.e("FROM_CAMERA", data?.data.toString() + " RESULT_CANCELLED")
-            // User Cancelled the action
+            Toast.makeText(applicationContext, "Taking picture failed.", Toast.LENGTH_SHORT)
+                .show() // User Cancelled the action
         }
     }
 
@@ -250,24 +231,19 @@ class AddCategory : AppCompatActivity() {
         ) // 4
     }
 
-    var currentPhotoPath = ""
-    private fun getImageFile(): File {
-        val imageFileName = "JPEG_" + System.currentTimeMillis() + "_"
-        val mydir = applicationContext?.getDir("get2basket", Context.MODE_PRIVATE)
-        val profile = File(mydir, "profile")
-        if (!profile.exists()) {
-            profile.mkdirs()
-        }
-        val file = File.createTempFile(
-            imageFileName, ".jpg", profile
-        )
-        currentPhotoPath = "file:" + file.absolutePath
-        return file
-    }
-
     private fun openCropActivity(sourceUri: Uri, destinationUri: Uri) {
+        val options = UCrop.Options()
+        options.setToolbarColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
+        options.setStatusBarColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
+        options.setActiveWidgetColor(
+            ContextCompat.getColor(
+                applicationContext,
+                R.color.colorPrimary
+            )
+        )
         this@AddCategory.let {
             UCrop.of(sourceUri, destinationUri)
+                .withOptions(options)
                 .withAspectRatio(5f, 5f)
                 .start(this@AddCategory)
         }

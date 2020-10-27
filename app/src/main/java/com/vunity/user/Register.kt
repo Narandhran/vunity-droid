@@ -10,7 +10,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -140,10 +139,10 @@ class Register : AppCompatActivity() {
                 }
             }
         } catch (e: Exception) {
-            Log.e("Exception", e.toString())
+            e.printStackTrace()
             showMessage(
                 lay_root,
-                getString(R.string.unable_to_fetch)
+                getString(R.string.unable_to_collect)
             )
         }
 
@@ -184,7 +183,8 @@ class Register : AppCompatActivity() {
                     mapData["lname"] = edt_lname.text.toString().toLowerCase(Locale.getDefault())
                     mapData["email"] = edt_email.text.toString().toLowerCase(Locale.getDefault())
                     mapData["mobile"] = edt_mobile.text.toString().toLowerCase(Locale.getDefault())
-                    mapData["soothram"] = edt_soothram.text.toString().toLowerCase(Locale.getDefault())
+                    mapData["soothram"] =
+                        edt_soothram.text.toString().toLowerCase(Locale.getDefault())
                     mapData["vaidhika"] = isVaidhika
                     if (id.isEmpty()) {
                         register(mapData)
@@ -235,9 +235,8 @@ class Register : AppCompatActivity() {
                 val part: MultipartBody.Part =
                     MultipartBody.Part.createFormData("dp", file.name, fileReqBody)
 
-                Log.e("fileLocationReceiver", uri.toString())
                 if (internet?.checkMobileInternetConn(context)!!) {
-                    val uploadProfile = RetrofitClient.instanceClient.updateDp(part)
+                    val uploadProfile = RetrofitClient.userClient.updateDp(part)
                     uploadProfile.enqueue(
                         RetrofitWithBar(this@Register, object : Callback<ResDto> {
                             @SuppressLint("SimpleDateFormat")
@@ -246,7 +245,6 @@ class Register : AppCompatActivity() {
                                 call: Call<ResDto>,
                                 response: Response<ResDto>
                             ) {
-                                Log.e("onResponse", response.toString())
                                 if (response.code() == 200) {
                                     when (response.body()?.status) {
                                         200 -> {
@@ -298,17 +296,12 @@ class Register : AppCompatActivity() {
                                                 lay_root,
                                                 getString(R.string.msg_something_wrong)
                                             )
-                                            Log.e(
-                                                "Response",
-                                                response.body()!!.toString()
-                                            )
                                         }
                                     } catch (e: Exception) {
                                         showErrorMessage(
                                             lay_root,
                                             getString(R.string.msg_something_wrong)
                                         )
-                                        Log.e("Exception", e.toString())
                                     }
 
                                 } else if (response.code() == 401) {
@@ -324,7 +317,6 @@ class Register : AppCompatActivity() {
                             }
 
                             override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                                Log.e("onResponse", t.message.toString())
                                 showErrorMessage(
                                     lay_root,
                                     getString(R.string.msg_something_wrong)
@@ -345,8 +337,7 @@ class Register : AppCompatActivity() {
     private fun register(mapData: HashMap<String, Any>) {
         if (internet!!.checkMobileInternetConn(this@Register)) {
             try {
-                Log.e("mapData", mapData.toString())
-                val register = RetrofitClient.instanceClientWithoutToken.register(mapData)
+                val register = RetrofitClient.userClient.register(mapData)
                 register.enqueue(
                     RetrofitWithBar(this@Register, object : Callback<ResDto> {
                         @SuppressLint("SimpleDateFormat")
@@ -355,7 +346,6 @@ class Register : AppCompatActivity() {
                             call: Call<ResDto>,
                             response: Response<ResDto>
                         ) {
-                            Log.e("onResponse", response.toString())
                             if (response.code() == 200) {
                                 when (response.body()?.status) {
                                     200 -> {
@@ -409,17 +399,12 @@ class Register : AppCompatActivity() {
                                             lay_root,
                                             getString(R.string.msg_something_wrong)
                                         )
-                                        Log.e(
-                                            "Response",
-                                            response.body()!!.toString()
-                                        )
                                     }
                                 } catch (e: Exception) {
                                     showErrorMessage(
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e("Exception", e.toString())
                                 }
 
                             } else if (response.code() == 401) {
@@ -435,7 +420,6 @@ class Register : AppCompatActivity() {
                         }
 
                         override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                            Log.e("onResponse", t.message.toString())
                             showErrorMessage(
                                 lay_root,
                                 getString(R.string.msg_something_wrong)
@@ -445,7 +429,6 @@ class Register : AppCompatActivity() {
                 )
 
             } catch (e: Exception) {
-                Log.d("ParseException", e.toString())
                 e.printStackTrace()
             }
         } else {
@@ -459,8 +442,7 @@ class Register : AppCompatActivity() {
     private fun update(mapData: HashMap<String, Any>) {
         if (internet!!.checkMobileInternetConn(this@Register)) {
             try {
-                Log.e("mapData", mapData.toString())
-                val register = RetrofitClient.instanceClient.updateProfile(mapData)
+                val register = RetrofitClient.userClient.updateProfile(mapData)
                 register.enqueue(
                     RetrofitWithBar(this@Register, object : Callback<ResDto> {
                         @SuppressLint("SimpleDateFormat")
@@ -469,7 +451,6 @@ class Register : AppCompatActivity() {
                             call: Call<ResDto>,
                             response: Response<ResDto>
                         ) {
-                            Log.e("onResponse", response.toString())
                             if (response.code() == 200) {
                                 when (response.body()?.status) {
                                     200 -> {
@@ -514,17 +495,12 @@ class Register : AppCompatActivity() {
                                             lay_root,
                                             getString(R.string.msg_something_wrong)
                                         )
-                                        Log.e(
-                                            "Response",
-                                            response.body()!!.toString()
-                                        )
                                     }
                                 } catch (e: Exception) {
                                     showErrorMessage(
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e("Exception", e.toString())
                                 }
 
                             } else if (response.code() == 401) {
@@ -540,7 +516,6 @@ class Register : AppCompatActivity() {
                         }
 
                         override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                            Log.e("onResponse", t.message.toString())
                             showErrorMessage(
                                 lay_root,
                                 getString(R.string.msg_something_wrong)
@@ -550,7 +525,6 @@ class Register : AppCompatActivity() {
                 )
 
             } catch (e: Exception) {
-                Log.d("ParseException", e.toString())
                 e.printStackTrace()
             }
         } else {

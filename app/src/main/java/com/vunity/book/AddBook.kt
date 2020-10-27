@@ -10,9 +10,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
-import android.provider.OpenableColumns
 import android.text.Editable
-import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.annotation.RequiresApi
@@ -154,10 +152,10 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                 }
             }
         } catch (e: Exception) {
-            Log.e("Exception", e.toString())
+            e.printStackTrace()
             showMessage(
                 lay_root,
-                getString(R.string.unable_to_fetch)
+                getString(R.string.unable_to_collect)
             )
         }
 
@@ -326,13 +324,13 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
             imagePath == null -> {
                 showErrorMessage(
                     lay_root,
-                    "Book images required!, Please tap on empty place holder to select image!"
+                    "BookDetails images required!, Please tap on empty place holder to select image!"
                 )
             }
             pdfPath == null -> {
                 showErrorMessage(
                     lay_root,
-                    "Book pdf required!, Please tap on empty place holder to select pdf!"
+                    "BookDetails pdf required!, Please tap on empty place holder to select pdf!"
                 )
             }
 
@@ -374,7 +372,7 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
             }
             else -> {
                 try {
-                    val bookBody = BookBody(
+                    val bookBody = ReqBookBody(
                         categoryId = categoryId,
                         name = edt_name.text.toString(),
                         genre = genresList,
@@ -384,13 +382,9 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                         description = edt_description.text.toString(),
                         makeAnnouncement = announcement
                     )
-                    val jsonAdapter: JsonAdapter<BookBody> =
-                        moshi.adapter(BookBody::class.java)
+                    val jsonAdapter: JsonAdapter<ReqBookBody> =
+                        moshi.adapter(ReqBookBody::class.java)
                     val json: String = jsonAdapter.toJson(bookBody)
-                    Log.e(
-                        "bookBody",
-                        "thumbnail :$imagePath\n pdf :$pdfPath\n textField$json"
-                    )
 
                     val imageFile = File(imagePath.toString())
                     val imageReqBody = RequestBody.create(MediaType.parse("image/*"), imageFile)
@@ -404,7 +398,7 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
 
                     if (internet?.checkMobileInternetConn(applicationContext)!!) {
                         val create =
-                            RetrofitClient.instanceClient.addBook(
+                            RetrofitClient.bookClient.addBook(
                                 thumbnail = imagePart,
                                 pdf = pdfPart,
                                 text = text
@@ -417,7 +411,6 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                                     call: Call<ResDto>,
                                     response: Response<ResDto>
                                 ) {
-                                    Log.e("onResponse", response.toString())
                                     if (response.code() == 200) {
                                         when (response.body()?.status) {
                                             200 -> {
@@ -463,17 +456,13 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                                                     lay_root,
                                                     getString(R.string.msg_something_wrong)
                                                 )
-                                                Log.e(
-                                                    "Response",
-                                                    response.body()!!.toString()
-                                                )
                                             }
                                         } catch (e: Exception) {
+                                            e.printStackTrace()
                                             showErrorMessage(
                                                 lay_root,
                                                 getString(R.string.msg_something_wrong)
                                             )
-                                            Log.e("Exception", e.toString())
                                         }
 
                                     } else if (response.code() == 401) {
@@ -487,7 +476,6 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                                 }
 
                                 override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                                    Log.e("onResponse", t.message.toString())
                                     showErrorMessage(
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
@@ -502,7 +490,7 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                         )
                     }
                 } catch (e: Exception) {
-                    Log.e("Product Exception", e.toString())
+                    e.printStackTrace()
                 }
             }
         }
@@ -555,7 +543,7 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
             }
             else -> {
                 try {
-                    val bookBody = BookBody(
+                    val bookBody = ReqBookBody(
                         categoryId = categoryId,
                         name = edt_name.text.toString(),
                         genre = genresList,
@@ -565,12 +553,11 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                         description = edt_description.text.toString(),
                         makeAnnouncement = announcement
                     )
-                    Log.e("bookBody", bookBody.toString())
                     if (internet?.checkMobileInternetConn(applicationContext)!!) {
                         val update =
-                            RetrofitClient.instanceClient.updateBook(
+                            RetrofitClient.bookClient.updateBook(
                                 id = bookId,
-                                bookBody = bookBody
+                                reqBookBody = bookBody
                             )
                         update.enqueue(
                             RetrofitWithBar(this@AddBook, object : Callback<ResDto> {
@@ -580,7 +567,6 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                                     call: Call<ResDto>,
                                     response: Response<ResDto>
                                 ) {
-                                    Log.e("onResponse", response.toString())
                                     if (response.code() == 200) {
                                         when (response.body()?.status) {
                                             200 -> {
@@ -625,17 +611,13 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                                                     lay_root,
                                                     getString(R.string.msg_something_wrong)
                                                 )
-                                                Log.e(
-                                                    "Response",
-                                                    response.body()!!.toString()
-                                                )
                                             }
                                         } catch (e: Exception) {
+                                            e.printStackTrace()
                                             showErrorMessage(
                                                 lay_root,
                                                 getString(R.string.msg_something_wrong)
                                             )
-                                            Log.e("Exception", e.toString())
                                         }
 
                                     } else if (response.code() == 401) {
@@ -649,7 +631,6 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                                 }
 
                                 override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                                    Log.e("onResponse", t.message.toString())
                                     showErrorMessage(
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
@@ -664,20 +645,19 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                         )
                     }
                 } catch (e: Exception) {
-                    Log.e("Product Exception", e.toString())
+                    e.printStackTrace()
                 }
             }
         }
     }
 
     private fun updatePdf(bookId: String, pdfPath: String) {
-        Log.e("bookBody", "pdf :$pdfPath")
         val pdfFile = File(pdfPath)
         val pdfReqBody = RequestBody.create(MediaType.parse("application/pdf"), pdfFile)
         val pdfPart: MultipartBody.Part =
             MultipartBody.Part.createFormData("content", pdfFile.name, pdfReqBody)
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            val updatePdf = RetrofitClient.instanceClient.updateBookPdf(pdf = pdfPart, id = bookId)
+            val updatePdf = RetrofitClient.bookClient.updateBookPdf(pdf = pdfPart, id = bookId)
             updatePdf.enqueue(
                 RetrofitWithBar(this@AddBook, object : Callback<ResDto> {
                     @SuppressLint("SimpleDateFormat")
@@ -686,7 +666,6 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                         call: Call<ResDto>,
                         response: Response<ResDto>
                     ) {
-                        Log.e("onResponse", response.toString())
                         if (response.code() == 200) {
                             when (response.body()?.status) {
                                 200 -> {
@@ -732,17 +711,13 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
+                                e.printStackTrace()
                                 showErrorMessage(
                                     lay_root,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         } else if (response.code() == 401) {
@@ -756,7 +731,6 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                     }
 
                     override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                        Log.e("onResponse", t.message.toString())
                         showErrorMessage(
                             lay_root,
                             getString(R.string.msg_something_wrong)
@@ -773,14 +747,13 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
     }
 
     private fun updateImage(bookId: String, imagePath: String) {
-        Log.e("bookBody", "thumbnail :$imagePath")
         val imageFile = File(imagePath)
         val imageReqBody = RequestBody.create(MediaType.parse("image/*"), imageFile)
         val imagePart: MultipartBody.Part =
             MultipartBody.Part.createFormData("pdf-thumb", imageFile.name, imageReqBody)
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
             val updatePdf =
-                RetrofitClient.instanceClient.updateBookImage(thumbnail = imagePart, id = bookId)
+                RetrofitClient.bookClient.updateBookImage(thumbnail = imagePart, id = bookId)
             updatePdf.enqueue(
                 RetrofitWithBar(this@AddBook, object : Callback<ResDto> {
                     @SuppressLint("SimpleDateFormat")
@@ -789,7 +762,6 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                         call: Call<ResDto>,
                         response: Response<ResDto>
                     ) {
-                        Log.e("onResponse", response.toString())
                         if (response.code() == 200) {
                             when (response.body()?.status) {
                                 200 -> {
@@ -835,17 +807,13 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
+                                e.printStackTrace()
                                 showErrorMessage(
                                     lay_root,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         } else if (response.code() == 401) {
@@ -859,7 +827,6 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                     }
 
                     override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                        Log.e("onResponse", t.message.toString())
                         showErrorMessage(
                             lay_root,
                             getString(R.string.msg_something_wrong)
@@ -916,7 +883,6 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                 }
 
             } catch (e: Exception) {
-                Log.d("ParseException", e.toString())
                 e.printStackTrace()
             }
         }
@@ -926,14 +892,13 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
     private fun categories(): HashMap<String, String> {
         val hashCategory = HashMap<String, String>()
         if (internet?.checkMobileInternetConn(this@AddBook)!!) {
-            category = RetrofitClient.instanceClient.category()
+            category = RetrofitClient.categoryClient.category()
             category?.enqueue(object : Callback<CategoryListDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(
                     call: Call<CategoryListDto>,
                     response: Response<CategoryListDto>
                 ) {
-                    Log.e("onResponse", response.toString())
                     when {
                         response.code() == 200 -> {
                             when (response.body()?.status) {
@@ -942,7 +907,6 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                                     for (list in categoryData) {
                                         hashCategory[list._id] = list.name
                                     }
-                                    Log.e("Categories", hashCategory.toString())
                                 }
                                 204 -> {
                                     showErrorMessage(
@@ -983,17 +947,9 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
-                                showErrorMessage(
-                                    lay_root,
-                                    getString(R.string.msg_something_wrong)
-                                )
-                                Log.e("Exception", e.toString())
+                                e.printStackTrace()
                             }
 
                         }
@@ -1010,7 +966,6 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                 }
 
                 override fun onFailure(call: Call<CategoryListDto>, t: Throwable) {
-                    Log.e("onFailure", t.message.toString())
                     if (!call.isCanceled) {
                         showErrorMessage(
                             lay_root,
@@ -1032,14 +987,13 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
     private fun genres(): ArrayList<String> {
         val genreNames: ArrayList<String> = arrayListOf()
         if (internet?.checkMobileInternetConn(this@AddBook)!!) {
-            genres = RetrofitClient.instanceClient.genres()
+            genres = RetrofitClient.userClient.genres()
             genres?.enqueue(object : Callback<GenreDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(
                     call: Call<GenreDto>,
                     response: Response<GenreDto>
                 ) {
-                    Log.e("onResponse", response.toString())
                     when {
                         response.code() == 200 -> {
                             when (response.body()?.status) {
@@ -1048,7 +1002,6 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                                     for (item in genreData) {
                                         genreNames.add(item.genre)
                                     }
-                                    Log.e("genreNames", genreNames.toString())
                                 }
                                 204 -> {
                                     showErrorMessage(
@@ -1090,17 +1043,12 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 showErrorMessage(
                                     lay_root,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         }
@@ -1117,7 +1065,6 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                 }
 
                 override fun onFailure(call: Call<GenreDto>, t: Throwable) {
-                    Log.e("onFailure", t.message.toString())
                     if (!call.isCanceled) {
                         showErrorMessage(
                             lay_root,
@@ -1153,22 +1100,20 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
             val sourceUri = data.data // 1
             if (sourceUri != null) {
                 pickiT?.getPath(data.data, Build.VERSION.SDK_INT)
-                val name = StringUtils.right(getName(sourceUri, applicationContext), 7)
+                val name = StringUtils.right(getFileName(sourceUri, applicationContext), 7)
                 img_pdf_delete.visibility = View.VISIBLE
                 img_pdf_add.setImageDrawable(
                     ContextCompat.getDrawable(applicationContext, R.drawable.ic_pdf_checked)
                 )
                 txt_pdf_filename.text = getString(R.string.star) + name
             }  // 4
-            Log.e("FROM_PDF", sourceUri.toString())
         } else if (requestCode == Constants.PICK_IMAGE_GALLERY_REQUEST_CODE && resultCode == Activity.RESULT_OK && data != null) {
             val sourceUri = data.data // 1
-            val file = getImageFile() // 2
+            val file = getTempFile(applicationContext) // 2
             val destinationUri = Uri.fromFile(file)  // 3
             if (sourceUri != null) {
                 openCropActivity(sourceUri, destinationUri)
             }  // 4
-            Log.e("FROM_GALLERY", destinationUri.toString())
         } else if (resultCode == Activity.RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
             val resultUri = UCrop.getOutput(data!!)
             if (bookId.isNotEmpty()) {
@@ -1188,13 +1133,10 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
                 )
                 txt_image_filename.text = getString(R.string.star) + name
             }
-            Log.e("FROM_UCROP", resultUri.toString())
         } else if (resultCode == UCrop.RESULT_ERROR) {
             val cropError = UCrop.getError(data!!)
-            Log.e("FROM_UCROP", cropError.toString())
         } else if (resultCode == Activity.RESULT_CANCELED) {
             showMessage(lay_root, "Fetching files cancelled.")
-            Log.e("RESULT_CANCELED", data?.data.toString() + " RESULT_CANCELLED")
             // User Cancelled the action
         }
     }
@@ -1227,37 +1169,19 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
         ) // 4
     }
 
-    var currentPhotoPath = ""
-    private fun getImageFile(): File {
-        val imageFileName = System.currentTimeMillis().toString() + "_thumbnail"
-        val mydir = applicationContext?.getDir("get2basket", Context.MODE_PRIVATE)
-        val profile = File(mydir, "profile")
-        if (!profile.exists()) {
-            profile.mkdirs()
-        }
-        val file = File.createTempFile(
-            imageFileName, ".jpg", profile
-        )
-        currentPhotoPath = "file:" + file.absolutePath
-        return file
-    }
-
     private fun openCropActivity(sourceUri: Uri, destinationUri: Uri) {
+        val options = UCrop.Options()
+        options.setToolbarColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
+        options.setStatusBarColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
+        options.setActiveWidgetColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
         this@AddBook.let {
             UCrop.of(sourceUri, destinationUri)
+                .withOptions(options)
                 .withAspectRatio(5f, 5f)
                 .start(this@AddBook)
         }
     }
 
-    fun getName(uri: Uri, context: Context): String {
-        val returnCursor = context.contentResolver.query(uri, null, null, null, null)
-        val nameIndex = returnCursor?.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-        returnCursor?.moveToFirst()
-        val fileName = nameIndex?.let { returnCursor.getString(it) }
-        returnCursor?.close()
-        return fileName.toString()
-    }
 
     override fun PickiTonUriReturned() {
     }
@@ -1280,7 +1204,6 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
         } else {
             pdfPath = path
         }
-        Log.e("pdfPath", pdfPath.toString())
     }
 
     override fun onBackPressed() {

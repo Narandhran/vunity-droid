@@ -34,9 +34,11 @@ import com.vunity.book.AddBook
 import com.vunity.category.AddCategory
 import com.vunity.favourite.Favourite
 import com.vunity.general.*
+import com.vunity.report.Report
 import com.vunity.server.InternetDetector
 import com.vunity.server.RetrofitClient
 import com.vunity.server.RetrofitWithBar
+import com.vunity.video.AddVideo
 import kotlinx.android.synthetic.main.act_profile.*
 import kotlinx.android.synthetic.main.dialog_amount.*
 import kotlinx.android.synthetic.main.dialog_create_announcement.*
@@ -95,7 +97,7 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                     R.anim.fade_out
                 )
             } catch (e: Exception) {
-                Log.e("Exception", e.toString())
+                e.printStackTrace()
             }
         }
 
@@ -154,20 +156,24 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
         val role = getData(Enums.Role.value, applicationContext)
         if (role == Enums.Admin.value) {
             fab_admin.visibility = View.VISIBLE
+            lay_report.visibility = View.VISIBLE
+            lay_report.setOnClickListener {
+                startActivity(Intent(this@Profile, Report::class.java))
+            }
         } else {
             fab_admin.visibility = View.GONE
+            lay_report.visibility = View.GONE
         }
     }
 
     private fun loadProfileInfo(): MutableList<ProData> {
-        profile = RetrofitClient.instanceClient.profile()
+        profile = RetrofitClient.userClient.profile()
         profile?.enqueue(object : Callback<ProDto> {
             @SuppressLint("DefaultLocale", "SetTextI18n")
             override fun onResponse(
                 call: Call<ProDto>,
                 response: Response<ProDto>
             ) {
-                Log.e("onResponse", response.toString())
                 when {
                     response.code() == 200 -> {
                         when (response.body()?.status) {
@@ -223,7 +229,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                                         this@Profile.applicationContext
                                     )
                                 } catch (e: Exception) {
-                                    Log.d("Profile", e.toString())
                                     e.printStackTrace()
                                 }
                             }
@@ -260,17 +265,12 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                                     layout_refresh,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e(
-                                    "Response",
-                                    response.body()!!.toString()
-                                )
                             }
                         } catch (e: Exception) {
                             showErrorMessage(
                                 layout_refresh,
                                 getString(R.string.msg_something_wrong)
                             )
-                            Log.e("Exception", e.toString())
                         }
 
                     }
@@ -287,7 +287,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
             }
 
             override fun onFailure(call: Call<ProDto>, t: Throwable) {
-                Log.e("onFailure", t.message.toString())
                 if (!call.isCanceled) {
                     showErrorMessage(
                         layout_refresh,
@@ -301,6 +300,15 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
 
     @RequiresApi(Build.VERSION_CODES.M)
     private fun initSpeedDial() {
+
+        fab_admin.addActionItem(
+            SpeedDialActionItem.Builder(R.id.fab_vunity_announcement, R.drawable.ic_megaphone)
+                .setLabel(getString(R.string.announcement))
+                .setFabImageTintColor(ResourcesCompat.getColor(resources, R.color.white, theme))
+                .setLabelColor(getColor(R.color.theme_dark_grey))
+                .setTheme(R.style.FabTheme)
+                .create()
+        )
 
         fab_admin.addActionItem(
             SpeedDialActionItem.Builder(R.id.fab_category, R.drawable.ic_category)
@@ -320,6 +328,14 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                 .create()
         )
 
+        fab_admin.addActionItem(
+            SpeedDialActionItem.Builder(R.id.fab_video, R.drawable.ic_play)
+                .setLabel(getString(R.string.add_video))
+                .setFabImageTintColor(ResourcesCompat.getColor(resources, R.color.white, theme))
+                .setLabelColor(getColor(R.color.theme_dark_grey))
+                .setTheme(R.style.FabTheme)
+                .create()
+        )
 
         fab_admin.addActionItem(
             SpeedDialActionItem.Builder(R.id.fab_book, R.drawable.ic_book)
@@ -333,15 +349,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
         fab_admin.addActionItem(
             SpeedDialActionItem.Builder(R.id.fab_user, R.drawable.ic_add_user)
                 .setLabel(getString(R.string.user))
-                .setFabImageTintColor(ResourcesCompat.getColor(resources, R.color.white, theme))
-                .setLabelColor(getColor(R.color.theme_dark_grey))
-                .setTheme(R.style.FabTheme)
-                .create()
-        )
-
-        fab_admin.addActionItem(
-            SpeedDialActionItem.Builder(R.id.fab_vunity_announcement, R.drawable.ic_megaphone)
-                .setLabel(getString(R.string.announcement))
                 .setFabImageTintColor(ResourcesCompat.getColor(resources, R.color.white, theme))
                 .setLabelColor(getColor(R.color.theme_dark_grey))
                 .setTheme(R.style.FabTheme)
@@ -380,6 +387,12 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                     vunityAnnouncement()
                     return@OnActionSelectedListener true
                 }
+
+                R.id.fab_video -> {
+                    fab_admin.close()
+                    startActivity(Intent(this@Profile, AddVideo::class.java))
+                    return@OnActionSelectedListener true
+                }
             }
             false
         })
@@ -400,8 +413,7 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                     } else {
                         val mapData: HashMap<String, String> = HashMap()
                         mapData["genre"] = edtName.text.toString().toLowerCase(Locale.getDefault())
-                        Log.e("mapData", mapData.toString())
-                        val addGenre = RetrofitClient.instanceClient.addGenre(mapData)
+                        val addGenre = RetrofitClient.userClient.addGenre(mapData)
                         addGenre.enqueue(
                             RetrofitWithBar(this@Profile, object : Callback<ResDto> {
                                 @SuppressLint("SimpleDateFormat")
@@ -410,7 +422,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                                     call: Call<ResDto>,
                                     response: Response<ResDto>
                                 ) {
-                                    Log.e("onResponse", response.toString())
                                     if (response.code() == 200) {
                                         when (response.body()?.status) {
                                             200 -> {
@@ -459,17 +470,12 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                                                     layName,
                                                     getString(R.string.msg_something_wrong)
                                                 )
-                                                Log.e(
-                                                    "Response",
-                                                    response.body()!!.toString()
-                                                )
                                             }
                                         } catch (e: Exception) {
                                             showErrorMessage(
                                                 layName,
                                                 getString(R.string.msg_something_wrong)
                                             )
-                                            Log.e("Exception", e.toString())
                                         }
 
                                     } else if (response.code() == 401) {
@@ -485,7 +491,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                                 }
 
                                 override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                                    Log.e("onResponse", t.message.toString())
                                     showErrorMessage(
                                         layName,
                                         getString(R.string.msg_something_wrong)
@@ -497,7 +502,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                     }
 
                 } catch (e: Exception) {
-                    Log.d("ParseException", e.toString())
                     e.printStackTrace()
                 }
             } else {
@@ -534,8 +538,7 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                     try {
                         val mapData: HashMap<String, Int> = HashMap()
                         mapData["amount"] = dialog.edt_amount.text.toString().toInt() * 100
-                        Log.e("mapData", mapData.toString())
-                        val donate = RetrofitClient.instanceClient.donate(mapData)
+                        val donate = RetrofitClient.userClient.donate(mapData)
                         donate.enqueue(
                             RetrofitWithBar(this@Profile, object :
                                 Callback<DonateDto> {
@@ -544,7 +547,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                                     call: Call<DonateDto>,
                                     response: Response<DonateDto>
                                 ) {
-                                    Log.e("onResponse", response.body().toString())
                                     when {
                                         response.code() == 200 -> {
                                             if (response.body()?.status == 200) {
@@ -563,7 +565,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                                                     dialog.lay_amount,
                                                     getString(R.string.msg_something_wrong)
                                                 )
-                                                Log.e("Response", response.body().toString())
                                             }
                                         }
 
@@ -594,14 +595,12 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                                                         dialog.lay_amount,
                                                         getString(R.string.msg_something_wrong)
                                                     )
-                                                    Log.e("Response", response.body()!!.toString())
                                                 }
                                             } catch (e: Exception) {
                                                 showErrorMessage(
                                                     dialog.lay_amount,
                                                     getString(R.string.msg_something_wrong)
                                                 )
-                                                Log.e("Mapping Exception", e.toString())
                                             }
                                         }
 
@@ -615,7 +614,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                                 }
 
                                 override fun onFailure(call: Call<DonateDto>, t: Throwable) {
-                                    Log.e("onFailure", t.toString())
                                     showErrorMessage(
                                         dialog.lay_amount,
                                         getString(R.string.msg_something_wrong)
@@ -624,7 +622,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                             })
                         )
                     } catch (e: Exception) {
-                        Log.d("ParseException", e.toString())
                         e.printStackTrace()
                     }
 
@@ -684,9 +681,8 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                             val mapData: HashMap<String, String> = HashMap()
                             mapData["title"] = dialog.edt_title.text.toString()
                             mapData["message"] = dialog.edt_description.text.toString()
-                            Log.e("mapData", mapData.toString())
                             val announcement =
-                                RetrofitClient.instanceClient.cmsAnnouncement(mapData)
+                                RetrofitClient.userClient.cmsAnnouncement(mapData)
                             announcement.enqueue(
                                 RetrofitWithBar(this@Profile, object :
                                     Callback<ResDto> {
@@ -695,7 +691,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                                         call: Call<ResDto>,
                                         response: Response<ResDto>
                                     ) {
-                                        Log.e("onResponse", response.toString())
                                         when {
                                             response.code() == 200 -> {
                                                 if (response.body()?.status == 200) {
@@ -729,7 +724,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                                                         dialog.lay_title,
                                                         getString(R.string.msg_something_wrong)
                                                     )
-                                                    Log.e("Response", response.body().toString())
                                                 }
                                             }
 
@@ -760,17 +754,12 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                                                             dialog.lay_title,
                                                             getString(R.string.msg_something_wrong)
                                                         )
-                                                        Log.e(
-                                                            "Response",
-                                                            response.body()!!.toString()
-                                                        )
                                                     }
                                                 } catch (e: Exception) {
                                                     showErrorMessage(
                                                         dialog.lay_title,
                                                         getString(R.string.msg_something_wrong)
                                                     )
-                                                    Log.e("Mapping Exception", e.toString())
                                                 }
                                             }
 
@@ -787,7 +776,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                                     }
 
                                     override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                                        Log.e("onFailure", t.toString())
                                         showErrorMessage(
                                             dialog.lay_title,
                                             getString(R.string.msg_something_wrong)
@@ -796,7 +784,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                                 })
                             )
                         } catch (e: Exception) {
-                            Log.d("ParseException", e.toString())
                             e.printStackTrace()
                         }
 
@@ -840,13 +827,12 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
     private fun verifyPayment(verify: VerifyPayment) {
         if (internet?.checkMobileInternetConn(this@Profile)!!) {
             try {
-                val verifyPayment = RetrofitClient.instanceClient.verifyPayment(verify)
+                val verifyPayment = RetrofitClient.userClient.verifyPayment(verify)
                 verifyPayment.enqueue(
                     RetrofitWithBar(this@Profile, object :
                         Callback<ResDto> {
                         @SuppressLint("SetTextI18n")
                         override fun onResponse(call: Call<ResDto>, response: Response<ResDto>) {
-                            Log.e("onResponse", response.toString())
                             when {
                                 response.code() == 200 -> {
                                     if (response.body()?.status == 200) {
@@ -856,20 +842,11 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                                             dialog.cancel()
                                         }
                                         dialog.show()
-//                                        Handler().postDelayed({
-//                                            startActivity(Intent(this@Profile, Home::class.java))
-//                                            this@Profile.overridePendingTransition(
-//                                                R.anim.fade_in,
-//                                                R.anim.fade_out
-//                                            )
-//                                            finish()
-//                                        }, 200)
                                     } else {
                                         showErrorMessage(
                                             layout_refresh,
                                             getString(R.string.msg_something_wrong)
                                         )
-                                        Log.e("Response", response.body().toString())
                                     }
                                 }
 
@@ -900,14 +877,12 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                                                 layout_refresh,
                                                 getString(R.string.msg_something_wrong)
                                             )
-                                            Log.e("Response", response.body()!!.toString())
                                         }
                                     } catch (e: Exception) {
                                         showErrorMessage(
                                             layout_refresh,
                                             getString(R.string.msg_something_wrong)
                                         )
-                                        Log.e("Mapping Exception", e.toString())
                                     }
                                 }
 
@@ -926,7 +901,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                         }
 
                         override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                            Log.e("onFailure", t.toString())
                             showErrorMessage(
                                 layout_refresh,
                                 getString(R.string.msg_something_wrong)
@@ -935,7 +909,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
                     })
                 )
             } catch (e: Exception) {
-                Log.d("ParseException", e.toString())
                 e.printStackTrace()
             }
 

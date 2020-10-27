@@ -95,6 +95,7 @@ data class FilterBody(
     var vedham: String?,
     var marital_status: String?
 )
+
 data class CityDto(
     var contentFound: Boolean?,
     var `data`: List<CityData>?,

@@ -1,4 +1,4 @@
-package com.vunity.book
+package com.vunity.video
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -6,7 +6,6 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -18,33 +17,34 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.squareup.picasso.Picasso
 import com.vunity.R
+import com.vunity.favourite.ReqFavBody
 import com.vunity.general.*
-import com.vunity.reader.Reader
+import com.vunity.reader.Player
 import com.vunity.server.InternetDetector
 import com.vunity.server.RetrofitClient
 import com.vunity.server.RetrofitWithBar
 import com.vunity.user.ErrorMsgDto
 import com.vunity.user.Login
 import com.vunity.user.ResDto
-import kotlinx.android.synthetic.main.act_book.*
+import kotlinx.android.synthetic.main.act_book_details.*
 import kotlinx.android.synthetic.main.toolbar.txt_title
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class Book : AppCompatActivity() {
+class VideoDetails : AppCompatActivity() {
 
     private var internet: InternetDetector? = null
     private val moshi: Moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
         .build()
     private var favorite = true
-    private var books: Call<BookDto>? = null
+    private var videos: Call<VideoDto>? = null
     var isLoggedIn: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.act_book)
+        setContentView(R.layout.act_book_details)
 
         val window: Window = this.window
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -55,25 +55,26 @@ class Book : AppCompatActivity() {
 
         layout_refresh.setOnRefreshListener {
             finish()
-            reloadActivity(this@Book)
+            reloadActivity(this@VideoDetails)
             layout_refresh.isRefreshing = false
         }
 
-        internet = InternetDetector.getInstance(this@Book)
+        internet = InternetDetector.getInstance(this@VideoDetails)
         isLoggedIn = getData("logged_user", applicationContext).toString()
 
         try {
             val data = intent.getStringExtra("data")
             if (data != null) {
-                val book = SingleBook(
+                val video = ReqSingleVideoBody(
                     libraryId = data,
-                    userId = getData("user_id", applicationContext).toString()
+                    userId = getData("user_id", applicationContext).toString(),
+                    isVideo = true
                 )
-                books(book)
+                videos(video)
             }
         } catch (e: Exception) {
-            Log.e("Exception", e.toString())
-            showMessage(lay_root, getString(R.string.unable_to_fetch))
+            e.printStackTrace()
+            showMessage(lay_root, getString(R.string.unable_to_collect))
         }
 
         val role = getData(Enums.Role.value, applicationContext)
@@ -82,18 +83,17 @@ class Book : AppCompatActivity() {
         } else {
             img_edit.visibility = View.GONE
         }
+        btn_read.text = getString(R.string.play)
     }
 
-    private fun books(book: SingleBook) {
-        Log.e("book", book.toString())
-        books = RetrofitClient.instanceClientWithoutToken.getOneBook(book)
-        books?.enqueue(object : Callback<BookDto> {
+    private fun videos(videoReq: ReqSingleVideoBody) {
+        videos = RetrofitClient.videoClient.getOneVideo(videoReq)
+        videos?.enqueue(object : Callback<VideoDto> {
             @SuppressLint("DefaultLocale", "SetTextI18n")
             override fun onResponse(
-                call: Call<BookDto>,
-                response: Response<BookDto>
+                call: Call<VideoDto>,
+                response: Response<VideoDto>
             ) {
-                Log.e("onResponse", response.toString())
                 when {
                     response.code() == 200 -> {
                         when (response.body()?.status) {
@@ -105,8 +105,8 @@ class Book : AppCompatActivity() {
                                     .load(
                                         getData(
                                             "rootPath",
-                                            this@Book
-                                        ) + Enums.Book.value + response.body()!!.data.thumbnail
+                                            this@VideoDetails
+                                        ) + Enums.VideoThumb.value + response.body()!!.data.thumbnail
                                     )
                                     .error(R.drawable.img_place_holder)
                                     .placeholder(R.drawable.img_place_holder)
@@ -118,7 +118,7 @@ class Book : AppCompatActivity() {
                                     if (response.body()!!.data.isBookmark!!) {
                                         img_bookmark.setImageDrawable(
                                             ContextCompat.getDrawable(
-                                                this@Book,
+                                                this@VideoDetails,
                                                 R.drawable.ic_heart_fill
                                             )
                                         )
@@ -128,7 +128,7 @@ class Book : AppCompatActivity() {
 
                                 img_bookmark.setOnClickListener {
                                     if (isLoggedIn == getString(R.string.skip)) {
-                                        val intent = Intent(this@Book, Login::class.java)
+                                        val intent = Intent(this@VideoDetails, Login::class.java)
                                         intent.putExtra(
                                             getString(R.string.data),
                                             getString(R.string.new_user)
@@ -138,7 +138,7 @@ class Book : AppCompatActivity() {
                                         if (favorite) {
                                             img_bookmark.setImageDrawable(
                                                 ContextCompat.getDrawable(
-                                                    this@Book,
+                                                    this@VideoDetails,
                                                     R.drawable.ic_heart_fill
                                                 )
                                             )
@@ -147,7 +147,7 @@ class Book : AppCompatActivity() {
                                         } else {
                                             img_bookmark.setImageDrawable(
                                                 ContextCompat.getDrawable(
-                                                    this@Book,
+                                                    this@VideoDetails,
                                                     R.drawable.ic_heart
                                                 )
                                             )
@@ -158,21 +158,34 @@ class Book : AppCompatActivity() {
                                 }
 
                                 btn_read.setOnClickListener {
-                                    val intent = Intent(this@Book, Reader::class.java)
-                                    intent.putExtra(
-                                        this@Book.getString(R.string.data),
-                                        response.body()!!.data.content
-                                    )
-                                    startActivity(intent)
+                                    if (isLoggedIn == getString(R.string.skip)) {
+                                        val intent = Intent(this@VideoDetails, Login::class.java)
+                                        intent.putExtra(
+                                            getString(R.string.data),
+                                            getString(R.string.new_user)
+                                        )
+                                        startActivity(intent)
+                                    } else {
+                                        val intent = Intent(this@VideoDetails, Player::class.java)
+                                        intent.putExtra(
+                                            this@VideoDetails.getString(R.string.data),
+                                            response.body()!!.data.content
+                                        )
+                                        startActivity(intent)
+                                        overridePendingTransition(
+                                            R.anim.fade_in,
+                                            R.anim.fade_out
+                                        )
+                                    }
                                 }
 
                                 img_edit.setOnClickListener {
                                     try {
-                                        val jsonAdapter: JsonAdapter<BookData> =
-                                            moshi.adapter(BookData::class.java)
+                                        val jsonAdapter: JsonAdapter<VideoData> =
+                                            moshi.adapter(VideoData::class.java)
                                         val json: String =
                                             jsonAdapter.toJson(response.body()!!.data)
-                                        val intent = Intent(this@Book, AddBook::class.java)
+                                        val intent = Intent(this@VideoDetails, AddVideo::class.java)
                                         intent.putExtra("data", json)
                                         startActivityForResult(intent, 1)
                                         overridePendingTransition(
@@ -180,7 +193,7 @@ class Book : AppCompatActivity() {
                                             R.anim.fade_out
                                         )
                                     } catch (e: Exception) {
-                                        Log.e("Exception", e.toString())
+                                        e.printStackTrace()
                                     }
                                 }
                             }
@@ -217,23 +230,18 @@ class Book : AppCompatActivity() {
                                     lay_root,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e(
-                                    "Response",
-                                    response.body()!!.toString()
-                                )
                             }
                         } catch (e: Exception) {
                             showErrorMessage(
                                 lay_root,
                                 getString(R.string.msg_something_wrong)
                             )
-                            Log.e("Exception", e.toString())
                         }
 
                     }
 
                     response.code() == 401 -> {
-                        sessionExpired(this@Book)
+                        sessionExpired(this@VideoDetails)
                     }
                     else -> {
                         showErrorMessage(
@@ -244,8 +252,7 @@ class Book : AppCompatActivity() {
                 }
             }
 
-            override fun onFailure(call: Call<BookDto>, t: Throwable) {
-                Log.e("onFailure", t.message.toString())
+            override fun onFailure(call: Call<VideoDto>, t: Throwable) {
                 if (!call.isCanceled) {
                     showErrorMessage(
                         lay_root,
@@ -258,26 +265,23 @@ class Book : AppCompatActivity() {
 
     private fun addFav(id: String) {
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            val addFav = RetrofitClient.instanceClient.addFavourite(id)
+            val reqFavBody = ReqFavBody(isVideo = true, libraryId = id)
+            val addFav = RetrofitClient.favouriteClient.addFavourite(reqFavBody)
             addFav.enqueue(
-                RetrofitWithBar(this@Book, object : Callback<ResDto> {
+                RetrofitWithBar(this@VideoDetails, object : Callback<ResDto> {
                     @SuppressLint("SimpleDateFormat")
                     @RequiresApi(Build.VERSION_CODES.O)
                     override fun onResponse(
                         call: Call<ResDto>,
                         response: Response<ResDto>
                     ) {
-                        Log.e("onResponse", response.toString())
                         if (response.code() == 200) {
                             when (response.body()?.status) {
                                 200 -> {
 
                                 }
                                 else -> {
-                                    showErrorMessage(
-                                        lay_root,
-                                        response.message()
-                                    )
+                                    showErrorMessage(lay_root, response.message())
                                 }
                             }
 
@@ -305,22 +309,17 @@ class Book : AppCompatActivity() {
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 showErrorMessage(
                                     lay_root,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         } else if (response.code() == 401) {
                             sessionExpired(
-                                this@Book
+                                this@VideoDetails
                             )
                         } else {
                             showErrorMessage(
@@ -331,7 +330,6 @@ class Book : AppCompatActivity() {
                     }
 
                     override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                        Log.e("onResponse", t.message.toString())
                         showErrorMessage(
                             lay_root,
                             getString(R.string.msg_something_wrong)
@@ -350,16 +348,16 @@ class Book : AppCompatActivity() {
 
     private fun removeFav(id: String) {
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            val removeFav = RetrofitClient.instanceClient.removeFavourite(id)
+            val reqFavBody = ReqFavBody(isVideo = true, libraryId = id)
+            val removeFav = RetrofitClient.favouriteClient.removeFavourite(reqFavBody)
             removeFav.enqueue(
-                RetrofitWithBar(this@Book, object : Callback<ResDto> {
+                RetrofitWithBar(this@VideoDetails, object : Callback<ResDto> {
                     @SuppressLint("SimpleDateFormat")
                     @RequiresApi(Build.VERSION_CODES.O)
                     override fun onResponse(
                         call: Call<ResDto>,
                         response: Response<ResDto>
                     ) {
-                        Log.e("onResponse", response.toString())
                         if (response.code() == 200) {
                             when (response.body()?.status) {
                                 200 -> {
@@ -397,22 +395,17 @@ class Book : AppCompatActivity() {
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 showErrorMessage(
                                     lay_root,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         } else if (response.code() == 401) {
                             sessionExpired(
-                                this@Book
+                                this@VideoDetails
                             )
                         } else {
                             showErrorMessage(
@@ -423,7 +416,6 @@ class Book : AppCompatActivity() {
                     }
 
                     override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                        Log.e("onResponse", t.message.toString())
                         showErrorMessage(
                             lay_root,
                             getString(R.string.msg_something_wrong)
@@ -448,14 +440,15 @@ class Book : AppCompatActivity() {
                     try {
                         val id = data.getStringExtra(getString(R.string.data))
                         if (id != null) {
-                            val book = SingleBook(
+                            val video = ReqSingleVideoBody(
                                 libraryId = id,
-                                userId = getData("user_id", applicationContext).toString()
+                                userId = getData("user_id", applicationContext).toString(),
+                                isVideo = true
                             )
-                            books(book)
+                            videos(video)
                         }
                     } catch (e: Exception) {
-                        Log.e("Exception", e.toString())
+                        e.printStackTrace()
                     }
                 }
             }
@@ -467,15 +460,16 @@ class Book : AppCompatActivity() {
         try {
             val data = intent.getStringExtra("data")
             if (data != null) {
-                val book = SingleBook(
+                val video = ReqSingleVideoBody(
                     libraryId = data,
-                    userId = getData("user_id", applicationContext).toString()
+                    userId = getData("user_id", applicationContext).toString(),
+                    isVideo = true
                 )
-                books(book)
+                videos(video)
             }
         } catch (e: Exception) {
-            Log.e("Exception", e.toString())
-            showMessage(lay_root, getString(R.string.unable_to_fetch))
+            e.printStackTrace()
+            showMessage(lay_root, getString(R.string.unable_to_collect))
         }
     }
 

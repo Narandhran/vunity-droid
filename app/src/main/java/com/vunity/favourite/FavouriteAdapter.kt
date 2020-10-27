@@ -5,7 +5,6 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,13 +19,14 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.squareup.picasso.Picasso
 import com.vunity.R
-import com.vunity.book.Book
+import com.vunity.book.BookDetails
 import com.vunity.general.*
 import com.vunity.server.InternetDetector
 import com.vunity.server.RetrofitClient
 import com.vunity.server.RetrofitWithBar
 import com.vunity.user.ErrorMsgDto
 import com.vunity.user.ResDto
+import com.vunity.video.VideoDetails
 import org.apache.commons.lang3.StringUtils
 import retrofit2.Call
 import retrofit2.Callback
@@ -57,28 +57,52 @@ class FavouriteAdapter(
         try {
             data = dataList[position]
             internet = InternetDetector.getInstance(activity)
-            holder.txtName.text = StringUtils.capitalize(data.libraryId.name)
-            Picasso.get().load(
-                getData(
-                    "rootPath",
-                    activity.applicationContext
-                ) + Enums.Book.value + data.libraryId.thumbnail
-            ).placeholder(R.drawable.img_place_holder)
-                .fit().into(holder.imgBook)
+            if (data.isVideo) {
 
-            holder.cardFav.setOnClickListener {
-                data = dataList[position]
-                val intent = Intent(activity, Book::class.java)
-                intent.putExtra(activity.getString(R.string.data), data.libraryId._id)
-                activity.startActivity(intent)
-            }
+                holder.txtName.text = StringUtils.capitalize(data.videoId?.name)
+                Picasso.get().load(
+                    getData(
+                        "rootPath",
+                        activity.applicationContext
+                    ) + Enums.VideoThumb.value + data.videoId?.thumbnail
+                ).placeholder(R.drawable.img_place_holder)
+                    .fit().into(holder.imgBook)
 
-            holder.imgBookMark.setOnClickListener {
-                removeFav(data.libraryId._id)
+                holder.cardFav.setOnClickListener {
+                    data = dataList[position]
+                    val intent = Intent(activity, VideoDetails::class.java)
+                    intent.putExtra(activity.getString(R.string.data), data.videoId?._id)
+                    activity.startActivity(intent)
+                }
+
+                holder.imgBookMark.setOnClickListener {
+                    removeFav(data.isVideo, data.videoId?._id.toString())
+                }
+
+            } else {
+
+                holder.txtName.text = StringUtils.capitalize(data.libraryId?.name)
+                Picasso.get().load(
+                    getData(
+                        "rootPath",
+                        activity.applicationContext
+                    ) + Enums.Book.value + data.libraryId?.thumbnail
+                ).placeholder(R.drawable.img_place_holder)
+                    .fit().into(holder.imgBook)
+
+                holder.cardFav.setOnClickListener {
+                    data = dataList[position]
+                    val intent = Intent(activity, BookDetails::class.java)
+                    intent.putExtra(activity.getString(R.string.data), data.libraryId?._id)
+                    activity.startActivity(intent)
+                }
+
+                holder.imgBookMark.setOnClickListener {
+                    removeFav(data.isVideo, data.libraryId?._id.toString())
+                }
             }
 
         } catch (e: Exception) {
-            Log.d("Exception", e.toString())
             e.printStackTrace()
         }
     }
@@ -102,9 +126,10 @@ class FavouriteAdapter(
         var cardFav: MaterialCardView = view.findViewById(R.id.card_favourite)
     }
 
-    private fun removeFav(id: String) {
+    private fun removeFav(isVideo: Boolean, id: String) {
         if (internet?.checkMobileInternetConn(activity)!!) {
-            val removeFav = RetrofitClient.instanceClient.removeFavourite(id)
+            val reqFavBody = ReqFavBody(isVideo = isVideo, libraryId = id)
+            val removeFav = RetrofitClient.favouriteClient.removeFavourite(reqFavBody)
             removeFav.enqueue(
                 RetrofitWithBar(activity, object : Callback<ResDto> {
                     @SuppressLint("SimpleDateFormat")
@@ -113,7 +138,6 @@ class FavouriteAdapter(
                         call: Call<ResDto>,
                         response: Response<ResDto>
                     ) {
-                        Log.e("onResponse", response.toString())
                         if (response.code() == 200) {
                             when (response.body()?.status) {
                                 200 -> {
@@ -155,17 +179,12 @@ class FavouriteAdapter(
                                         view,
                                         activity.getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 showErrorMessage(
                                     view,
                                     activity.getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         } else if (response.code() == 401) {
@@ -181,7 +200,6 @@ class FavouriteAdapter(
                     }
 
                     override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                        Log.e("onResponse", t.message.toString())
                         showErrorMessage(
                             view,
                             activity.getString(R.string.msg_something_wrong)

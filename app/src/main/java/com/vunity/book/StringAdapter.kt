@@ -2,7 +2,6 @@ package com.vunity.book
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,7 +43,6 @@ class StringAdapter(
                 notifyDataSetChanged()
             }
         } catch (e: Exception) {
-            Log.d("Exception", e.toString())
             e.printStackTrace()
         }
     }

@@ -61,14 +61,11 @@ class Favourite : AppCompatActivity() {
             lay_shimmer.startShimmer()
         }
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            favourite = RetrofitClient.instanceClient.listFavourite()
+            favourite = RetrofitClient.favouriteClient.listFavourite()
             favourite?.enqueue(object : Callback<FavListDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
-                override fun onResponse(
-                    call: Call<FavListDto>,
-                    response: Response<FavListDto>
-                ) {
-                    Log.e("onResponse", response.toString())
+                override fun onResponse(call: Call<FavListDto>, response: Response<FavListDto>) {
+                    Log.e("onResponse",response.toString())
                     when {
                         response.code() == 200 -> {
                             when (response.body()?.status) {
@@ -139,17 +136,12 @@ class Favourite : AppCompatActivity() {
                                         layout_refresh,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 showErrorMessage(
                                     layout_refresh,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         }
@@ -169,7 +161,6 @@ class Favourite : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<FavListDto>, t: Throwable) {
-                    Log.e("onFailure", t.message.toString())
                     if (!call.isCanceled) {
                         showErrorMessage(
                             layout_refresh,
@@ -177,6 +168,7 @@ class Favourite : AppCompatActivity() {
                         )
                         lay_shimmer.visibility = View.GONE
                         lay_shimmer.stopShimmer()
+                        Log.e("onFailure",t.toString())
                     }
                 }
             })

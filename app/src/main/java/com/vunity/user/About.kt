@@ -3,7 +3,6 @@ package com.vunity.user
 import android.annotation.SuppressLint
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.squareup.moshi.JsonAdapter
@@ -54,7 +53,7 @@ class About : AppCompatActivity() {
     private fun about() {
         if (internet?.checkMobileInternetConn(this@About)!!) {
             try {
-                about = RetrofitClient.instanceClient.about()
+                about = RetrofitClient.userClient.about()
                 about!!.enqueue(
                     RetrofitWithBar(this@About, object : Callback<ResDto> {
                         @SuppressLint("SimpleDateFormat")
@@ -63,7 +62,6 @@ class About : AppCompatActivity() {
                             call: Call<ResDto>,
                             response: Response<ResDto>
                         ) {
-                            Log.e("onResponse", response.toString())
                             if (response.code() == 200) {
                                 when (response.body()?.status) {
                                     200 -> {
@@ -101,17 +99,12 @@ class About : AppCompatActivity() {
                                             lay_root,
                                             getString(R.string.msg_something_wrong)
                                         )
-                                        Log.e(
-                                            "Response",
-                                            response.body()!!.toString()
-                                        )
                                     }
                                 } catch (e: Exception) {
                                     showErrorMessage(
                                         lay_root,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e("Exception", e.toString())
                                 }
 
                             } else if (response.code() == 401) {
@@ -127,7 +120,6 @@ class About : AppCompatActivity() {
                         }
 
                         override fun onFailure(call: Call<ResDto>, t: Throwable) {
-                            Log.e("onResponse", t.message.toString())
                             showErrorMessage(
                                 lay_root,
                                 getString(R.string.msg_something_wrong)
@@ -137,7 +129,6 @@ class About : AppCompatActivity() {
                 )
 
             } catch (e: Exception) {
-                Log.d("ParseException", e.toString())
                 e.printStackTrace()
             }
         } else {

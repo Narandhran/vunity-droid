@@ -3,7 +3,6 @@ package com.vunity.book
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.textview.MaterialTextView
 import com.vunity.R
-import com.vunity.discover.SeeAll
 import org.apache.commons.lang3.StringUtils
 
 
@@ -44,7 +42,7 @@ class BookParentAdapter(
 
             holder.btnMore.setOnClickListener {
                 data = dataList[position]
-                val intent = Intent(activity, SeeAll::class.java)
+                val intent = Intent(activity, BookSeeAll::class.java)
                 intent.putExtra(
                     activity.getString(R.string.data),
                     activity.getString(R.string.loadBooksByGenre)
@@ -53,7 +51,6 @@ class BookParentAdapter(
                 activity.startActivity(intent)
             }
         } catch (e: Exception) {
-            Log.d("Exception", e.toString())
             e.printStackTrace()
         }
     }

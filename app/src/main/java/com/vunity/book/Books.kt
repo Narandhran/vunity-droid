@@ -1,10 +1,9 @@
-package com.vunity.discover
+package com.vunity.book
 
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,11 +14,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.squareup.picasso.Picasso
 import com.vunity.R
-import com.vunity.banner.Banner
 import com.vunity.banner.BannerListDto
-import com.vunity.book.BookParentAdapter
-import com.vunity.book.HomeData
-import com.vunity.book.HomeDto
 import com.vunity.category.CategoryAdapter
 import com.vunity.category.CategoryData
 import com.vunity.category.CategoryListDto
@@ -38,7 +33,7 @@ import retrofit2.Response
 import java.util.*
 
 
-class Discover : Fragment(), IOnBackPressed {
+class Books : Fragment(), IOnBackPressed {
 
     private var category: Call<CategoryListDto>? = null
     private var banner: Call<BannerListDto>? = null
@@ -68,7 +63,7 @@ class Discover : Fragment(), IOnBackPressed {
         view.layout_refresh.setOnRefreshListener {
             reloadFragment(
                 activity?.supportFragmentManager!!,
-                this@Discover
+                this@Books
             )
             view.layout_refresh.isRefreshing = false
         }
@@ -78,7 +73,7 @@ class Discover : Fragment(), IOnBackPressed {
                 getData(
                     "rootPath",
                     requireContext()
-                ) + Enums.Dp.value + getData("dp",requireContext())
+                ) + Enums.Dp.value + getData("dp", requireContext())
             )
             .error(R.drawable.ic_dummy_profile)
             .placeholder(R.drawable.ic_dummy_profile)
@@ -109,20 +104,20 @@ class Discover : Fragment(), IOnBackPressed {
         }
 
         view.btn_seeall.setOnClickListener {
-            val intent = Intent(requireActivity(), SeeAll::class.java)
+            val intent = Intent(requireActivity(), BookSeeAll::class.java)
             intent.putExtra(getString(R.string.data), getString(R.string.loadAllCategory))
             startActivity(intent)
         }
 
         view.txt_search.setOnClickListener {
-            val intent = Intent(requireActivity(), Search::class.java)
+            val intent = Intent(requireActivity(), BookSearch::class.java)
             startActivity(intent)
             requireActivity().overridePendingTransition(R.anim.bottom_up, R.anim.nothing)
         }
     }
 
     companion object {
-        fun newInstance(): Discover = Discover()
+        fun newInstance(): Books = Books()
     }
 
     override fun onBackPressed(): Boolean {
@@ -133,14 +128,13 @@ class Discover : Fragment(), IOnBackPressed {
         if (!view.lay_shimmer.isShimmerStarted) {
             view.lay_shimmer.startShimmer()
         }
-        banner = RetrofitClient.instanceClient.getBanners()
+        banner = RetrofitClient.bannerClient.getBanners()
         banner?.enqueue(object : Callback<BannerListDto> {
             @SuppressLint("DefaultLocale", "SetTextI18n")
             override fun onResponse(
                 call: Call<BannerListDto>,
                 response: Response<BannerListDto>
             ) {
-                Log.e("onResponse", response.toString())
                 when {
                     response.code() == 200 -> {
                         when (response.body()?.status) {
@@ -149,7 +143,10 @@ class Discover : Fragment(), IOnBackPressed {
                                 for (i in response.body()!!.data?.toMutableList()!!) {
                                     banner.add(i.banner.toString())
                                 }
-                                view.view_pager.adapter = ViewPagerAdapter(requireContext(), banner)
+                                view.view_pager.adapter = ViewPagerAdapter(
+                                    requireActivity(),
+                                    response.body()!!.data?.toMutableList()!!
+                                )
                                 view.worm_dots_indicator.setViewPager(view.view_pager)
                                 try {
                                     var currentPage = 0
@@ -165,44 +162,9 @@ class Discover : Fragment(), IOnBackPressed {
                                         }
                                     }, 1000, 3000)
                                 } catch (exception: java.lang.Exception) {
-                                    Log.e("Exception", exception.message.toString())
+                                    exception.printStackTrace()
                                 }
-                                view.view_pager.setOnItemClickListener(object :
-                                    ClickableViewPager.OnItemClickListener {
-                                    override fun onItemClick(position: Int) {
-                                        val role = getData(Enums.Role.value, requireContext())
-                                        if (role == Enums.Admin.value) {
-                                            startActivity(
-                                                Intent(
-                                                    requireActivity(),
-                                                    Banner::class.java
-                                                )
-                                            )
-                                        }
-                                        if (role == Enums.User.value) {
-                                            try {
-                                                if (position == 1) {
-                                                    val intent =
-                                                        Intent(activity, Profile::class.java)
-                                                    intent.putExtra(
-                                                        getString(R.string.data),
-                                                        getString(R.string.profile)
-                                                    )
-                                                    startActivity(intent)
-                                                }
-                                            } catch (exception: java.lang.Exception) {
-                                                Log.e("Exception", exception.message.toString())
-                                            }
-                                        }
-                                    }
-                                })
                             }
-//                            else -> {
-//                                coordinatorErrorMessage(
-//                                    view.lay_root,
-//                                    response.message()
-//                                )
-//                            }
                         }
                     }
 
@@ -230,17 +192,12 @@ class Discover : Fragment(), IOnBackPressed {
                                     view.lay_root,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e(
-                                    "Response",
-                                    response.body()!!.toString()
-                                )
                             }
                         } catch (e: Exception) {
                             coordinatorErrorMessage(
                                 view.lay_root,
                                 getString(R.string.msg_something_wrong)
                             )
-                            Log.e("Exception", e.toString())
                         }
 
                     }
@@ -260,7 +217,6 @@ class Discover : Fragment(), IOnBackPressed {
             }
 
             override fun onFailure(call: Call<BannerListDto>, t: Throwable) {
-                Log.e("onFailure", t.message.toString())
                 if (!call.isCanceled) {
                     coordinatorErrorMessage(
                         view.lay_root,
@@ -277,14 +233,13 @@ class Discover : Fragment(), IOnBackPressed {
         if (!view.lay_shimmer.isShimmerStarted) {
             view.lay_shimmer.startShimmer()
         }
-        category = RetrofitClient.instanceClient.category()
+        category = RetrofitClient.categoryClient.category()
         category?.enqueue(object : Callback<CategoryListDto> {
             @SuppressLint("DefaultLocale", "SetTextI18n")
             override fun onResponse(
                 call: Call<CategoryListDto>,
                 response: Response<CategoryListDto>
             ) {
-                Log.e("onResponse", response.toString())
                 when {
                     response.code() == 200 -> {
                         when (response.body()?.status) {
@@ -302,7 +257,7 @@ class Discover : Fragment(), IOnBackPressed {
                                         )
                                     view.view_category?.setHasFixedSize(true)
                                     val categoryAdapter =
-                                        CategoryAdapter(categoryData, requireActivity())
+                                        CategoryAdapter(categoryData, requireActivity(), true)
                                     view.view_category?.adapter = categoryAdapter
                                 }
                             }
@@ -344,17 +299,12 @@ class Discover : Fragment(), IOnBackPressed {
                                     view.lay_root,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e(
-                                    "Response",
-                                    response.body()!!.toString()
-                                )
                             }
                         } catch (e: Exception) {
                             coordinatorErrorMessage(
                                 view.lay_root,
                                 getString(R.string.msg_something_wrong)
                             )
-                            Log.e("Exception", e.toString())
                         }
 
                     }
@@ -374,7 +324,6 @@ class Discover : Fragment(), IOnBackPressed {
             }
 
             override fun onFailure(call: Call<CategoryListDto>, t: Throwable) {
-                Log.e("onFailure", t.message.toString())
                 if (!call.isCanceled) {
                     coordinatorErrorMessage(
                         view.lay_root,
@@ -391,14 +340,13 @@ class Discover : Fragment(), IOnBackPressed {
         if (!view.lay_shimmer.isShimmerStarted) {
             view.lay_shimmer.startShimmer()
         }
-        books = RetrofitClient.instanceClientWithoutToken.getHome()
+        books = RetrofitClient.bookClient.getHome()
         books?.enqueue(object : Callback<HomeDto> {
             @SuppressLint("DefaultLocale", "SetTextI18n")
             override fun onResponse(
                 call: Call<HomeDto>,
                 response: Response<HomeDto>
             ) {
-                Log.e("onResponse", response.toString())
                 when {
                     response.code() == 200 -> {
                         when (response.body()?.status) {
@@ -417,19 +365,6 @@ class Discover : Fragment(), IOnBackPressed {
                                     view.view_book_parent?.adapter = bookParentAdapter
                                 }
                             }
-                            204 -> {
-                                saveData(
-                                    "default_address",
-                                    "false",
-                                    activity!!
-                                )
-                            }
-//                            else -> {
-//                                coordinatorErrorMessage(
-//                                    view.lay_root,
-//                                    response.message()
-//                                )
-//                            }
                         }
                     }
 
@@ -457,17 +392,12 @@ class Discover : Fragment(), IOnBackPressed {
                                     view.lay_root,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e(
-                                    "Response",
-                                    response.body()!!.toString()
-                                )
                             }
                         } catch (e: Exception) {
                             coordinatorErrorMessage(
                                 view.lay_root,
                                 getString(R.string.msg_something_wrong)
                             )
-                            Log.e("Exception", e.toString())
                         }
 
                     }
@@ -487,7 +417,6 @@ class Discover : Fragment(), IOnBackPressed {
             }
 
             override fun onFailure(call: Call<HomeDto>, t: Throwable) {
-                Log.e("onFailure", t.message.toString())
                 if (!call.isCanceled) {
                     coordinatorErrorMessage(
                         view.lay_root,

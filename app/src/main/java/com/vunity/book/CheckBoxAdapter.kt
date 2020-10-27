@@ -2,7 +2,6 @@ package com.vunity.book
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -70,13 +69,8 @@ class CheckBoxAdapter(
                         }
                     }
                 }
-                Log.e(
-                    "dataList",
-                    "$shakhaList $vedhaAdhyayanamList $prayogamList $shastraAdhyayanamList"
-                )
             }
         } catch (e: Exception) {
-            Log.d("Exception", e.toString())
             e.printStackTrace()
         }
     }

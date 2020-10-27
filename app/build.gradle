@@ -7,14 +7,14 @@ apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    buildToolsVersion "29.0.3"
 
     defaultConfig {
         applicationId "com.vunity"
         minSdkVersion 19
         targetSdkVersion 29
-        versionCode 4
-        versionName "1.3.0"
+        versionCode 5
+        versionName "1.4.0"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         useLibrary 'org.apache.http.legacy'
@@ -73,6 +73,7 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
+    implementation 'com.google.android.exoplayer:exoplayer:2.10.4'
 
     //Moshi
     implementation "com.squareup.moshi:moshi:$moshiVersion"
@@ -86,7 +87,7 @@ dependencies {
 
     // Firebase Crashlytics SDK.
     implementation 'com.google.firebase:firebase-analytics-ktx:17.6.0'
-//    implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
+    //implementation 'com.google.firebase:firebase-crashlytics:17.2.1'
     implementation 'com.google.firebase:firebase-messaging:20.3.0'
 
     //Material widgets by third parties
@@ -105,8 +106,11 @@ dependencies {
     implementation 'com.razorpay:checkout:1.6.4'
 
     //AWS
-    implementation ('com.amazonaws:aws-android-sdk-mobile-client:2.6.7@aar') { transitive = true }
+    implementation('com.amazonaws:aws-android-sdk-mobile-client:2.6.7@aar') { transitive = true }
     implementation 'com.amazonaws:aws-android-sdk-s3:2.6.31'
     implementation 'com.amazonaws:aws-android-sdk-cognito:2.6.31'
+
+    //Pie Charts
+    implementation 'im.dacer:AndroidCharts:1.0.2'
 
 }

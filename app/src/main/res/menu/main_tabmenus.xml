@@ -3,10 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/action_discover"
+        android:id="@+id/action_books"
         android:enabled="true"
-        android:icon="@drawable/ic_compass"
-        android:title="@string/discover"
+        android:icon="@drawable/ic_library"
+        android:title="@string/book"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_videos"
+        android:enabled="true"
+        android:icon="@drawable/ic_play"
+        android:title="@string/video"
         app:showAsAction="ifRoom" />
 
     <item

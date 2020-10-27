@@ -5,7 +5,6 @@ package com.vunity.reader
 import android.app.ProgressDialog
 import android.content.res.Configuration
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
@@ -55,13 +54,16 @@ class Reader : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteListener
             val data = intent.getStringExtra("data")
             if (data != null) {
                 val url = getData("rootPath", this@Reader) + Enums.Book.value + data
-//                    val url = "https://swadharmaa.s3.ap-south-1.amazonaws.com/book/5_6305423766222537117.pdf"
                 val stream = RetrievePDQStream().execute(url).get()
                 loadFromStream(stream)
             }
         } catch (e: Exception) {
-            Log.e("Exception", e.toString())
-            coordinatorMessage(lay_root, getString(R.string.unable_to_fetch))
+            e.printStackTrace()
+            if (mProgressDialog.isShowing) {
+                mProgressDialog.dismiss()
+                window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
+            }
+            coordinatorMessage(lay_root, getString(R.string.unable_to_collect))
         }
     }
 

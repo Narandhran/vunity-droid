@@ -1,9 +1,8 @@
-package com.vunity.discover
+package com.vunity.video
 
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
@@ -11,9 +10,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import com.vunity.general.Home
 import com.vunity.R
-import com.vunity.book.BookListDto
+import com.vunity.general.Home
 import com.vunity.general.coordinatorErrorMessage
 import com.vunity.general.reloadActivity
 import com.vunity.general.sessionExpired
@@ -26,18 +24,14 @@ import retrofit2.Callback
 import retrofit2.Response
 
 
-class Search : AppCompatActivity() {
+class VideoSearch : AppCompatActivity() {
 
     private var internet: InternetDetector? = null
     private val moshi: Moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
         .build()
-    private var books: Call<BookListDto>? = null
-
-    val spanCount = 3 //  columns
-    val spacing = 15 // pixel
-    val includeEdge = true
-
+    private var videos: Call<VideoListDto>? = null
+    val spanCount = 2 //  columns
     private var queryTextListener: SearchView.OnQueryTextListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -46,26 +40,26 @@ class Search : AppCompatActivity() {
 
         layout_refresh.setOnRefreshListener {
             finish()
-            reloadActivity(this@Search)
+            reloadActivity(this@VideoSearch)
             layout_refresh.isRefreshing = false
         }
 
         im_back.setOnClickListener {
-            val intent = Intent(this@Search, Home::class.java)
+            val intent = Intent(this@VideoSearch, Home::class.java)
             startActivity(intent)
             overridePendingTransition(R.anim.bottom_up, R.anim.nothing)
         }
 
-        internet = InternetDetector.getInstance(this@Search)
-        allBooks()
+        internet = InternetDetector.getInstance(this@VideoSearch)
+        allVideos()
 
         queryTextListener = object : SearchView.OnQueryTextListener {
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText.equals("")) {
-                    allBooks()
+                    allVideos()
                 } else {
-                    if (internet?.checkMobileInternetConn(this@Search)!!) {
-                        searchInBooks(newText!!)
+                    if (internet?.checkMobileInternetConn(this@VideoSearch)!!) {
+                        searchInVideos(newText!!)
                     } else {
                         coordinatorErrorMessage(layout_refresh, getString(R.string.msg_no_internet))
                     }
@@ -75,10 +69,10 @@ class Search : AppCompatActivity() {
 
             override fun onQueryTextSubmit(query: String?): Boolean {
                 if (query.equals("")) {
-                    allBooks()
+                    allVideos()
                 } else {
-                    if (internet?.checkMobileInternetConn(this@Search)!!) {
-                        searchInBooks(query!!)
+                    if (internet?.checkMobileInternetConn(this@VideoSearch)!!) {
+                        searchInVideos(query!!)
                     } else {
                         coordinatorErrorMessage(layout_refresh, getString(R.string.msg_no_internet))
                     }
@@ -92,8 +86,8 @@ class Search : AppCompatActivity() {
 
     override fun onStop() {
         super.onStop()
-        if (books != null) {
-            books?.cancel()
+        if (videos != null) {
+            videos?.cancel()
         }
     }
 
@@ -102,24 +96,23 @@ class Search : AppCompatActivity() {
         overridePendingTransition(R.anim.bottom_up, R.anim.nothing)
     }
 
-    private fun allBooks() {
+    private fun allVideos() {
         if (!lay_shimmer.isShimmerStarted) {
             lay_shimmer.startShimmer()
         }
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            books = RetrofitClient.instanceClient.getAllBooks()
-            books?.enqueue(object : Callback<BookListDto> {
+            videos = RetrofitClient.videoClient.getAllVideos()
+            videos?.enqueue(object : Callback<VideoListDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(
-                    call: Call<BookListDto>,
-                    response: Response<BookListDto>
+                    call: Call<VideoListDto>,
+                    response: Response<VideoListDto>
                 ) {
-                    Log.e("onResponse", response.toString())
                     when {
                         response.code() == 200 -> {
                             when (response.body()?.status) {
                                 200 -> {
-                                    val bookData = response.body()!!.data.toMutableList()
+                                    val videoData = response.body()!!.data.toMutableList()
                                     lay_no_data.visibility = View.GONE
                                     lay_no_internet.visibility = View.GONE
                                     lay_data.visibility = View.VISIBLE
@@ -130,15 +123,9 @@ class Search : AppCompatActivity() {
                                             GridLayoutManager.VERTICAL,
                                             false
                                         )
-//                                        view_search?.addItemDecoration(
-//                                            GridSpacingItemDecoration(
-//                                                spanCount,
-//                                                spacing,
-//                                                includeEdge
-//                                            )
-//                                        )
                                         view_search?.setHasFixedSize(true)
-                                        val searchAdapter = SearchAdapter(bookData, this@Search)
+                                        val searchAdapter =
+                                            VideoSearchAdapter(videoData, this@VideoSearch)
                                         view_search?.adapter = searchAdapter
                                     }
                                 }
@@ -180,23 +167,18 @@ class Search : AppCompatActivity() {
                                         layout_refresh,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 coordinatorErrorMessage(
                                     layout_refresh,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         }
 
                         response.code() == 401 -> {
-                            sessionExpired(this@Search)
+                            sessionExpired(this@VideoSearch)
                         }
                         else -> {
                             coordinatorErrorMessage(
@@ -209,8 +191,7 @@ class Search : AppCompatActivity() {
                     lay_shimmer.stopShimmer()
                 }
 
-                override fun onFailure(call: Call<BookListDto>, t: Throwable) {
-                    Log.e("onFailure", t.message.toString())
+                override fun onFailure(call: Call<VideoListDto>, t: Throwable) {
                     if (!call.isCanceled) {
                         coordinatorErrorMessage(
                             layout_refresh,
@@ -231,24 +212,23 @@ class Search : AppCompatActivity() {
         }
     }
 
-    private fun searchInBooks(value: String) {
+    private fun searchInVideos(value: String) {
         if (!lay_shimmer.isShimmerStarted) {
             lay_shimmer.startShimmer()
         }
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            books = RetrofitClient.instanceClient.searchBooks(value)
-            books?.enqueue(object : Callback<BookListDto> {
+            videos = RetrofitClient.videoClient.searchVideos(value)
+            videos?.enqueue(object : Callback<VideoListDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(
-                    call: Call<BookListDto>,
-                    response: Response<BookListDto>
+                    call: Call<VideoListDto>,
+                    response: Response<VideoListDto>
                 ) {
-                    Log.e("onResponse", response.toString())
                     when {
                         response.code() == 200 -> {
                             when (response.body()?.status) {
                                 200 -> {
-                                    val bookData = response.body()!!.data.toMutableList()
+                                    val videoData = response.body()!!.data.toMutableList()
                                     lay_no_data.visibility = View.GONE
                                     lay_no_internet.visibility = View.GONE
                                     lay_data.visibility = View.VISIBLE
@@ -259,15 +239,9 @@ class Search : AppCompatActivity() {
                                             GridLayoutManager.VERTICAL,
                                             false
                                         )
-//                                        view_search?.addItemDecoration(
-//                                            GridSpacingItemDecoration(
-//                                                spanCount,
-//                                                spacing,
-//                                                includeEdge
-//                                            )
-//                                        )
                                         view_search?.setHasFixedSize(true)
-                                        val searchAdapter = SearchAdapter(bookData, this@Search)
+                                        val searchAdapter =
+                                            VideoSearchAdapter(videoData, this@VideoSearch)
                                         view_search?.adapter = searchAdapter
                                     }
                                 }
@@ -309,23 +283,18 @@ class Search : AppCompatActivity() {
                                         layout_refresh,
                                         getString(R.string.msg_something_wrong)
                                     )
-                                    Log.e(
-                                        "Response",
-                                        response.body()!!.toString()
-                                    )
                                 }
                             } catch (e: Exception) {
                                 coordinatorErrorMessage(
                                     layout_refresh,
                                     getString(R.string.msg_something_wrong)
                                 )
-                                Log.e("Exception", e.toString())
                             }
 
                         }
 
                         response.code() == 401 -> {
-                            sessionExpired(this@Search)
+                            sessionExpired(this@VideoSearch)
                         }
                         else -> {
                             coordinatorErrorMessage(
@@ -338,8 +307,7 @@ class Search : AppCompatActivity() {
                     lay_shimmer.stopShimmer()
                 }
 
-                override fun onFailure(call: Call<BookListDto>, t: Throwable) {
-                    Log.e("onFailure", t.message.toString())
+                override fun onFailure(call: Call<VideoListDto>, t: Throwable) {
                     if (!call.isCanceled) {
                         coordinatorErrorMessage(
                             layout_refresh,

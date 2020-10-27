@@ -12,9 +12,9 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.vunity.R
-import com.vunity.category.CategoryAdapter
 import com.vunity.category.CategoryData
 import com.vunity.category.CategoryListDto
+import com.vunity.category.CategoryVideoAdapter
 import com.vunity.general.GridSpacingItemDecoration
 import com.vunity.general.reloadActivity
 import com.vunity.general.sessionExpired
@@ -37,12 +37,12 @@ class VideoSeeAll : AppCompatActivity() {
         .build()
     var loadCategory: Call<CategoryListDto>? = null
     var categoryData: MutableList<CategoryData> = arrayListOf()
-    lateinit var categoryAdapter: CategoryAdapter
+    lateinit var categoryVideoAdapter: CategoryVideoAdapter
     var loadVideos: Call<VideoListDto>? = null
     var videoData: MutableList<VideoData> = arrayListOf()
     lateinit var videoSearchAdapter: VideoSearchAdapter
 
-    val spanCount = 3 //  columns
+    val spanCount = 2 //  columns
     val spacing = 15 // pixel
     val includeEdge = true
     private var ascending = true
@@ -144,9 +144,13 @@ class VideoSeeAll : AppCompatActivity() {
                                             )
                                         )
                                         view_more?.setHasFixedSize(true)
-                                        categoryAdapter =
-                                            CategoryAdapter(categoryData, this@VideoSeeAll, false)
-                                        view_more?.adapter = categoryAdapter
+                                        categoryVideoAdapter =
+                                            CategoryVideoAdapter(
+                                                categoryData,
+                                                this@VideoSeeAll,
+                                                false
+                                            )
+                                        view_more?.adapter = categoryVideoAdapter
 
                                         im_sort.setOnClickListener {
                                             im_sort.animate()
@@ -161,23 +165,23 @@ class VideoSeeAll : AppCompatActivity() {
                                                 })
                                             if (ascending) {
                                                 categoryData.sortBy { it.name }
-                                                categoryAdapter =
-                                                    CategoryAdapter(
+                                                categoryVideoAdapter =
+                                                    CategoryVideoAdapter(
                                                         categoryData,
                                                         this@VideoSeeAll,
                                                         false
                                                     )
-                                                view_more?.adapter = categoryAdapter
+                                                view_more?.adapter = categoryVideoAdapter
                                                 ascending = false
                                             } else {
                                                 categoryData.reverse()
-                                                categoryAdapter =
-                                                    CategoryAdapter(
+                                                categoryVideoAdapter =
+                                                    CategoryVideoAdapter(
                                                         categoryData,
                                                         this@VideoSeeAll,
                                                         false
                                                     )
-                                                view_more?.adapter = categoryAdapter
+                                                view_more?.adapter = categoryVideoAdapter
                                                 ascending = true
                                             }
                                         }

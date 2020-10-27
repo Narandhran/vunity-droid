@@ -17,7 +17,8 @@ data class BannerListDto(
 data class BannerData(
     var __v: Int?,
     var _id: String?,
-    var banner: String?,
+    var banner: Any?,
+    var video: Any?,
     var createdAt: String?,
     var updatedAt: String?
 )

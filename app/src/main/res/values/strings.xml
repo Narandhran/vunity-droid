@@ -15,7 +15,7 @@
     <string name="take_photo">Take Photo</string>
     <string name="cancel">Cancel</string>
     <string name="update">Update</string>
-    <string name="unable_to_fetch">Unable to fetch you!, Try after some time!.</string>
+    <string name="unable_to_collect">Unable to collect the information, Try after again later.</string>
     <string name="profile">PROFILE</string>
     <string name="bookmarks">Bookmarks</string>
     <string name="about">About</string>
@@ -132,6 +132,7 @@
     <!--aws keys-->
     <string name="access_key">AKIAQXVJ7GKFF4Z4QS5T</string>
     <string name="secret_key">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</string>
+    <string name="report">Report</string>
 
 
 </resources>

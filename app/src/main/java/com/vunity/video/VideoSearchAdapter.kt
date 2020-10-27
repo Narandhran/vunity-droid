@@ -25,7 +25,7 @@ class VideoSearchAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.card_book_child, parent, false)
+            .inflate(R.layout.card_video_child, parent, false)
         return Holder(itemView)
     }
 
@@ -63,7 +63,7 @@ class VideoSearchAdapter(
     }
 
     inner class Holder(view: View) : RecyclerView.ViewHolder(view) {
-        var imgVideo: PorterShapeImageView = view.findViewById(R.id.img_book)
+        var imgVideo: PorterShapeImageView = view.findViewById(R.id.img_video)
         var txtName: MaterialTextView = view.findViewById(R.id.txt_name)
         var cardVideo: MaterialCardView = view.findViewById(R.id.card_book)
     }

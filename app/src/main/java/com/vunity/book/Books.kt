@@ -14,7 +14,6 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.squareup.picasso.Picasso
 import com.vunity.R
-import com.vunity.banner.Banner
 import com.vunity.banner.BannerListDto
 import com.vunity.category.CategoryAdapter
 import com.vunity.category.CategoryData
@@ -144,7 +143,10 @@ class Books : Fragment(), IOnBackPressed {
                                 for (i in response.body()!!.data?.toMutableList()!!) {
                                     banner.add(i.banner.toString())
                                 }
-                                view.view_pager.adapter = ViewPagerAdapter(requireContext(), banner)
+                                view.view_pager.adapter = ViewPagerAdapter(
+                                    requireActivity(),
+                                    response.body()!!.data?.toMutableList()!!
+                                )
                                 view.worm_dots_indicator.setViewPager(view.view_pager)
                                 try {
                                     var currentPage = 0
@@ -162,35 +164,6 @@ class Books : Fragment(), IOnBackPressed {
                                 } catch (exception: java.lang.Exception) {
                                     exception.printStackTrace()
                                 }
-                                view.view_pager.setOnItemClickListener(object :
-                                    ClickableViewPager.OnItemClickListener {
-                                    override fun onItemClick(position: Int) {
-                                        val role = getData(Enums.Role.value, requireContext())
-                                        if (role == Enums.Admin.value) {
-                                            startActivity(
-                                                Intent(
-                                                    requireActivity(),
-                                                    Banner::class.java
-                                                )
-                                            )
-                                        }
-                                        if (role == Enums.User.value) {
-                                            try {
-                                                if (position == 1) {
-                                                    val intent =
-                                                        Intent(activity, Profile::class.java)
-                                                    intent.putExtra(
-                                                        getString(R.string.data),
-                                                        getString(R.string.profile)
-                                                    )
-                                                    startActivity(intent)
-                                                }
-                                            } catch (exception: java.lang.Exception) {
-                                                exception.printStackTrace()
-                                            }
-                                        }
-                                    }
-                                })
                             }
                         }
                     }

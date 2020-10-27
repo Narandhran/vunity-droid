@@ -27,7 +27,7 @@ import com.vunity.user.ErrorMsgDto
 import com.vunity.user.Login
 import com.vunity.user.ProDto
 import com.vunity.user.ResDto
-import com.vunity.video.UploadService
+import com.vunity.video.VideoUploadService
 import com.vunity.video.Videos
 import com.vunity.vunity.Vunity
 import com.vunity.vunity.VunityUsers
@@ -302,12 +302,12 @@ class Home : AppCompatActivity(), PickiTCallbacks {
 
     override fun onResume() {
         super.onResume()
-        if (!isMyServiceRunning(applicationContext, UploadService::class.java)) {
-            val path = applicationContext?.getDir(getString(R.string.app_name), MODE_PRIVATE)
-            val tempFiles = File(path, "temp")
-            deleteTemps(tempFiles)
-            pickiT?.deleteTemporaryFile()
-        }
+//        if (!isMyServiceRunning(applicationContext, VideoUploadService::class.java)) {
+//            val path = applicationContext?.getDir(getString(R.string.app_name), MODE_PRIVATE)
+//            val tempFiles = File(path, "temp")
+//            deleteTemps(tempFiles)
+//            pickiT?.deleteTemporaryFile()
+//        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

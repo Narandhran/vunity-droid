@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.os.Handler
+import android.provider.Settings.Secure
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -35,9 +36,12 @@ class Verification : AppCompatActivity() {
         .add(KotlinJsonAdapterFactory())
         .build()
 
+    @SuppressLint("HardwareIds")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_verification)
+
+        val deviceId = Secure.getString(applicationContext.contentResolver, Secure.ANDROID_ID)
 
         if (intent.getStringExtra("mobile") != null) {
             mobile = intent.getStringExtra("mobile")!!.toString()
@@ -159,10 +163,12 @@ class Verification : AppCompatActivity() {
                     "Enter your verification code (OTP)."
                 )
             } else {
+
                 val loginBody = LoginBody(
                     mobile = mobile,
                     otp = otp.toInt(),
-                    fcmToken = getData("fcm_token", applicationContext).toString()
+                    fcmToken = getData("fcm_token", applicationContext).toString(),
+                    deviceId = deviceId
                 )
                 login(loginBody)
             }

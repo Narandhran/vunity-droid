@@ -63,7 +63,7 @@ class Reader : AppCompatActivity(), OnPageChangeListener, OnLoadCompleteListener
                 mProgressDialog.dismiss()
                 window.clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE)
             }
-            coordinatorMessage(lay_root, getString(R.string.unable_to_fetch))
+            coordinatorMessage(lay_root, getString(R.string.unable_to_collect))
         }
     }
 

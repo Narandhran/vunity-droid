@@ -38,7 +38,8 @@ data class HomeVideoData(
 
 data class ReqSingleVideoBody(
     var libraryId: String,
-    var userId: Any
+    var userId: Any,
+    var isVideo: Boolean
 )
 
 data class VideoDto(

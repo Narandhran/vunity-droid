@@ -23,7 +23,7 @@ class VideoParentAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
         val itemView = LayoutInflater.from(parent.context)
-            .inflate(R.layout.card_book_parent, parent, false)
+            .inflate(R.layout.card_video_parent, parent, false)
         return Holder(itemView)
     }
 

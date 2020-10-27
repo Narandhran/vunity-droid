@@ -158,7 +158,7 @@ class AddVideo : AppCompatActivity(), PickiTCallbacks {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            showMessage(lay_root, getString(R.string.unable_to_fetch))
+            showMessage(lay_root, getString(R.string.unable_to_collect))
         }
 
         swt_announcement.setOnCheckedChangeListener { buttonView, isChecked ->
@@ -357,7 +357,7 @@ class AddVideo : AppCompatActivity(), PickiTCallbacks {
             }
             else -> {
                 try {
-                    if (!isMyServiceRunning(applicationContext, UploadService::class.java)) {
+                    if (!isMyServiceRunning(applicationContext, VideoUploadService::class.java)) {
                         val videoBody = ReqVideoBody(
                             categoryId = categoryId,
                             name = edt_name.text.toString(),
@@ -373,7 +373,7 @@ class AddVideo : AppCompatActivity(), PickiTCallbacks {
                             moshi.adapter(ReqVideoBody::class.java)
                         val json: String = jsonAdapter.toJson(videoBody)
 
-                        val serviceIntent = Intent(this@AddVideo, UploadService::class.java)
+                        val serviceIntent = Intent(this@AddVideo, VideoUploadService::class.java)
                         val mBundle = Bundle()
                         mBundle.putString("imagePath", imagePath)
                         mBundle.putString("videoPath", videoPath)

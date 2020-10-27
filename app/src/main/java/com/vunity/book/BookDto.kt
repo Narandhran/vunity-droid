@@ -36,7 +36,8 @@ data class HomeBookData(
 
 data class ReqSingleBookBody(
     var libraryId: String,
-    var userId: Any
+    var userId: Any,
+    var isVideo: Boolean
 )
 
 data class BookDto(

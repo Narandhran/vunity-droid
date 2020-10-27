@@ -155,7 +155,7 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
             e.printStackTrace()
             showMessage(
                 lay_root,
-                getString(R.string.unable_to_fetch)
+                getString(R.string.unable_to_collect)
             )
         }
 

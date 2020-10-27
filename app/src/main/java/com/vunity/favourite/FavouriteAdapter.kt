@@ -26,6 +26,7 @@ import com.vunity.server.RetrofitClient
 import com.vunity.server.RetrofitWithBar
 import com.vunity.user.ErrorMsgDto
 import com.vunity.user.ResDto
+import com.vunity.video.VideoDetails
 import org.apache.commons.lang3.StringUtils
 import retrofit2.Call
 import retrofit2.Callback
@@ -56,24 +57,49 @@ class FavouriteAdapter(
         try {
             data = dataList[position]
             internet = InternetDetector.getInstance(activity)
-            holder.txtName.text = StringUtils.capitalize(data.libraryId.name)
-            Picasso.get().load(
-                getData(
-                    "rootPath",
-                    activity.applicationContext
-                ) + Enums.Book.value + data.libraryId.thumbnail
-            ).placeholder(R.drawable.img_place_holder)
-                .fit().into(holder.imgBook)
+            if (data.isVideo) {
 
-            holder.cardFav.setOnClickListener {
-                data = dataList[position]
-                val intent = Intent(activity, BookDetails::class.java)
-                intent.putExtra(activity.getString(R.string.data), data.libraryId._id)
-                activity.startActivity(intent)
-            }
+                holder.txtName.text = StringUtils.capitalize(data.videoId?.name)
+                Picasso.get().load(
+                    getData(
+                        "rootPath",
+                        activity.applicationContext
+                    ) + Enums.VideoThumb.value + data.videoId?.thumbnail
+                ).placeholder(R.drawable.img_place_holder)
+                    .fit().into(holder.imgBook)
 
-            holder.imgBookMark.setOnClickListener {
-                removeFav(data.libraryId._id)
+                holder.cardFav.setOnClickListener {
+                    data = dataList[position]
+                    val intent = Intent(activity, VideoDetails::class.java)
+                    intent.putExtra(activity.getString(R.string.data), data.videoId?._id)
+                    activity.startActivity(intent)
+                }
+
+                holder.imgBookMark.setOnClickListener {
+                    removeFav(data.isVideo, data.videoId?._id.toString())
+                }
+
+            } else {
+
+                holder.txtName.text = StringUtils.capitalize(data.libraryId?.name)
+                Picasso.get().load(
+                    getData(
+                        "rootPath",
+                        activity.applicationContext
+                    ) + Enums.Book.value + data.libraryId?.thumbnail
+                ).placeholder(R.drawable.img_place_holder)
+                    .fit().into(holder.imgBook)
+
+                holder.cardFav.setOnClickListener {
+                    data = dataList[position]
+                    val intent = Intent(activity, BookDetails::class.java)
+                    intent.putExtra(activity.getString(R.string.data), data.libraryId?._id)
+                    activity.startActivity(intent)
+                }
+
+                holder.imgBookMark.setOnClickListener {
+                    removeFav(data.isVideo, data.libraryId?._id.toString())
+                }
             }
 
         } catch (e: Exception) {
@@ -100,9 +126,10 @@ class FavouriteAdapter(
         var cardFav: MaterialCardView = view.findViewById(R.id.card_favourite)
     }
 
-    private fun removeFav(id: String) {
+    private fun removeFav(isVideo: Boolean, id: String) {
         if (internet?.checkMobileInternetConn(activity)!!) {
-            val removeFav = RetrofitClient.favouriteClient.removeFavourite(id)
+            val reqFavBody = ReqFavBody(isVideo = isVideo, libraryId = id)
+            val removeFav = RetrofitClient.favouriteClient.removeFavourite(reqFavBody)
             removeFav.enqueue(
                 RetrofitWithBar(activity, object : Callback<ResDto> {
                     @SuppressLint("SimpleDateFormat")

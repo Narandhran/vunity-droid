@@ -61,19 +61,6 @@ class Splash : AppCompatActivity() {
                         finish()
                     }, 2000)
                 }
-                "skip" -> {
-                    Handler().postDelayed({
-                        val homeIndent = Intent(this@Splash, Home::class.java)
-                        homeIndent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-                        homeIndent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        startActivity(homeIndent)
-                        this@Splash.overridePendingTransition(
-                            R.anim.fade_in,
-                            R.anim.fade_out
-                        )
-                        finish()
-                    }, 2000)
-                }
                 else -> {
                     Handler().postDelayed({
                         val loginIntent = Intent(this@Splash, Login::class.java)

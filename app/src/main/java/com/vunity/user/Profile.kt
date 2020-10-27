@@ -34,6 +34,7 @@ import com.vunity.book.AddBook
 import com.vunity.category.AddCategory
 import com.vunity.favourite.Favourite
 import com.vunity.general.*
+import com.vunity.report.Report
 import com.vunity.server.InternetDetector
 import com.vunity.server.RetrofitClient
 import com.vunity.server.RetrofitWithBar
@@ -155,8 +156,13 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
         val role = getData(Enums.Role.value, applicationContext)
         if (role == Enums.Admin.value) {
             fab_admin.visibility = View.VISIBLE
+            lay_report.visibility = View.VISIBLE
+            lay_report.setOnClickListener {
+                startActivity(Intent(this@Profile, Report::class.java))
+            }
         } else {
             fab_admin.visibility = View.GONE
+            lay_report.visibility = View.GONE
         }
     }
 
@@ -296,6 +302,15 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
     private fun initSpeedDial() {
 
         fab_admin.addActionItem(
+            SpeedDialActionItem.Builder(R.id.fab_vunity_announcement, R.drawable.ic_megaphone)
+                .setLabel(getString(R.string.announcement))
+                .setFabImageTintColor(ResourcesCompat.getColor(resources, R.color.white, theme))
+                .setLabelColor(getColor(R.color.theme_dark_grey))
+                .setTheme(R.style.FabTheme)
+                .create()
+        )
+
+        fab_admin.addActionItem(
             SpeedDialActionItem.Builder(R.id.fab_category, R.drawable.ic_category)
                 .setLabel(getString(R.string.add_category))
                 .setFabImageTintColor(ResourcesCompat.getColor(resources, R.color.white, theme))
@@ -334,15 +349,6 @@ class Profile : AppCompatActivity(), PaymentResultWithDataListener {
         fab_admin.addActionItem(
             SpeedDialActionItem.Builder(R.id.fab_user, R.drawable.ic_add_user)
                 .setLabel(getString(R.string.user))
-                .setFabImageTintColor(ResourcesCompat.getColor(resources, R.color.white, theme))
-                .setLabelColor(getColor(R.color.theme_dark_grey))
-                .setTheme(R.style.FabTheme)
-                .create()
-        )
-
-        fab_admin.addActionItem(
-            SpeedDialActionItem.Builder(R.id.fab_vunity_announcement, R.drawable.ic_megaphone)
-                .setLabel(getString(R.string.announcement))
                 .setFabImageTintColor(ResourcesCompat.getColor(resources, R.color.white, theme))
                 .setLabelColor(getColor(R.color.theme_dark_grey))
                 .setTheme(R.style.FabTheme)

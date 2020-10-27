@@ -17,6 +17,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.squareup.picasso.Picasso
 import com.vunity.R
+import com.vunity.favourite.ReqFavBody
 import com.vunity.general.*
 import com.vunity.reader.Player
 import com.vunity.server.InternetDetector
@@ -66,13 +67,14 @@ class VideoDetails : AppCompatActivity() {
             if (data != null) {
                 val video = ReqSingleVideoBody(
                     libraryId = data,
-                    userId = getData("user_id", applicationContext).toString()
+                    userId = getData("user_id", applicationContext).toString(),
+                    isVideo = true
                 )
                 videos(video)
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            showMessage(lay_root, getString(R.string.unable_to_fetch))
+            showMessage(lay_root, getString(R.string.unable_to_collect))
         }
 
         val role = getData(Enums.Role.value, applicationContext)
@@ -170,6 +172,10 @@ class VideoDetails : AppCompatActivity() {
                                             response.body()!!.data.content
                                         )
                                         startActivity(intent)
+                                        overridePendingTransition(
+                                            R.anim.fade_in,
+                                            R.anim.fade_out
+                                        )
                                     }
                                 }
 
@@ -259,7 +265,8 @@ class VideoDetails : AppCompatActivity() {
 
     private fun addFav(id: String) {
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            val addFav = RetrofitClient.favouriteClient.addFavourite(id)
+            val reqFavBody = ReqFavBody(isVideo = true, libraryId = id)
+            val addFav = RetrofitClient.favouriteClient.addFavourite(reqFavBody)
             addFav.enqueue(
                 RetrofitWithBar(this@VideoDetails, object : Callback<ResDto> {
                     @SuppressLint("SimpleDateFormat")
@@ -341,7 +348,8 @@ class VideoDetails : AppCompatActivity() {
 
     private fun removeFav(id: String) {
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            val removeFav = RetrofitClient.favouriteClient.removeFavourite(id)
+            val reqFavBody = ReqFavBody(isVideo = true, libraryId = id)
+            val removeFav = RetrofitClient.favouriteClient.removeFavourite(reqFavBody)
             removeFav.enqueue(
                 RetrofitWithBar(this@VideoDetails, object : Callback<ResDto> {
                     @SuppressLint("SimpleDateFormat")
@@ -434,7 +442,8 @@ class VideoDetails : AppCompatActivity() {
                         if (id != null) {
                             val video = ReqSingleVideoBody(
                                 libraryId = id,
-                                userId = getData("user_id", applicationContext).toString()
+                                userId = getData("user_id", applicationContext).toString(),
+                                isVideo = true
                             )
                             videos(video)
                         }
@@ -453,13 +462,14 @@ class VideoDetails : AppCompatActivity() {
             if (data != null) {
                 val video = ReqSingleVideoBody(
                     libraryId = data,
-                    userId = getData("user_id", applicationContext).toString()
+                    userId = getData("user_id", applicationContext).toString(),
+                    isVideo = true
                 )
                 videos(video)
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            showMessage(lay_root, getString(R.string.unable_to_fetch))
+            showMessage(lay_root, getString(R.string.unable_to_collect))
         }
     }
 

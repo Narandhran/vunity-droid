@@ -9,6 +9,8 @@ import android.provider.Settings
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.core.app.NotificationCompat
+import com.amazonaws.ClientConfiguration
+import com.amazonaws.Protocol
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.mobile.client.AWSMobileClient
 import com.amazonaws.mobileconnectors.s3.transferutility.TransferListener
@@ -35,7 +37,7 @@ import retrofit2.Response
 import java.io.File
 
 
-class UploadService : Service() {
+class VideoUploadService : Service() {
 
     private val moshi: Moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())
@@ -75,7 +77,8 @@ class UploadService : Service() {
             .setContentTitle("Videos are uploading, please wait...")
             .setSmallIcon(R.drawable.ic_stat_notification)
             .setContentIntent(pendingIntent)
-            .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+            .setSound(null)
+            .setDefaults(0)
             .setProgress(100, 0, false)
 
         notification = notificationBuilder.build()
@@ -105,7 +108,7 @@ class UploadService : Service() {
             val serviceChannel = NotificationChannel(
                 getString(R.string.channel_id),
                 getString(R.string.channel_name),
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_LOW
             )
             val manager = getSystemService(NotificationManager::class.java)!!
             manager.createNotificationChannel(serviceChannel)
@@ -114,12 +117,20 @@ class UploadService : Service() {
 
     private fun uploadVideo() {
         val newFile = File(videoPath)
-        AWSMobileClient.getInstance().initialize(this).execute()
 
+        val timeoutConnection = 50000000
+        val clientConfiguration = ClientConfiguration()
+        clientConfiguration.maxErrorRetry = 5
+        clientConfiguration.connectionTimeout = timeoutConnection
+        clientConfiguration.socketTimeout = timeoutConnection
+        clientConfiguration.protocol = Protocol.HTTP
+
+        AWSMobileClient.getInstance().initialize(this).execute()
         // KEY and SECRET are gotten when we create an IAM user above
         val credentials =
             BasicAWSCredentials(getString(R.string.access_key), getString(R.string.secret_key))
-        val s3Client = AmazonS3Client(credentials)
+        val s3Client = AmazonS3Client(credentials, clientConfiguration)
+
         val transferUtility = TransferUtility.builder()
             .context(applicationContext)
             .awsConfiguration(AWSMobileClient.getInstance().configuration)
@@ -150,6 +161,7 @@ class UploadService : Service() {
 
             override fun onError(id: Int, ex: Exception) {
                 notifier("Video not uploaded", ex.toString())
+                Log.e("onError", ex.toString())
             }
         })
 

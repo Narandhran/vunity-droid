@@ -10,6 +10,7 @@ import com.vunity.category.CategoryResponse
 import com.vunity.favourite.FavouriteResponse
 import com.vunity.general.Application
 import com.vunity.general.getToken
+import com.vunity.report.ReportResponse
 import com.vunity.user.UserResponse
 import com.vunity.video.VideoResponse
 import com.vunity.vunity.VunityResponse
@@ -90,4 +91,7 @@ object RetrofitClient {
         retrofit.create(VunityResponse::class.java)
     }
 
+    val reportClient: ReportResponse by lazy {
+        retrofit.create(ReportResponse::class.java)
+    }
 }

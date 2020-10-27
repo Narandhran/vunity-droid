@@ -31,7 +31,7 @@ class VideoSearch : AppCompatActivity() {
         .add(KotlinJsonAdapterFactory())
         .build()
     private var videos: Call<VideoListDto>? = null
-    val spanCount = 3 //  columns
+    val spanCount = 2 //  columns
     private var queryTextListener: SearchView.OnQueryTextListener? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {

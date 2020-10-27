@@ -6,7 +6,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
-import android.view.View
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.tasks.OnCompleteListener
@@ -15,7 +14,10 @@ import com.squareup.moshi.JsonAdapter
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.vunity.R
-import com.vunity.general.*
+import com.vunity.general.saveData
+import com.vunity.general.sessionExpired
+import com.vunity.general.showErrorMessage
+import com.vunity.general.showMessage
 import com.vunity.server.InternetDetector
 import com.vunity.server.RetrofitClient
 import com.vunity.server.RetrofitWithBar
@@ -34,11 +36,6 @@ class Login : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_login)
 
-        val data = intent.getStringExtra(getString(R.string.data))
-        if (data == getString(R.string.new_user)) {
-            lay_skip.visibility = View.GONE
-        }
-
         im_back.setOnClickListener {
             onBackPressed()
         }
@@ -54,17 +51,6 @@ class Login : AppCompatActivity() {
 
         btn_register.setOnClickListener {
             startActivity(Intent(this@Login, Register::class.java))
-            finish()
-        }
-
-        btn_skip.setOnClickListener {
-            startActivity(Intent(this@Login, Home::class.java))
-            saveData("logged_user", "skip", applicationContext)
-            saveData(
-                "rootPath",
-                "https://vunity.s3.ap-south-1.amazonaws.com/",
-                applicationContext
-            )
             finish()
         }
 

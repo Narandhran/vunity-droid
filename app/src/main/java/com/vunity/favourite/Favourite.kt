@@ -2,6 +2,7 @@ package com.vunity.favourite
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.GridLayoutManager
@@ -63,10 +64,8 @@ class Favourite : AppCompatActivity() {
             favourite = RetrofitClient.favouriteClient.listFavourite()
             favourite?.enqueue(object : Callback<FavListDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
-                override fun onResponse(
-                    call: Call<FavListDto>,
-                    response: Response<FavListDto>
-                ) {
+                override fun onResponse(call: Call<FavListDto>, response: Response<FavListDto>) {
+                    Log.e("onResponse",response.toString())
                     when {
                         response.code() == 200 -> {
                             when (response.body()?.status) {
@@ -169,6 +168,7 @@ class Favourite : AppCompatActivity() {
                         )
                         lay_shimmer.visibility = View.GONE
                         lay_shimmer.stopShimmer()
+                        Log.e("onFailure",t.toString())
                     }
                 }
             })

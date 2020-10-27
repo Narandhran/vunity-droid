@@ -68,7 +68,7 @@ class Player : AppCompatActivity() {
             }
         } catch (e: Exception) {
             e.printStackTrace()
-            showMessage(lay_main, getString(R.string.unable_to_fetch))
+            showMessage(lay_main, getString(R.string.unable_to_collect))
         }
 
         img_mode.setOnClickListener {

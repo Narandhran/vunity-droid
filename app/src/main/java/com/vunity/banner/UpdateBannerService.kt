@@ -37,7 +37,7 @@ import retrofit2.Response
 import java.io.File
 
 
-class UdpateBannerService : Service() {
+class UpdateBannerService : Service() {
 
     private val moshi: Moshi = Moshi.Builder()
         .add(KotlinJsonAdapterFactory())

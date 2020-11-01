@@ -113,7 +113,7 @@ class BookSeeAll : AppCompatActivity() {
 
     private fun loadCategory() {
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            loadCategory = RetrofitClient.categoryClient.category()
+            loadCategory = RetrofitClient.categoryClient.category(key = "library")
             loadCategory?.enqueue(object : Callback<CategoryListDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(

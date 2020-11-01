@@ -14,6 +14,6 @@ data class CMSReport(
 )
 
 data class ReportData(
-    var activeUsers: Int?,
-    var date: String?
+    var activeUsers: Int,
+    var date: String
 )

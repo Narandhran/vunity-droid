@@ -201,8 +201,8 @@ class Report : AppCompatActivity() {
         val stringList = ArrayList<String>()
 
         listOfData.forEach { data ->
-            stringList.add(data.date.toString())
-            dataList.add(data.activeUsers!!)
+            stringList.add(data.date)
+            dataList.add(data.activeUsers)
         }
         lineView.setBottomTextList(stringList)
         dataLists.add(dataList)

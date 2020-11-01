@@ -657,7 +657,11 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
         val pdfPart: MultipartBody.Part =
             MultipartBody.Part.createFormData("content", pdfFile.name, pdfReqBody)
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            val updatePdf = RetrofitClient.bookClient.updateBookPdf(pdf = pdfPart, id = bookId)
+            val updatePdf = RetrofitClient.bookClient.updateBookPdf(
+                libraryId = bookId,
+                makeAnnouncement = announcement,
+                pdf = pdfPart
+            )
             updatePdf.enqueue(
                 RetrofitWithBar(this@AddBook, object : Callback<ResDto> {
                     @SuppressLint("SimpleDateFormat")
@@ -892,7 +896,7 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
     private fun categories(): HashMap<String, String> {
         val hashCategory = HashMap<String, String>()
         if (internet?.checkMobileInternetConn(this@AddBook)!!) {
-            category = RetrofitClient.categoryClient.category()
+            category = RetrofitClient.categoryClient.category(key = "ALL")
             category?.enqueue(object : Callback<CategoryListDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(
@@ -1173,7 +1177,12 @@ class AddBook : AppCompatActivity(), PickiTCallbacks {
         val options = UCrop.Options()
         options.setToolbarColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
         options.setStatusBarColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
-        options.setActiveWidgetColor(ContextCompat.getColor(applicationContext, R.color.colorPrimary))
+        options.setActiveWidgetColor(
+            ContextCompat.getColor(
+                applicationContext,
+                R.color.colorPrimary
+            )
+        )
         this@AddBook.let {
             UCrop.of(sourceUri, destinationUri)
                 .withOptions(options)

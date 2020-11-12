@@ -40,6 +40,9 @@ class Player : AppCompatActivity() {
             onBackPressed()
         }
 
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        img_mode.setImageResource(R.drawable.ic_exit_fullscreen)
+
         try {
 
             val data = intent.getStringExtra("data")

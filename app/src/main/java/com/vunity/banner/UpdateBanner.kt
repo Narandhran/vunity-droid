@@ -115,7 +115,7 @@ class UpdateBanner : AppCompatActivity(), PickiTCallbacks {
                     }
                     else -> {
                         val serviceIntent =
-                            Intent(this@UpdateBanner, UdpateBannerService::class.java)
+                            Intent(this@UpdateBanner, UpdateBannerService::class.java)
                         val mBundle = Bundle()
                         mBundle.putString("imagePath", imagePath)
                         mBundle.putString("videoPath", videoPath)

@@ -113,7 +113,7 @@ class VideoSeeAll : AppCompatActivity() {
 
     private fun loadCategory() {
         if (internet?.checkMobileInternetConn(applicationContext)!!) {
-            loadCategory = RetrofitClient.categoryClient.category()
+            loadCategory = RetrofitClient.categoryClient.category(key = "video")
             loadCategory?.enqueue(object : Callback<CategoryListDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(

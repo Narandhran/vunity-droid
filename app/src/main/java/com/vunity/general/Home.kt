@@ -6,6 +6,7 @@ import android.app.Dialog
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.util.Log
 import android.view.WindowManager
 import androidx.annotation.RequiresApi
@@ -27,7 +28,6 @@ import com.vunity.user.ErrorMsgDto
 import com.vunity.user.Login
 import com.vunity.user.ProDto
 import com.vunity.user.ResDto
-import com.vunity.video.VideoUploadService
 import com.vunity.video.Videos
 import com.vunity.vunity.Vunity
 import com.vunity.vunity.VunityUsers
@@ -37,22 +37,28 @@ import org.apache.commons.lang3.StringUtils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.io.File
 import java.util.*
 
 class Home : AppCompatActivity(), PickiTCallbacks {
 
-    var pickiT: PickiT? = null
+    private var pickIt: PickiT? = null
+    private var deviceId: String? = null
 
+    @SuppressLint("HardwareIds")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_home)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+
+        deviceId = Settings.Secure.getString(
+            applicationContext.contentResolver,
+            Settings.Secure.ANDROID_ID
+        )
         navigationView.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener)
         navigationView.selectedItemId = R.id.action_books
         loadProfileInfo()
 
-        pickiT = PickiT(this, this, this)
+        pickIt = PickiT(this, this, this)
 
         try {
             FirebaseInstanceId.getInstance().instanceId
@@ -165,6 +171,7 @@ class Home : AppCompatActivity(), PickiTCallbacks {
     private fun sendRegistrationToServer(token: String) {
         val mapData: HashMap<String, String> = HashMap()
         mapData["fcm"] = token
+        mapData["deviceId"] = deviceId.toString()
         val updateToken = RetrofitClient.userClient.updateProfile(mapData)
         updateToken.enqueue(object : Callback<ResDto> {
             @SuppressLint("SimpleDateFormat")
@@ -298,16 +305,6 @@ class Home : AppCompatActivity(), PickiTCallbacks {
                 Log.e("onFailure", t.message.toString())
             }
         })
-    }
-
-    override fun onResume() {
-        super.onResume()
-//        if (!isMyServiceRunning(applicationContext, VideoUploadService::class.java)) {
-//            val path = applicationContext?.getDir(getString(R.string.app_name), MODE_PRIVATE)
-//            val tempFiles = File(path, "temp")
-//            deleteTemps(tempFiles)
-//            pickiT?.deleteTemporaryFile()
-//        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

@@ -6,6 +6,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
@@ -87,6 +88,7 @@ class VideoDetails : AppCompatActivity() {
     }
 
     private fun videos(videoReq: ReqSingleVideoBody) {
+        Log.e("videoReq",videoReq.toString())
         videos = RetrofitClient.videoClient.getOneVideo(videoReq)
         videos?.enqueue(object : Callback<VideoDto> {
             @SuppressLint("DefaultLocale", "SetTextI18n")

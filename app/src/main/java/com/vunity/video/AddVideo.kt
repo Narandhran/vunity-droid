@@ -679,7 +679,7 @@ class AddVideo : AppCompatActivity(), PickiTCallbacks {
     private fun categories(): HashMap<String, String> {
         val hashCategory = HashMap<String, String>()
         if (internet?.checkMobileInternetConn(this@AddVideo)!!) {
-            category = RetrofitClient.categoryClient.category()
+            category = RetrofitClient.categoryClient.category(key = "ALL")
             category?.enqueue(object : Callback<CategoryListDto> {
                 @SuppressLint("DefaultLocale", "SetTextI18n")
                 override fun onResponse(

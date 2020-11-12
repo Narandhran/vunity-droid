@@ -6,8 +6,7 @@ import com.squareup.moshi.JsonClass
 data class LoginBody(
     var mobile: String,
     val fcmToken: String,
-    var otp: Int,
-    var deviceId: String
+    var otp: Int
 )
 
 data class LoginDto(

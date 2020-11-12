@@ -6,6 +6,7 @@ import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.http.*
 
+
 interface BookResponse {
 
     @Multipart
@@ -24,8 +25,12 @@ interface BookResponse {
     fun updateBookImage(@Path("id") id: String, @Part thumbnail: MultipartBody.Part): Call<ResDto>
 
     @Multipart
-    @PUT("library/update_book/{id}")
-    fun updateBookPdf(@Path("id") id: String, @Part pdf: MultipartBody.Part): Call<ResDto>
+    @PUT("library/update_book")
+    fun updateBookPdf(
+        @Query("libraryId") libraryId: String,
+        @Query("makeAnnouncement") makeAnnouncement: Boolean,
+        @Part pdf: MultipartBody.Part
+    ): Call<ResDto>
 
     @GET("library/homepage")
     fun getHome(): Call<HomeDto>

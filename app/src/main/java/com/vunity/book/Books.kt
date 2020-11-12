@@ -233,7 +233,7 @@ class Books : Fragment(), IOnBackPressed {
         if (!view.lay_shimmer.isShimmerStarted) {
             view.lay_shimmer.startShimmer()
         }
-        category = RetrofitClient.categoryClient.category()
+        category = RetrofitClient.categoryClient.category(key = "library")
         category?.enqueue(object : Callback<CategoryListDto> {
             @SuppressLint("DefaultLocale", "SetTextI18n")
             override fun onResponse(

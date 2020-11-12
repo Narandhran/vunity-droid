@@ -9,6 +9,7 @@
     <color name="theme_light_grey">#62778C</color>
     <color name="theme_pure_grey">#A962778C</color>
     <color name="light_grey">#E5E5E5</color>
+    <color name="android_grey">#F5F5F5</color>
 
     <color name="white">#ffffff</color>
     <color name="black">#000000</color>
@@ -20,13 +21,5 @@
     <color name="orange">#F7931D</color>
     <color name="light_orange">#0DFF453A</color>
     <color name="green">#558B2F</color>
-
-    <color name="dayOne">#E53935</color>
-    <color name="dayTwo">#8E24AA</color>
-    <color name="dayThree">#1E88E5</color>
-    <color name="dayFour">#00897B</color>
-    <color name="dayFive">#FDD835</color>
-    <color name="daySix">#81D4FA</color>
-    <color name="daySeven">#CE93D8</color>
 
 </resources>

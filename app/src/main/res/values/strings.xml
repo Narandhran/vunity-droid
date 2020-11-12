@@ -133,6 +133,11 @@
     <string name="access_key">AKIAQXVJ7GKFF4Z4QS5T</string>
     <string name="secret_key">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</string>
     <string name="report">Report</string>
+    <string name="overview">overview</string>
+    <string name="registered_users">Registered users</string>
+    <string name="live_users_for_today">Live users for today</string>
+    <string name="user_behaviour">User Behaviour</string>
+    <string name="last_7_days_performance">Last 7 days performance</string>
 
 
 </resources>

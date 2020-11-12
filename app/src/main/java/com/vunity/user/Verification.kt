@@ -41,8 +41,6 @@ class Verification : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.act_verification)
 
-        val deviceId = Secure.getString(applicationContext.contentResolver, Secure.ANDROID_ID)
-
         if (intent.getStringExtra("mobile") != null) {
             mobile = intent.getStringExtra("mobile")!!.toString()
         }
@@ -167,8 +165,7 @@ class Verification : AppCompatActivity() {
                 val loginBody = LoginBody(
                     mobile = mobile,
                     otp = otp.toInt(),
-                    fcmToken = getData("fcm_token", applicationContext).toString(),
-                    deviceId = deviceId
+                    fcmToken = getData("fcm_token", applicationContext).toString()
                 )
                 login(loginBody)
             }

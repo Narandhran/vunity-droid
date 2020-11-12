@@ -2,19 +2,18 @@ package com.vunity.report
 
 data class ReportDto(
     var contentFound: Boolean?,
-    var `data`: List<ReportData>?,
+    var `data`: CMSReport?,
     var message: String?,
     var status: Int?
 )
 
-data class ReportData(
-    var activeUsers: Int?,
-    var date: String?
+data class CMSReport(
+    var activeUser: Int?,
+    var report: List<ReportData>?,
+    var totalUser: Int?
 )
 
-
-data class ListReportData(
+data class ReportData(
     var activeUsers: Int,
-    var date: String,
-    var color: Int
+    var date: String
 )
